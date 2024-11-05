@@ -18,6 +18,7 @@ int main()
 	Parser(t, "vm.txt");
 	//system("pause");
 	DestroyTokens(t);
+	free(code);
 	Bvm vm = initBVM();
 	vm.numOfInstructions = textToProgram("vm.txt", vm.instruction);
 	printf("\n-------------Runtime-------------\n");
