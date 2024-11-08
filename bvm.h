@@ -39,7 +39,7 @@ typedef union {
 	} Word;
 
 typedef enum {
-	
+
 	PUSH,
 	PUSHF,
 	PUSHIP,
@@ -53,6 +53,7 @@ typedef enum {
 	IF,
 	JMP,
 	JMPT,
+	JMPF,
 	SETSP,
 	COPY,
 	SWAP,
@@ -62,7 +63,7 @@ typedef enum {
 	NEWLINE,
 	LABEL,
 	END,
-	
+
 
 	} InstructionType;
 
@@ -81,6 +82,7 @@ const char* instructionNames[] = {
 	"IF",
 	"JMP",
 	"JMPT",
+	"JMPF",
 	"SETSP",
 	"COPY",
 	"SWAP",
@@ -90,7 +92,7 @@ const char* instructionNames[] = {
 	"\n",
 	"LABEL",
 	"END",
-};
+	};
 
 //SIZE OF THE INSTRUCTION IS 8BYTE + 1BYTE
 typedef struct {
@@ -126,7 +128,7 @@ static inline void loop(Bvm *bvm);
 
 
 static inline u64 textToProgram(const char* name, Instruction *instrucion);
-static inline void dissasembler(Bvm *bvm);
+//static inline void dissasembler(Bvm *bvm);
 static inline void programToBin(const char* name, Instruction *instruction, u64 numOfInstruction);
 static inline void binToProgram(const char* name, Instruction *instruction);
 
@@ -141,7 +143,9 @@ static inline void stackPush(Stack *stack,i64 value) {
 		ERROR_BREAK("STACK OVERFLOW!!!\n");
 		}
 	stack->stack[stack->SP++]._asI64 =  value;
-	//LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
+#ifdef LOG_STACK
+	LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
+#endif
 	}
 
 
@@ -151,23 +155,30 @@ static inline void stackPushF64(Stack *stack,f64 value) {
 		ERROR_BREAK("STACK OVERFLOW!!!\n");
 		}
 	stack->stack[stack->SP++]._asF64 =  value;
-	//LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
+#ifdef LOG_STACK
+	LOG("STACK PUSH %f\n", stack->stack[stack->SP - 1]._asF64);
+#endif
 	}
-static inline void stackPushWord(Stack *stack, Word value){
-	if(stack->SP > STACK_CAPACITIY){
+static inline void stackPushWord(Stack *stack, Word value) {
+	if(stack->SP > STACK_CAPACITIY) {
 		ERROR_BREAK("STACK OVERFLOW!!!\n");
+		}
+#ifdef LOG_STACK
+	LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
+#endif
+	stack->stack[stack->SP++] = value;
 	}
-	stack->stack[stack->SP++] = value; 
-}
 
 
 static inline Word stackPop(Stack *stack) {
-	if(stack->SP < 0) {
+	if(stack->SP <= 0) {
 		ERROR_BREAK("STACK UNDERFLOW!!!\n");
 
 		}
 	stack->SP--;
-	//LOG("STACK POP %d\n", stack->stack[stack->SP]._asI64);
+#ifdef LOG_STACK
+	LOG("STACK POP %d\n", stack->stack[stack->SP]._asI64);
+#endif
 	return stack->stack[stack->SP];
 	}
 
@@ -198,7 +209,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 	//system("pause");
 	switch(bvm->instruction[bvm->IP].type) {
-	
+
 		case PUSH: {
 				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
 				bvm->IP++;
@@ -250,7 +261,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				else if(c._asU64 == f) {
 					LOG("PRINT %f\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
-					else if(c._asU64 == ch) {
+				else if(c._asU64 == ch) {
 					LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
 					}
 
@@ -379,7 +390,7 @@ static inline void executeInstruction(Bvm *bvm) {
 		case JMPT: {
 				a = stackPop(&bvm->stack);
 				c =  bvm->instruction[bvm->IP].operand;
-				
+
 				if(a._asU64) {
 					bvm->IP = c._asU64;
 					//stackPush(&bvm->stack, a._asI64);
@@ -390,6 +401,22 @@ static inline void executeInstruction(Bvm *bvm) {
 					}
 				break;
 				}
+
+		case JMPF: {
+				a = stackPop(&bvm->stack);
+				c =  bvm->instruction[bvm->IP].operand;
+
+				if(!a._asU64) {
+					bvm->IP = c._asU64;
+					//stackPush(&bvm->stack, a._asI64);
+					}
+				else {
+					//stackPush(&bvm->stack, a._asI64);
+					bvm->IP++;
+					}
+				break;
+				}
+
 
 		case SETSP: {
 				a = bvm->instruction[bvm->IP].operand;
@@ -516,11 +543,11 @@ static inline u64 textToProgram(const char* name, Instruction *instrucion) {
 					instrucion[counterInstruction].operand._asF64 = (f64)atof(textOperand);
 					LOG("operand %f\n", instrucion[counterInstruction].operand._asF64);
 					}
-				
-				else if(inst == NEWLINE || inst == LABEL){
+
+				else if(inst == NEWLINE || inst == LABEL) {
 					//DO NOTING IF NEW LINE
 					continue;
-				}
+					}
 				//Todo ADD >=, <=
 				else if(inst == IF) {
 					if(textOperand[0] == '>') {
