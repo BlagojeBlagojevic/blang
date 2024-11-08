@@ -12,8 +12,7 @@
 #include "lex.h"
 //#include "utils_string.h"
 
-Token* Tokeniser(char* input)
-{
+Token* Tokeniser(char* input) {
 
 	Token* tokens = malloc(MAX_TOKENS*sizeof(char));
 
@@ -23,27 +22,65 @@ Token* Tokeniser(char* input)
 	while (right <= len && left <= right) {
 		if(counterTokens == MAX_TOKENS) {
 			ERROR("We have excide max amount of tokens\n\n");
-		}
+			}
 		if (!isEndChar(input[right]))
 			right++;
 
 		if (isEndChar(input[right]) && left == right) {
 			if (isOperator(input[right])) {
+				//CHECK FOR A LOGICAL OPERATOR
+				if(isLogicOperator(input[right])) {
+					//IF OPERATOR CHECK FOR A = SIGN
+					if(input[right+1] == '=') {
+
+						tokens[counterTokens].type = TYPE_LOGICOPERATOR;
+						tokens[counterTokens].value = malloc(3*sizeof(char));
+						tokens[counterTokens].value[0] = input[right];
+						tokens[counterTokens].value[1] = input[right + 1];//CHECK
+						tokens[counterTokens].value[2] = '\0';
 #ifdef LOG_VAL
-				printf("Token: Operator, Value: %c\n", input[right]);
+						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
 #endif
-				tokens[counterTokens].type = TYPE_OPERATION;
-				tokens[counterTokens].value = malloc(2*sizeof(char));
-				tokens[counterTokens].value[0] = input[right];
-				tokens[counterTokens].value[1] = '\0';
-				counterTokens++;
-			}
+						counterTokens++;
+						right++;
+
+						}
+					else {
+
+						tokens[counterTokens].type = TYPE_LOGICOPERATOR;
+						tokens[counterTokens].value = malloc(2*sizeof(char));
+						tokens[counterTokens].value[0] = input[right];
+						tokens[counterTokens].value[1] = '\0';
+#ifdef LOG_VAL
+						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
+#endif
+						counterTokens++;
+						}
+					}
+
+				else {
+#ifdef LOG_VAL
+					printf("Token: Operator, Value: %c\n", input[right]);
+#endif
+
+
+					tokens[counterTokens].type = TYPE_OPERATION;
+					tokens[counterTokens].value = malloc(2*sizeof(char));
+					tokens[counterTokens].value[0] = input[right];
+					tokens[counterTokens].value[1] = '\0';
+
+					counterTokens++;
+					}
+
+				}
 
 			right++;
 			left = right;
-		} else if ((isEndChar(input[right]) && (left != right)) || (right == len
-		           && left != right)) {
+			}
+		else if ((isEndChar(input[right]) && (left != right)) || (right == len
+		         && left != right)) {
 			char* subStr = returnSubstring(input, left, right - 1);
+
 
 			if (isKeyword(subStr)) {
 #ifdef LOG_VAL
@@ -52,7 +89,7 @@ Token* Tokeniser(char* input)
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_KEYWORD;
 				counterTokens++;
-			}
+				}
 
 
 			else if (isInteger(subStr)) {
@@ -62,7 +99,7 @@ Token* Tokeniser(char* input)
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_CONST;
 				counterTokens++;
-			}
+				}
 
 
 			else if (isValidVar(subStr) && !isEndChar(input[right - 1])) {
@@ -73,46 +110,49 @@ Token* Tokeniser(char* input)
 				tokens[counterTokens].type = TYPE_VAR;
 				counterTokens++;
 
-			}
+				}
 
 
 			else if (!isValidVar(subStr)&& !isEndChar(input[right - 1])) {
 #ifdef LOG_VAL
-				printf("Token: Unidentified, Value: %s\n", subStr);
+				printf("\nToken: Unidentified, Value: %s\n", subStr);
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_UNREGISTER;
 				counterTokens++;
-			}
+				}
 
 			left = right;
+			}
 		}
-	}
 	tokens[counterTokens].type = TYPE_EOF;
 	return tokens;
-}
+	}
 
-void PrintTokens(Token *tokens)
-{
+void PrintTokens(Token *tokens) {
 	int counter = 0;
+	printf("\n_________________________\n");
 	while(tokens[counter].type != TYPE_EOF) {
 		printf("TOKEN [%s] : %s\n\n", TokenString[tokens[counter].type],
 		       tokens[counter].value);
 		counter++;
+		}
+	
+	printf("Num of tokens %d\n", counter - 1);
+	printf("\n_________________________\n");
 	}
-}
 
 
-void DestroyTokens(Token* tokens)
-{
+
+void DestroyTokens(Token* tokens) {
 	int counter = 0;
 	while(tokens[counter].type != TYPE_EOF) {
 		free(tokens[counter].value);
 		counter++;
 
-	}
+		}
 	free(tokens);
-}
+	}
 
 
 

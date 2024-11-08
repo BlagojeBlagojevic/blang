@@ -1,0 +1,5 @@
+10 20 print
+if < 
+39 10 + print print print
+end
+print end

@@ -4,7 +4,7 @@
 //#include "utils_string.h"
 
 #define NUM_OF_TOKENS 5
-#define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
+#define ERROR(...)  {printf("Error: "); fprintf(stderr, __VA_ARGS__); exit(-1);}
 
 #define MAX_TOKENS 10000
 #define MAX_LENGHT  100
@@ -16,6 +16,7 @@ typedef enum TokenType_t {
 	TYPE_KEYWORD,
 	TYPE_UNREGISTER,
 	TYPE_OPERATION,
+	TYPE_LOGICOPERATOR,
 	TYPE_EOF,
 
 } TokenType;
@@ -26,6 +27,7 @@ const char* TokenString[] = {
 	"KEYWORD",
 	"UNREGISTER",
 	"OPERATION",
+	"LOGICOPERATOR",
 	"EOF",
 };
 
