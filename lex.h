@@ -19,7 +19,7 @@ typedef enum TokenType_t {
 	TYPE_LOGICOPERATOR,
 	TYPE_EOF,
 
-} TokenType;
+	} TokenType;
 
 const char* TokenString[] = {
 	"CONST",
@@ -29,14 +29,15 @@ const char* TokenString[] = {
 	"OPERATION",
 	"LOGICOPERATOR",
 	"EOF",
-};
+	};
 
 //static_assert(NUM_OF_TOKENS==TYPE_EOF, "we have more tokens then max");
 
 typedef struct {
 	TokenType type;
 	char* value;     //IT EXIST TRUE ALL LIFTIME OF A PROGRAM
-} Token;
+	int jumpValue;
+	} Token;
 
 
 
