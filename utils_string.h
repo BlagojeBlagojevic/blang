@@ -4,7 +4,7 @@
 
 enum {KEYWORD_VAR, KEYWORD_PRINT, KEYWORD_IF, KEYWORD_END, KEY_WORDPOP };
 const char* keywords[] = { "var", "print", "if", "end", "pop"  };
-
+const char* endScriptToken = "endscript";
 
 //we hear nead to put wat will sep our code
 char isEndChar(char c) {
@@ -14,7 +14,8 @@ char isEndChar(char c) {
 	                    || (c == ';') || (c == '%') || (c == '>')
 	                    || (c == '<') || (c == '=') || (c == '(')
 	                    || (c == ')') || (c == '[') || (c == ']')
-	                    || (c == '{') || (c == '}') || (c == '\n'));
+	                    || (c == '{') || (c == '}') || (c == '\n')
+											|| (c == '\t') || (c == '\0'));
 	return temp;
 	}
 
@@ -26,10 +27,10 @@ char isOperator(char c) {
 
 //FOR NOW ONLY >, <, =
 char isLogicOperator(char c) {
-	
-		return (c == '>' || c == '<' || c == '=');
-	
-	
+
+	return (c == '>' || c == '<' || c == '=');
+
+
 	}
 
 
