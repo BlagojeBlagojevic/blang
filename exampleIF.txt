@@ -1,0 +1,15 @@
+0 10 + print 
+30 
+if > 
+	20 print
+end
+30 30 
+if =
+	30 print
+	40 print
+	if >
+		50 print
+	end
+	60 print
+end
+endscript .
