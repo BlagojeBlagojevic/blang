@@ -51,6 +51,7 @@ typedef enum {
 	DIV,
 	DUP,
 	IF,
+	ELSE,
 	JMP,
 	JMPT,
 	JMPF,
@@ -80,6 +81,7 @@ const char* instructionNames[] = {
 	"DIV",
 	"DUP",
 	"IF",
+	"ELSE",
 	"JMP",
 	"JMPT",
 	"JMPF",
@@ -120,6 +122,7 @@ typedef struct {
 	Instruction instruction[MAX_SIZE_OF_PROGRAM];
 	u64 numOfInstructions;
 	u64 IP;
+	i64 jumpReg;
 	} Bvm;
 
 static inline Bvm  initBVM(void);
@@ -195,7 +198,7 @@ static inline Bvm initBVM(void) {
 	LOG("Init BVM\n");
 	LOG("\n SP = %lu\n", bvm.stack.SP);
 	LOG("\n IP = %lu\n", bvm.IP);
-
+	bvm.jumpReg = 0;
 
 	return bvm;
 
@@ -380,6 +383,13 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
+		case ELSE: {
+				stackPush(&bvm->stack, bvm->jumpReg);
+				bvm->jumpReg = 0;
+				bvm->IP++;
+				break;
+				}
+
 		case JMP: {
 				a = bvm->instruction[bvm->IP].operand;
 
@@ -393,6 +403,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 				if(a._asU64) {
 					bvm->IP = c._asU64;
+					bvm->jumpReg = 1;
 					//stackPush(&bvm->stack, a._asI64);
 					}
 				else {
@@ -408,6 +419,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 				if(!a._asU64) {
 					bvm->IP = c._asU64;
+					bvm->jumpReg = 1;
 					//stackPush(&bvm->stack, a._asI64);
 					}
 				else {
