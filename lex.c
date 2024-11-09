@@ -1,3 +1,4 @@
+
 #include<stdio.h>
 #include<string.h>
 #include<assert.h>
@@ -12,6 +13,7 @@
 #include "lex.h"
 //#include "utils_string.h"
 
+
 Token* Tokeniser(char* input) {
 
 	Token* tokens = malloc(MAX_TOKENS*sizeof(char));
@@ -20,6 +22,7 @@ Token* Tokeniser(char* input) {
 	int len = strlen(input);
 	int counterTokens = 0;
 	while (right <= len && left <= right) {
+		
 		if(counterTokens == MAX_TOKENS) {
 			ERROR("We have excide max amount of tokens\n\n");
 			}
@@ -38,6 +41,7 @@ Token* Tokeniser(char* input) {
 						tokens[counterTokens].value[0] = input[right];
 						tokens[counterTokens].value[1] = input[right + 1];//CHECK
 						tokens[counterTokens].value[2] = '\0';
+						
 #ifdef LOG_VAL
 						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
 #endif
@@ -80,7 +84,9 @@ Token* Tokeniser(char* input) {
 		else if ((isEndChar(input[right]) && (left != right)) || (right == len
 		         && left != right)) {
 			char* subStr = returnSubstring(input, left, right - 1);
-
+			if(!strcmp(subStr, "endscript")){
+				break;
+			}
 
 			if (isKeyword(subStr)) {
 #ifdef LOG_VAL
@@ -126,6 +132,7 @@ Token* Tokeniser(char* input) {
 			}
 		}
 	tokens[counterTokens].type = TYPE_EOF;
+	
 	return tokens;
 	}
 
@@ -137,7 +144,7 @@ void PrintTokens(Token *tokens) {
 		       tokens[counter].value);
 		counter++;
 		}
-	
+
 	printf("Num of tokens %d\n", counter - 1);
 	printf("\n_________________________\n");
 	}
