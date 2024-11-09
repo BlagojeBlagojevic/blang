@@ -1,3 +1,4 @@
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -9,10 +10,10 @@
 
 
 #define WRITE_TO_FILE(str)\
-		{char buffer[100];\
+		{char buffer[100]; \
 		memset(buffer, '\0', sizeof(char)*100);\
 		sprintf(buffer, str, tokens[counterTokens].value);\
-		fwrite(buffer,sizeof(char), strlen(buffer), f);\
+		fwrite(buffer,sizeof(char), strlen(buffer), f); counterInstruction++;\
 		}
 
 
@@ -27,6 +28,7 @@ void Parser(Token *tokens, const char* name) {
 		}
 	while(tokens[counterTokens].type != TYPE_EOF) {
 		printf("Num of token %d\n", counterTokens);
+		//system("pause");
 		if(counterTokens >= MAX_TOKENS) {
 			ERROR("Error in max num of tokens\n");
 			}
@@ -37,7 +39,6 @@ void Parser(Token *tokens, const char* name) {
 					//char buffer[100];
 					WRITE_TO_FILE("PUSH %s\n");
 					counterTokens++;
-					counterInstruction++;
 					break;
 					}
 			//MATH
@@ -47,24 +48,22 @@ void Parser(Token *tokens, const char* name) {
 								//if add type checking heare change
 								WRITE_TO_FILE("ADD 0\n");
 								counterTokens++;
-								counterInstruction++;
+
 								break;
 								}
 						case '-': {
 								WRITE_TO_FILE("DEC 0\n");
 								counterTokens++;
-								counterInstruction++;
+
 								break;
 								}
 						case '*': {
 								WRITE_TO_FILE("MUL 0\n");
-counterInstruction++;
 								counterTokens++;
 								break;
 								}
 						case '/': {
 								WRITE_TO_FILE("DIV 0\n");
-								counterInstruction++;
 								counterTokens++;
 								break;
 								}
@@ -81,11 +80,8 @@ counterInstruction++;
 					//PRINT FOR NOW ONLY INTEGERS
 					if(WORD_COMPARE(KEYWORD_PRINT)) {
 						WRITE_TO_FILE("PRINT 0\n");
-						counterInstruction++;
 						counterTokens++;
-
 						}
-
 					else {
 						//counterInstruction++;
 						counterTokens++;
@@ -94,35 +90,47 @@ counterInstruction++;
 					}
 			case TYPE_LOGICOPERATOR: {
 					//GET A FIRST END TOKEN
-					int endTokenPosition = 0;
-					//IN MACRO PROBOBLY
-					for(int i = counterTokens+2; tokens[i].type != TYPE_EOF; i++) {
-						//printf("counter %d\n", i);
-						if(tokens[i].type == TYPE_KEYWORD) {
-							//printf("token %s keyword %s\n", tokens[i].value, keywords[KEYWORD_END]);
-							if(!strcmp(tokens[i].value, keywords[KEYWORD_IF])){
-								endTokenPosition+=2;   //IF HAS 3 INSTRUCTIONS
+					int endTokenPosition = counterInstruction, numIf = 0, counterTemp = counterTokens;
+					int numOfIf = 1;
+					
+					while(tokens[counterTemp].type != TYPE_EOF){
+						printf("CI %d ETP %d NIF %d\n", counterInstruction, endTokenPosition, numOfIf);
+						//system("pause");
+						if(!strcmp(tokens[counterTemp].value, keywords[KEYWORD_IF]) 
+							&& tokens[counterTemp].type == TYPE_KEYWORD){
+								numOfIf++;
+								endTokenPosition++;
 							}
-							if(!strcmp(tokens[i].value, keywords[KEYWORD_END])) {
-								//system("pause");
-								endTokenPosition += i;
-								printf("End token position %d\n", endTokenPosition);
-								break;
+						
+						else if(!strcmp(tokens[counterTemp].value, keywords[KEYWORD_END]) 
+							&& tokens[counterTemp].type == TYPE_KEYWORD){
+								//endTokenPosition++;
+								numOfIf--;
+								if(numOfIf == 0){
+									endTokenPosition+=2;
+									break;
 								}
+								
 							}
+						else{
+							endTokenPosition++;
 						}
-
-					if(endTokenPosition == 0) {
+						
+						counterTemp++;
+					}	
+					
+					if(tokens[counterTemp].type == TYPE_EOF) {
 						ERROR("End Token not provided Token: %s\n", tokens[counterTokens].value);
 						}
 
 					if(strlen(tokens[counterTokens].value) == 1) {
 						WRITE_TO_FILE("IF %s\n");
 						char buffer[100];
-						sprintf(buffer, "JMPF %d\n", endTokenPosition);
+						sprintf(buffer, "JMPF %d\n", endTokenPosition - 1);
 						fwrite(buffer, sizeof(char), strlen(buffer), f);
+						counterInstruction++;
 						counterTokens++;
-						counterInstruction+=3;  //3 INSTRUCTION FOR IF STATMENT
+
 						}
 					else {
 						//Todo implement other shit AKA >=, <=
