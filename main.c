@@ -3,15 +3,14 @@
 #include <string.h>
 #include "lex.c"
 #include "parser.c"
-
-#define LOG_STACK
+#define LOG_VALUE
+//#define LOG_STACK
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
 
-int main()
-{
+int main() {
 	char *code = malloc(MAX_TOKENS * sizeof(char));
-
+	memset(code, '\0', sizeof(char) * MAX_TOKENS);
 	//strcpy(code, "2 3 + print 5 * print");
 	//code[strlen(code) - 2] = '\n';
 	FILE *f = fopen("code.txt", "r");
@@ -35,4 +34,4 @@ int main()
 
 	return 0;
 
-}
+	}
