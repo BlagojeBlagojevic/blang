@@ -14,6 +14,7 @@
 #define TRUE  1
 #define FALSE 0
 
+//#define LOG_STACK
 enum {i, f, u, ch};
 
 //
@@ -105,7 +106,7 @@ typedef struct {
 #define MAX_SIZE_OF_PROGRAM 10024
 #define MAX_LINE 100
 typedef struct {
-	Word stack[STACK_CAPACITIY];
+	Word *stack;
 	i64  SP;
 	} Stack;
 
@@ -113,13 +114,14 @@ static inline void stackPush(Stack *stack,i64 value);
 static inline void stackPushF64(Stack *stack,f64 value);
 static inline void stackPushWord(Stack *stack, Word value);
 static inline Word stackPop(Stack *stack);
-
+static inline void initStack(Stack *stack);
 typedef struct {
 	u8 isRuning;
 	Stack stack;
 	Instruction instruction[MAX_SIZE_OF_PROGRAM];
 	u64 numOfInstructions;
 	u64 IP;
+	i64 jumpReg;
 	} Bvm;
 
 static inline Bvm  initBVM(void);
@@ -133,9 +135,9 @@ static inline void programToBin(const char* name, Instruction *instruction, u64 
 static inline void binToProgram(const char* name, Instruction *instruction);
 
 
-#define BVM_IMPLEMENTATION
+//#define BVM_IMPLEMENTATION
 
-
+#ifdef BVM_IMPLEMENTATION
 //STACK OPERATIONS
 //LETS DEFULT BE u64
 static inline void stackPush(Stack *stack,i64 value) {
@@ -182,6 +184,11 @@ static inline Word stackPop(Stack *stack) {
 	return stack->stack[stack->SP];
 	}
 
+static inline void initStack(Stack *stack){
+	stack->SP = 0;
+	stack->stack = malloc(sizeof(Word) * STACK_CAPACITIY);
+}
+
 
 
 static inline Bvm initBVM(void) {
@@ -192,10 +199,11 @@ static inline Bvm initBVM(void) {
 
 	memset(&bvm, 0, sizeof(bvm));
 	bvm.isRuning = TRUE;
+	initStack(&bvm.stack);
 	LOG("Init BVM\n");
 	LOG("\n SP = %lu\n", bvm.stack.SP);
 	LOG("\n IP = %lu\n", bvm.IP);
-
+	bvm.jumpReg = 0;
 
 	return bvm;
 
@@ -380,6 +388,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
+
 		case JMP: {
 				a = bvm->instruction[bvm->IP].operand;
 
@@ -393,6 +402,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 				if(a._asU64) {
 					bvm->IP = c._asU64;
+					bvm->jumpReg = 1;
 					//stackPush(&bvm->stack, a._asI64);
 					}
 				else {
@@ -408,6 +418,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 				if(!a._asU64) {
 					bvm->IP = c._asU64;
+					bvm->jumpReg = 1;
 					//stackPush(&bvm->stack, a._asI64);
 					}
 				else {
@@ -610,5 +621,5 @@ static inline void binToProgram(const char* name, Instruction *instruction) {
 	fclose(f);
 	}
 
-
+#endif
 #endif

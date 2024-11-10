@@ -22,7 +22,7 @@ Token* Tokeniser(char* input) {
 	int len = strlen(input);
 	int counterTokens = 0;
 	while (right <= len && left <= right) {
-		
+
 		if(counterTokens == MAX_TOKENS) {
 			ERROR("We have excide max amount of tokens\n\n");
 			}
@@ -41,7 +41,7 @@ Token* Tokeniser(char* input) {
 						tokens[counterTokens].value[0] = input[right];
 						tokens[counterTokens].value[1] = input[right + 1];//CHECK
 						tokens[counterTokens].value[2] = '\0';
-						
+
 #ifdef LOG_VAL
 						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
 #endif
@@ -84,9 +84,9 @@ Token* Tokeniser(char* input) {
 		else if ((isEndChar(input[right]) && (left != right)) || (right == len
 		         && left != right)) {
 			char* subStr = returnSubstring(input, left, right - 1);
-			if(!strcmp(subStr, "endscript")){
+			if(!strcmp(subStr, "endscript")) {
 				break;
-			}
+				}
 
 			if (isKeyword(subStr)) {
 #ifdef LOG_VAL
@@ -95,6 +95,26 @@ Token* Tokeniser(char* input) {
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_KEYWORD;
 				counterTokens++;
+				//IF KEYWORD IS ELSE ADD 1 IF = TOKENS
+				if(!strcmp(subStr, keywords[KEYWORD_ELSE])) {
+					//counterTokens--;
+					//free(tokens[counterTokens].value);
+					tokens[counterTokens].value = malloc(2*sizeof(char));
+					tokens[counterTokens].value[0] = '0';
+					tokens[counterTokens].value[1] = '\0';
+					tokens[counterTokens].type = TYPE_CONST;
+					counterTokens++;
+					tokens[counterTokens].value = malloc(2*sizeof(char));
+					tokens[counterTokens].value[0] = '=';
+					tokens[counterTokens].value[1] = '\0';
+					tokens[counterTokens].type = TYPE_LOGICOPERATOR;
+					counterTokens++;
+					tokens[counterTokens].value = malloc(3*sizeof(char));
+					strcpy(tokens[counterTokens].value, "if");
+					tokens[counterTokens].type = TYPE_KEYWORD;
+					counterTokens++;
+					
+					}
 				}
 
 
@@ -132,7 +152,7 @@ Token* Tokeniser(char* input) {
 			}
 		}
 	tokens[counterTokens].type = TYPE_EOF;
-	
+
 	return tokens;
 	}
 
@@ -140,7 +160,7 @@ void PrintTokens(Token *tokens) {
 	int counter = 0;
 	printf("\n_________________________\n");
 	while(tokens[counter].type != TYPE_EOF) {
-		printf("TOKEN [%s] : %s\n\n", TokenString[tokens[counter].type],
+		printf("TOKEN%d [%s] : %s\n\n", counter, TokenString[tokens[counter].type],
 		       tokens[counter].value);
 		counter++;
 		}
@@ -160,6 +180,5 @@ void DestroyTokens(Token* tokens) {
 		}
 	free(tokens);
 	}
-
 
 
