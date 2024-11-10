@@ -9,7 +9,11 @@ end
 	40 print
 	> if 
 		50 print
+		20 20 = if	
+					60 print 
+				end
+	70 print
 	end
-	60 print
+	80 print
 end
 endscript .
