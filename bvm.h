@@ -58,6 +58,7 @@ typedef enum {
 	SETSP,
 	COPY,
 	SWAP,
+	MEM,
 	NOP,
 	HALT,
 	INC,
@@ -87,6 +88,7 @@ const char* instructionNames[] = {
 	"SETSP",
 	"COPY",
 	"SWAP",
+	"MEM",
 	"NOP",
 	"HALT",
 	"INC",
@@ -440,15 +442,14 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 		case COPY: {
-				a = stackPop(&bvm->stack);
+				//a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
-				stackPush(&bvm->stack, a._asI64);
-				if(b._asU64 > STACK_CAPACITIY) {
-					ERROR_BREAK("STACK OVERFLOW ACCES!!!\n");
-					}
-				bvm->stack.stack[b._asU64] = a;
+				c = bvm->stack.stack[b._asU64];
+				stackPush(&bvm->stack, c._asI64);
+				//bvm->stack.stack[b._asU64] = a;
 				bvm->IP++;
 				break;
+			
 				}
 
 		case SWAP: {
@@ -460,7 +461,16 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		case MEM:{
+				a = stackPop(&bvm->stack);
+				b = bvm->instruction[bvm->IP].operand;
+				c = bvm->stack.stack[b._asU64];
+				stackPush(&bvm->stack, a._asI64);
+				memcpy(&bvm->stack.stack[b._asU64], &a, sizeof(Word));
+				bvm->IP++;
+				break;
+			
+		}
 
 		case NOP: {
 				bvm->IP++;
