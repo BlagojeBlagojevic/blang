@@ -2,10 +2,11 @@
 #define UTILS_STRINGS
 //#include<string.h>
 
-enum {KEYWORD_VAR, KEYWORD_PRINT, KEYWORD_IF, KEYWORD_END, KEY_WORDPOP };
-const char* keywords[] = { "var", "print", "if", "end", "pop"  };
+enum {KEYWORD_VAR, KEYWORD_PRINT, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_POP };
+const char* keywords[] = { "var", "print", "if", "end", "else", "dup", "pop"  };
 const char* endScriptToken = "endscript";
-
+enum {LOGIC_G, LOGIC_L, LOGIC_E};
+const char* logicOperators[] = {">", "<", "="};
 //we hear nead to put wat will sep our code
 char isEndChar(char c) {
 	const char temp = (
@@ -15,7 +16,7 @@ char isEndChar(char c) {
 	                    || (c == '<') || (c == '=') || (c == '(')
 	                    || (c == ')') || (c == '[') || (c == ']')
 	                    || (c == '{') || (c == '}') || (c == '\n')
-											|| (c == '\t') || (c == '\0'));
+	                    || (c == '\t') || (c == '\0'));
 	return temp;
 	}
 
