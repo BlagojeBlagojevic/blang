@@ -4,7 +4,7 @@
 //#include "utils_string.h"
 
 #define NUM_OF_TOKENS 5
-#define ERROR(...)  {printf("Error: "); fprintf(stderr, __VA_ARGS__); exit(-1);}
+#define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
 
 #define MAX_TOKENS 10000
 #define MAX_LENGHT  100
