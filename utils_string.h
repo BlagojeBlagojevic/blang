@@ -2,8 +2,9 @@
 #define UTILS_STRINGS
 //#include<string.h>
 
-enum {KEYWORD_VAR, KEYWORD_PRINT, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_POP };
-const char* keywords[] = { "var", "print", "if", "end", "else", "dup", "pop"  };
+enum {KEYWORD_VAR, KEYWORD_PRINT, KEYWORD_IF, KEYWORD_END, 
+			KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_POP };
+const char* keywords[] = { "var", "print", "if", "end", "else", "dup",  "let",  "pop"};
 const char* endScriptToken = "endscript";
 enum {LOGIC_G, LOGIC_L, LOGIC_E};
 const char* logicOperators[] = {">", "<", "="};
