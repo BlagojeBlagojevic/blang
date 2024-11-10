@@ -1,0 +1,16 @@
+10 let a  
+20 let b
+30 let c
+20 20 = dup 
+if  
+	a print
+	b print
+	+ print
+	let a 
+	a print
+end
+else
+	a print
+end
+b print
+endscript .

@@ -1,16 +1,51 @@
-
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<string.h>
 #include "lex.h"
-//#define LOG_STACK
-//#include "bvm.h"
+#define LOG_STACK
+#include "bvm.h"
 
 
 //void Parser(Token *tokens);
+#define MAX_VARS 100
+#define MAX_VARS_NAME 100
+//asumed that a var has global lifespawn
+typedef struct {
+	int adress[MAX_VARS];
+	char* name[MAX_VARS];
+	int sp;
 
+	} VarStack;
+
+
+void VarStackPush(VarStack* varstack,  char* name) {
+	if(varstack->sp > MAX_VARS) {
+		ERROR_BREAK("We have get more var then max amount max num of vars is %d\n", MAX_VARS);
+		}
+	int lenName = strlen(name);
+	int adress = STACK_CAPACITIY - 1 - varstack->sp;
+	varstack->name[varstack->sp] = name;//malloc(sizeof(char)*(lenName+1));
+	//strcpy(varstack->name[varstack->sp], name);
+	varstack->adress[varstack->sp] = adress;
+	printf("Var %s", name);
+	varstack->sp++;
+	}
+
+int VarStackGet(const char* name, VarStack *varstack) {
+	for(int i = 0; i < varstack->sp; i++) {
+		if(!strcmp(name, varstack->name[i])) {
+			return i;
+			}
+		}
+	return -1;
+	}
+
+void PrintVarStack(VarStack v) {
+	for(int i = 0; i < v.sp; i++) {
+		printf("Var %s addres %d\n", v.name[i], v.adress[i]);
+		}
+	}
 
 
 #define WORD_COMPARE(KEYWORD) (!strcmp(keywords[KEYWORD], tokens[counterTokens].value))
@@ -31,6 +66,9 @@ void Parser(Token *tokens, Bvm *bvm) {
 	int counterTokens = 0, counterInstruction = 0;
 
 	Stack ifStack;
+	VarStack varStack;
+	//memset(&varStack, 0, sizeof(VarStack)*MAX_VARS);
+	varStack.sp = 0;
 	initStack(&ifStack);
 	int stackSize = 0;
 	//
@@ -38,7 +76,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 
 		//printf("Num of token %d\n", counterTokens);
 		//system("pause");
-
+		//PrintVarStack(varStack);
 		//memset()
 		if(counterTokens >= MAX_TOKENS) {
 			ERROR("Error in max num of tokens\n");
@@ -46,6 +84,43 @@ void Parser(Token *tokens, Bvm *bvm) {
 		//WE FOR NOW HAVA A NUMS PUSH THEM ONLY INT FOR NOW
 
 		switch(tokens[counterTokens].type) {
+			case TYPE_VAR: {
+					if(counterTokens < 0)
+						break;
+					if(tokens[counterTokens-1].type == TYPE_KEYWORD
+					    && !strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_LET])) {
+							{
+							int is = VarStackGet(tokens[counterTokens].value, &varStack);
+							if(is == -1) {
+								VarStackPush(&varStack, tokens[counterTokens].value);
+								is = varStack.sp - 1;
+								}
+							else {
+								is =  VarStackGet(tokens[counterTokens].value, &varStack);
+								}
+							bvm->instruction[counterInstruction].type = MEM;
+							bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
+							printf("\nstore var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+							counterTokens++;
+							counterInstruction++;
+
+							}
+						}
+					else {
+						int is = VarStackGet(tokens[counterTokens].value, &varStack);
+						if(is == -1) {
+							ERROR_BREAK("We have not declaread a var %s\n", tokens[counterTokens].value);
+							}
+						bvm->instruction[counterInstruction].type = COPY;
+						bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
+						printf("\nload var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+						counterTokens++;
+						counterInstruction++;
+
+						}
+					break;
+					}
+
 			case TYPE_CONST: {
 					//char buffer[100];
 					int valueNum = ValueToNum(tokens[counterTokens].value);
@@ -78,7 +153,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 								printf("\noperation %s, dec\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
-
+								stackSize--;
 								break;
 								}
 						case '*': {
@@ -89,7 +164,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 								printf("\noperation %s, mul\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
-
+								stackSize--;
 								break;
 								}
 						case '/': {
@@ -100,10 +175,11 @@ void Parser(Token *tokens, Bvm *bvm) {
 								printf("\noperation %s, div\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
-
+								stackSize--;
 								break;
 								}
-							stackSize--;
+
+
 						default: {
 								ERROR("Not implemented math operation or somthing\n");
 								break;
@@ -176,6 +252,12 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+					else if(WORD_COMPARE(KEYWORD_LET)) {
+						bvm->instruction[counterInstruction].type = NOP;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
 					else {
 						//counterInstruction++;
 						counterTokens++;
@@ -215,13 +297,9 @@ void Parser(Token *tokens, Bvm *bvm) {
 					break;
 					}
 			}
-
-		//system("pause");
 		}
 
 	bvm->instruction[counterInstruction].type = END;
 	bvm->instruction[counterInstruction].operand._asU64 = 0;
 	bvm->numOfInstructions = (u64)counterTokens;
-
-
 	}
