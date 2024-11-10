@@ -97,20 +97,23 @@ Token* Tokeniser(char* input) {
 				counterTokens++;
 				//IF KEYWORD IS ELSE ADD 1 IF = TOKENS
 				if(!strcmp(subStr, keywords[KEYWORD_ELSE])) {
+					//counterTokens--;
+					//free(tokens[counterTokens].value);
 					tokens[counterTokens].value = malloc(2*sizeof(char));
-					tokens[counterTokens].value[0] = '1';
+					tokens[counterTokens].value[0] = '0';
 					tokens[counterTokens].value[1] = '\0';
 					tokens[counterTokens].type = TYPE_CONST;
-					counterTokens++;
-					tokens[counterTokens].value = malloc(3*sizeof(char));
-					strcpy(tokens[counterTokens].value, "if");
-					tokens[counterTokens].type = TYPE_KEYWORD;
 					counterTokens++;
 					tokens[counterTokens].value = malloc(2*sizeof(char));
 					tokens[counterTokens].value[0] = '=';
 					tokens[counterTokens].value[1] = '\0';
 					tokens[counterTokens].type = TYPE_LOGICOPERATOR;
 					counterTokens++;
+					tokens[counterTokens].value = malloc(3*sizeof(char));
+					strcpy(tokens[counterTokens].value, "if");
+					tokens[counterTokens].type = TYPE_KEYWORD;
+					counterTokens++;
+					
 					}
 				}
 
@@ -177,6 +180,5 @@ void DestroyTokens(Token* tokens) {
 		}
 	free(tokens);
 	}
-
 
 
