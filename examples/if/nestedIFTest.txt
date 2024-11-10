@@ -1,20 +1,20 @@
 10 print
 30 print 
-if >
+> if 
 	1000 print
 	100 200 + 330 +
 	100 200 
-	if <
+	> if 
        999 print	
 	end
 	20 30 
-	if <
+  > if 
 		998 print
-		20 30 
-		if <
-			998 print
-		end
-	100 print
+	 20 30 
+	  > if 
+			996 print
+		end 
+		100 print
 	end 
 1000 print
 end
