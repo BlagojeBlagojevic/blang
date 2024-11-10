@@ -14,6 +14,7 @@
 #define TRUE  1
 #define FALSE 0
 
+//#define LOG_STACK
 enum {i, f, u, ch};
 
 //
@@ -51,7 +52,6 @@ typedef enum {
 	DIV,
 	DUP,
 	IF,
-	ELSE,
 	JMP,
 	JMPT,
 	JMPF,
@@ -81,7 +81,6 @@ const char* instructionNames[] = {
 	"DIV",
 	"DUP",
 	"IF",
-	"ELSE",
 	"JMP",
 	"JMPT",
 	"JMPF",
@@ -107,7 +106,7 @@ typedef struct {
 #define MAX_SIZE_OF_PROGRAM 10024
 #define MAX_LINE 100
 typedef struct {
-	Word stack[STACK_CAPACITIY];
+	Word *stack;
 	i64  SP;
 	} Stack;
 
@@ -115,7 +114,7 @@ static inline void stackPush(Stack *stack,i64 value);
 static inline void stackPushF64(Stack *stack,f64 value);
 static inline void stackPushWord(Stack *stack, Word value);
 static inline Word stackPop(Stack *stack);
-
+static inline void initStack(Stack *stack);
 typedef struct {
 	u8 isRuning;
 	Stack stack;
@@ -136,9 +135,9 @@ static inline void programToBin(const char* name, Instruction *instruction, u64 
 static inline void binToProgram(const char* name, Instruction *instruction);
 
 
-#define BVM_IMPLEMENTATION
+//#define BVM_IMPLEMENTATION
 
-
+#ifdef BVM_IMPLEMENTATION
 //STACK OPERATIONS
 //LETS DEFULT BE u64
 static inline void stackPush(Stack *stack,i64 value) {
@@ -185,6 +184,11 @@ static inline Word stackPop(Stack *stack) {
 	return stack->stack[stack->SP];
 	}
 
+static inline void initStack(Stack *stack){
+	stack->SP = 0;
+	stack->stack = malloc(sizeof(Word) * STACK_CAPACITIY);
+}
+
 
 
 static inline Bvm initBVM(void) {
@@ -195,6 +199,7 @@ static inline Bvm initBVM(void) {
 
 	memset(&bvm, 0, sizeof(bvm));
 	bvm.isRuning = TRUE;
+	initStack(&bvm.stack);
 	LOG("Init BVM\n");
 	LOG("\n SP = %lu\n", bvm.stack.SP);
 	LOG("\n IP = %lu\n", bvm.IP);
@@ -383,12 +388,6 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
-		case ELSE: {
-				stackPush(&bvm->stack, bvm->jumpReg);
-				bvm->jumpReg = 0;
-				bvm->IP++;
-				break;
-				}
 
 		case JMP: {
 				a = bvm->instruction[bvm->IP].operand;
@@ -622,5 +621,5 @@ static inline void binToProgram(const char* name, Instruction *instruction) {
 	fclose(f);
 	}
 
-
+#endif
 #endif
