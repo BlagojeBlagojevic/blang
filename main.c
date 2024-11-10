@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "lex.c"
-#include "parser.c"
-#define LOG_VALUE
+
+
+//#define LOG_VALUE
 //#define LOG_STACK
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
+#include "lex.c"
+#include "parser.c"
 
 int main() {
 	char *code = malloc(MAX_TOKENS * sizeof(char));
@@ -19,14 +21,17 @@ int main() {
 	fread(code, sizeof(char), MAX_TOKENS, f);
 	printf("\n%s\n\n", code);
 	fclose(f);
+	Bvm vm = initBVM();
 	Token *t = Tokeniser(code);
 	PrintTokens(t);
-	Parser(t, "vm.txt");
+	//system("pause");
+	Parser(t, &vm);
 	//system("pause");
 	DestroyTokens(t);
 	//return 0;
-	Bvm vm = initBVM();
-	vm.numOfInstructions = textToProgram("vm.txt", vm.instruction);
+	
+	//return 0;
+	//vm.numOfInstructions = textToProgram("vm.txt", vm.instruction);
 	printf("\n-------------Runtime-------------\n");
 	loop(&vm);
 	printf("\n---------------------------------\n");
