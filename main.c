@@ -26,8 +26,8 @@ int main() {
 	PrintTokens(t);
 	//system("pause");
 	Parser(t, &vm);
-	//system("pause");
-	DestroyTokens(t);
+	//programToBin("vm.bin", &vm.instruction, vm.numOfInstructions);
+	
 	//return 0;
 	
 	//return 0;
@@ -36,7 +36,7 @@ int main() {
 	loop(&vm);
 	printf("\n---------------------------------\n");
 	//system("pause");
-
+	DestroyTokens(t);
 	return 0;
 
 	}

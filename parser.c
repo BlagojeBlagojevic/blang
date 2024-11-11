@@ -23,7 +23,7 @@ void VarStackPush(VarStack* varstack,  char* name) {
 	if(varstack->sp > MAX_VARS) {
 		ERROR_BREAK("We have get more var then max amount max num of vars is %d\n", MAX_VARS);
 		}
-	int lenName = strlen(name);
+	//int lenName = strlen(name);
 	int adress = STACK_CAPACITIY - 1 - varstack->sp;
 	varstack->name[varstack->sp] = name;//malloc(sizeof(char)*(lenName+1));
 	//strcpy(varstack->name[varstack->sp], name);
@@ -31,6 +31,7 @@ void VarStackPush(VarStack* varstack,  char* name) {
 	printf("Var %s", name);
 	varstack->sp++;
 	}
+
 
 int VarStackGet(const char* name, VarStack *varstack) {
 	for(int i = 0; i < varstack->sp; i++) {
@@ -40,6 +41,17 @@ int VarStackGet(const char* name, VarStack *varstack) {
 		}
 	return -1;
 	}
+
+
+//void VarStackSetAddress(const char* name, int adress, VarStack *varstack) {
+//	for(int i = 0; i < varstack->sp; i++) {
+//		if(!strcmp(name, varstack->name[i])) {
+//			varstack->adress = adress;
+//			return;
+//			}
+//		ERROR_BREAK("We have a errror in non existent name %s\n", name);
+//		}
+//	}
 
 void PrintVarStack(VarStack v) {
 	for(int i = 0; i < v.sp; i++) {
@@ -64,7 +76,8 @@ void Parser(Token *tokens, Bvm *bvm) {
 	//system("pause");
 
 	int counterTokens = 0, counterInstruction = 0;
-
+	VarStack label;
+	label.sp = 0;
 	Stack ifStack;
 	VarStack varStack;
 	//memset(&varStack, 0, sizeof(VarStack)*MAX_VARS);
@@ -200,6 +213,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 
 						}
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
+						stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						printf("\n%s, dup\n", tokens[counterTokens].value);
@@ -254,6 +268,20 @@ void Parser(Token *tokens, Bvm *bvm) {
 						}
 					else if(WORD_COMPARE(KEYWORD_LET)) {
 						bvm->instruction[counterInstruction].type = NOP;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+					else if(WORD_COMPARE(KEYWORD_DROP)) {
+						stackSize--;
+						bvm->instruction[counterInstruction].type = POP;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+					else if(WORD_COMPARE(KEYWORD_JUMP)) {
+						stackSize--;
+						bvm->instruction[counterInstruction].type = JMP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;

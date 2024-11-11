@@ -186,10 +186,10 @@ static inline Word stackPop(Stack *stack) {
 	return stack->stack[stack->SP];
 	}
 
-static inline void initStack(Stack *stack){
+static inline void initStack(Stack *stack) {
 	stack->SP = 0;
 	stack->stack = malloc(sizeof(Word) * STACK_CAPACITIY);
-}
+	}
 
 
 
@@ -392,8 +392,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 
 		case JMP: {
-				a = bvm->instruction[bvm->IP].operand;
-
+				a = stackPop(&bvm->stack);
 				bvm->IP = a._asU64;
 				break;
 				}
@@ -449,7 +448,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				//bvm->stack.stack[b._asU64] = a;
 				bvm->IP++;
 				break;
-			
+
 				}
 
 		case SWAP: {
@@ -461,7 +460,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		case MEM:{
+		case MEM: {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[b._asU64];
@@ -469,8 +468,8 @@ static inline void executeInstruction(Bvm *bvm) {
 				memcpy(&bvm->stack.stack[b._asU64], &a, sizeof(Word));
 				bvm->IP++;
 				break;
-			
-		}
+
+				}
 
 		case NOP: {
 				bvm->IP++;
