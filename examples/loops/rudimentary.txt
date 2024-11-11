@@ -1,0 +1,8 @@
+1 let a
+drop 10 a 
+< if
+	1 a + let a
+	print
+	4 jump 
+end
+endscript .
