@@ -56,6 +56,7 @@ typedef enum {
 	JMPT,
 	JMPF,
 	SETSP,
+	RESTORE,
 	COPY,
 	SWAP,
 	MEM,
@@ -86,6 +87,7 @@ const char* instructionNames[] = {
 	"JMPT",
 	"JMPF",
 	"SETSP",
+	"RESTORE",
 	"COPY",
 	"SWAP",
 	"MEM",
@@ -215,11 +217,12 @@ static inline Bvm initBVM(void) {
 static inline void executeInstruction(Bvm *bvm) {
 
 	static Word a, b, c;
-
-
+#ifdef LOG_STACK
+	printf("\n- %s\n", instructionNames[bvm->instruction[bvm->IP].type]);
+#endif
 	//system("pause");
 	switch(bvm->instruction[bvm->IP].type) {
-
+			
 		case PUSH: {
 				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
 				bvm->IP++;
@@ -275,7 +278,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
 					}
 
-
+				//system("pause");
 				bvm->IP++;
 				break;
 				}
@@ -392,8 +395,9 @@ static inline void executeInstruction(Bvm *bvm) {
 
 
 		case JMP: {
-				a = stackPop(&bvm->stack);
-				bvm->IP = a._asU64;
+				//a = stackPop(&bvm->stack);
+				b = bvm->instruction[bvm->IP].operand;
+				bvm->IP = b._asU64;
 				break;
 				}
 
@@ -439,6 +443,22 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+				
+		case RESTORE: {
+				//s[sp] -> sp, operand ->  sp
+				a = stackPop(&bvm->stack);
+				b = bvm->instruction[bvm->IP].operand;
+				if(b._asU64 > STACK_CAPACITIY) {
+					ERROR_BREAK("STACK OVERFLOW ACCES!!!\n");
+					}
+				
+				bvm->stack.SP = b._asI64;	
+				bvm->IP = a._asU64;
+				
+				
+				break;
+				}
+	
 
 		case COPY: {
 				//a = stackPop(&bvm->stack);

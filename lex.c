@@ -94,7 +94,9 @@ Token* Tokeniser(char* input) {
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_KEYWORD;
+				//printf("substr %s", tokens[counterTokens].value);
 				counterTokens++;
+				
 				//IF KEYWORD IS ELSE ADD 1 IF = TOKENS
 				if(!strcmp(subStr, keywords[KEYWORD_ELSE])) {
 					//counterTokens--;
