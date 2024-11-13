@@ -1,0 +1,41 @@
+0 let a
+while
+10 10 
+= dup
+if
+	20 print
+	30 40 = dup
+	if 
+		30 print
+	end
+	else 
+		50 print
+	end
+end
+else
+	30 print
+end
+40 print
+while
+0 10 
+= dup
+if
+	20 print
+	30 40 = dup
+	if 
+		30 print
+	end
+	else 
+		50 print
+	end
+end
+else
+	30 print
+end
+40 print
+endloop
+
+
+endloop
+print 
+endscript .
