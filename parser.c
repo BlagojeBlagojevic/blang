@@ -32,6 +32,16 @@ void VarStackPush(VarStack* varstack,  char* name) {
 	varstack->sp++;
 	}
 
+void StackMemMove(Stack *stack, int index) {
+	if(index >=  stack->SP) {
+		ERROR_BREAK("Stack acces violation memmove\n");
+		}
+	for(int i = index; i < stack->SP - 1; i++) {
+		stack->stack[i]._asI64 = stack->stack[i + 1]._asI64;
+		}
+	stack->SP--;
+	}
+
 
 int VarStackGet(const char* name, VarStack *varstack) {
 	for(int i = 0; i < varstack->sp; i++) {
@@ -54,14 +64,21 @@ int VarStackGet(const char* name, VarStack *varstack) {
 //	}
 
 void PrintVarStack(VarStack v) {
-	for(int i = 0; i < v.sp; i++) {
+	for(int i = 0; i <= v.sp; i++) {
 		printf("Var %s addres %d\n", v.name[i], v.adress[i]);
 		}
 	}
 
 
-#define WORD_COMPARE(KEYWORD) (!strcmp(keywords[KEYWORD], tokens[counterTokens].value))
+void PrintStack(Stack v) {
+	for(int i = 0; i < v.SP; i++) {
+		printf("Stack(%d) = %d\n", i, v.stack[i]);
+		}
+	}
 
+
+#define WORD_COMPARE(KEYWORD) (!strcmp(keywords[KEYWORD], tokens[counterTokens].value))
+#define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
 int ValueToNum(char *str) {
 	long int num;
 	char *end;
@@ -76,15 +93,18 @@ void Parser(Token *tokens, Bvm *bvm) {
 	//system("pause");
 
 	int counterTokens = 0, counterInstruction = 0;
-	VarStack label;
-	label.sp = 0;
+	//VarStack label;
+	//label.sp = 0;
 	Stack ifStack;
+	Stack whileStack;
+	Stack endloopStack;
 	VarStack varStack;
 	//memset(&varStack, 0, sizeof(VarStack)*MAX_VARS);
 	varStack.sp = 0;
 	initStack(&ifStack);
+	initStack(&whileStack);
+	initStack(&endloopStack);
 	int stackSize = 0;
-	//
 	while(tokens[counterTokens].type != TYPE_EOF) {
 
 		//printf("Num of token %d\n", counterTokens);
@@ -102,22 +122,19 @@ void Parser(Token *tokens, Bvm *bvm) {
 						break;
 					if(tokens[counterTokens-1].type == TYPE_KEYWORD
 					    && !strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_LET])) {
-							{
-							int is = VarStackGet(tokens[counterTokens].value, &varStack);
-							if(is == -1) {
-								VarStackPush(&varStack, tokens[counterTokens].value);
-								is = varStack.sp - 1;
-								}
-							else {
-								is =  VarStackGet(tokens[counterTokens].value, &varStack);
-								}
-							bvm->instruction[counterInstruction].type = MEM;
-							bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
-							printf("\nstore var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
-							counterTokens++;
-							counterInstruction++;
-
+						int is = VarStackGet(tokens[counterTokens].value, &varStack);
+						if(is == -1) {
+							VarStackPush(&varStack, tokens[counterTokens].value);
+							is = varStack.sp - 1;
 							}
+						else {
+							is =  VarStackGet(tokens[counterTokens].value, &varStack);
+							}
+						bvm->instruction[counterInstruction].type = MEM;
+						bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
+						printf("\nstore var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+						counterTokens++;
+						counterInstruction++;
 						}
 					else {
 						int is = VarStackGet(tokens[counterTokens].value, &varStack);
@@ -129,7 +146,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						printf("\nload var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
 						counterTokens++;
 						counterInstruction++;
-
+						stackSize++;
 						}
 					break;
 					}
@@ -155,7 +172,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 								printf("\noperation %s, add\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
-
+								stackSize--;
 								break;
 								}
 						case '-': {
@@ -213,7 +230,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 
 						}
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
-						stackSize++;
+						//stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						printf("\n%s, dup\n", tokens[counterTokens].value);
@@ -223,8 +240,8 @@ void Parser(Token *tokens, Bvm *bvm) {
 						}
 
 					else if(WORD_COMPARE(KEYWORD_IF)) {
-						stackSize-=2;
-						stackPush(&ifStack, stackSize);
+						//stackSize-=2;
+
 						//stackSize = 0;
 						int endTokenPos = counterInstruction, numIF = 0;
 						while(tokens[endTokenPos].type != TYPE_EOF) {
@@ -250,12 +267,16 @@ void Parser(Token *tokens, Bvm *bvm) {
 						printf("\n%d, JUMPF\n", endTokenPos);
 						counterTokens++;
 						counterInstruction++;
+						stackSize--;
+						printf("StackSize %d\n", stackSize);
+						stackPush(&ifStack, stackSize);
+
 
 						}
 					else if(WORD_COMPARE(KEYWORD_ELSE)) {
 						bvm->instruction[counterInstruction].type = SETSP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&ifStack)._asI64;
-						stackSize = bvm->instruction[counterInstruction].operand._asI64;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
 						printf("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
@@ -273,18 +294,55 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 						}
 					else if(WORD_COMPARE(KEYWORD_DROP)) {
-						stackSize--;
+						//stackSize--;
 						bvm->instruction[counterInstruction].type = POP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
-						}
-					else if(WORD_COMPARE(KEYWORD_JUMP)) {
 						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_ENDLOOP)) {
 						bvm->instruction[counterInstruction].type = JMP;
-						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&whileStack)._asI64;
+						//stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nendwhile token = %d, end\n", bvm->instruction[counterInstruction].operand._asI64);
+						stackPush(&endloopStack, (i64)counterInstruction);
 						counterTokens++;
 						counterInstruction++;
+						}
+
+					else if(WORD_COMPARE(KEYWORD_WHILE)) {
+						bvm->instruction[counterInstruction].type = SETSP;
+						bvm->instruction[counterInstruction].operand._asI64 = stackSize;
+						stackPush(&whileStack, counterTokens);
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nwhile sp = %d, while\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						}
+					else if(WORD_COMPARE(KEYWORD_BREAKLOOP)) {
+						//if(counterTokens <= 1){
+						int endTokenPos = counterTokens, numWhile = 1;
+						while(tokens[endTokenPos].type != TYPE_EOF) {
+							if(!strcmp(tokens[endTokenPos].value, keywords[KEYWORD_WHILE])) {
+								numWhile++;
+								printf("Num of while %d\n", numWhile);
+								//system("pause");
+								}
+							if(!strcmp(tokens[endTokenPos].value, keywords[KEYWORD_ENDLOOP])) {
+								numWhile--;
+								if(numWhile <= 0) {
+									break;
+									}
+								}
+							endTokenPos++;
+							}
+						bvm->instruction[counterInstruction].type = JMP;
+						bvm->instruction[counterInstruction].operand._asI64 = (i64)(endTokenPos+1);
+						printf("\n%d, JUMP OUT OF LOOP\n", endTokenPos);
+						counterTokens++;
+						counterInstruction++;
+
 						}
 					else {
 						//counterInstruction++;
@@ -300,6 +358,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
+						stackSize--;
 						}
 					else if (!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_G])) {
 						bvm->instruction[counterInstruction].type = IF;
@@ -307,6 +366,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
+						stackSize--;
 						}
 					else if(!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_L])) {
 						bvm->instruction[counterInstruction].type = IF;
@@ -314,6 +374,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
+						stackSize--;
 						}
 					//TD add all other logic operators
 					else {};
