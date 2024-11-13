@@ -1,0 +1,11 @@
+0 let a
+while
+a 1 + let a
+	10 a < dup if
+		100 a - print
+	end
+	else
+		breakloop
+	end
+endloop
+endscript .
