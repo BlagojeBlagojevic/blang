@@ -1,17 +1,25 @@
-0 10 
-= dup
-if
-	20 print
-	30 40 = dup
-	if 
-		30 print
+0 let a
+0 let b 
+while
+a 1 + let a
+	10 a < dup if
+		100 a - print
 	end
-	else 
-		50 print
+	else
+		breakloop
 	end
-end
-else
-	30 print
-end
-40 print
+while
+b 1 + let b
+	10 b < dup if
+		b print
+	end
+	else
+		0 let b
+		1234 print
+		breakloop
+	end
+endloop
+endloop
 endscript .
+
+
