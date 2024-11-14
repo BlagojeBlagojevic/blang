@@ -2,11 +2,11 @@
 #define UTILS_STRINGS
 //#include<string.h>
 
-enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_IF, KEYWORD_END,
+enum {KEYWORD_VAR = 0, KEYWORD_PRINT,KEYWORD_PRINTCHAR, KEYWORD_IF, KEYWORD_END,
       KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_POP
      };
-const char* keywords[] = { "var", "print", "if", "end", "else",
+const char* keywords[] = { "var", "print","printchar", "if", "end", "else",
                            "dup",  "let", "drop","while","endloop","breakloop","pop",
                          };
 const char* endScriptToken = "endscript";
@@ -28,7 +28,7 @@ char isEndChar(char c) {
 char isOperator(char c) {
 	return (c == '+' || c == '-' || c == '*'
 	        || c == '/' || c == '>' || c == '<'
-	        || c == '=');
+	        || c == '=' || c == '%');
 	}
 
 //FOR NOW ONLY >, <, =
