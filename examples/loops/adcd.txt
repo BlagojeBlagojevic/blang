@@ -1,0 +1,11 @@
+65 let a
+while
+	a printchar 
+	89 < if
+		breakloop
+	end 
+1 a + let a
+endloop
+endscript .
+
+
