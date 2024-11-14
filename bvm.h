@@ -50,6 +50,7 @@ typedef enum {
 	MUL,
 	DEC,
 	DIV,
+	MOD,
 	DUP,
 	IF,
 	JMP,
@@ -81,6 +82,7 @@ const char* instructionNames[] = {
 	"MUL",
 	"DEC",
 	"DIV",
+	"MOD",
 	"DUP",
 	"IF",
 	"JMP",
@@ -222,7 +224,7 @@ static inline void executeInstruction(Bvm *bvm) {
 #endif
 	//system("pause");
 	switch(bvm->instruction[bvm->IP].type) {
-			
+
 		case PUSH: {
 				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
 				bvm->IP++;
@@ -339,7 +341,15 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		case MOD: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				if(b._asI64 == 0) {
+					ERROR_BREAK("ERROR MOD BY 0 !!!\n");
+					}
+				stackPush(&bvm->stack, (i64)(a._asU64 % b._asU64));
+				break;
+				}
 		case DUP: {
 				a = stackPop(&bvm->stack);
 				stackPush(&bvm->stack, a._asI64);
@@ -443,7 +453,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-				
+
 		case RESTORE: {
 				//s[sp] -> sp, operand ->  sp
 				a = stackPop(&bvm->stack);
@@ -451,14 +461,14 @@ static inline void executeInstruction(Bvm *bvm) {
 				if(b._asU64 > STACK_CAPACITIY) {
 					ERROR_BREAK("STACK OVERFLOW ACCES!!!\n");
 					}
-				
-				bvm->stack.SP = b._asI64;	
+
+				bvm->stack.SP = b._asI64;
 				bvm->IP = a._asU64;
-				
-				
+
+
 				break;
 				}
-	
+
 
 		case COPY: {
 				//a = stackPop(&bvm->stack);
