@@ -1,11 +1,9 @@
 65 let a
 while
-	a printchar 
+	a charprint 
 	89 < if
 		breakloop
 	end 
 1 a + let a
 endloop
 endscript .
-
-
