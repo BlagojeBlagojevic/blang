@@ -90,7 +90,7 @@ char* returnSubstring(char* str, int start, int end) {
 	return subStr;
 	}
 	
-	int ValueToNum(char *str) {
+int ValueToNum(char *str) {
 	long int num;
 	char *end;
 	num = strtol(str, &end, 10);
