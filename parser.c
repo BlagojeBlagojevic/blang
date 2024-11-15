@@ -79,13 +79,6 @@ void PrintStack(Stack v) {
 
 #define WORD_COMPARE(KEYWORD) (!strcmp(keywords[KEYWORD], tokens[counterTokens].value))
 #define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
-int ValueToNum(char *str) {
-	long int num;
-	char *end;
-	num = strtol(str, &end, 10);
-	//printf("Num is %d", (int)num);
-	return (int)num;
-	}
 
 
 void Parser(Token *tokens, Bvm *bvm) {
@@ -136,6 +129,20 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+					else if(tokens[counterTokens-1].type == TYPE_KEYWORD
+					        && !strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_PTR])) {
+						int is = VarStackGet(tokens[counterTokens].value, &varStack);
+						if(is == -1) {
+							ERROR_BREAK("We have not declared a var %s", tokens[counterTokens].value);
+							}
+						printf("\nptr var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+						bvm->instruction[counterInstruction].type = PUSH;
+						bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						}
+
 					else {
 						int is = VarStackGet(tokens[counterTokens].value, &varStack);
 						if(is == -1) {
@@ -257,7 +264,6 @@ void Parser(Token *tokens, Bvm *bvm) {
 
 							endTokenPos++;
 							}
-
 						//system("pause");
 						if(tokens[endTokenPos].type == TYPE_EOF) {
 							ERROR_BREAK("End token not provided\n");
@@ -270,9 +276,8 @@ void Parser(Token *tokens, Bvm *bvm) {
 						stackSize--;
 						printf("StackSize %d\n", stackSize);
 						stackPush(&ifStack, stackSize);
-
-
 						}
+	
 					else if(WORD_COMPARE(KEYWORD_ELSE)) {
 						bvm->instruction[counterInstruction].type = SETSP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&ifStack)._asI64;
@@ -281,18 +286,28 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+	
 					else if(WORD_COMPARE(KEYWORD_END)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
 						}
+	
 					else if(WORD_COMPARE(KEYWORD_LET)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
 						}
+	
+					else if(WORD_COMPARE(KEYWORD_PTR)) {
+						bvm->instruction[counterInstruction].type = NOP;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+	
 					else if(WORD_COMPARE(KEYWORD_DROP)) {
 						//stackSize--;
 						bvm->instruction[counterInstruction].type = POP;
