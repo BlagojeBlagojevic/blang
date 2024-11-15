@@ -61,6 +61,7 @@ typedef enum {
 	COPY,
 	SWAP,
 	MEM,
+	MEMSTACK,
 	NOP,
 	HALT,
 	INC,
@@ -93,6 +94,7 @@ const char* instructionNames[] = {
 	"COPY",
 	"SWAP",
 	"MEM",
+	"MEMSTACK",
 	"NOP",
 	"HALT",
 	"INC",
@@ -496,6 +498,15 @@ static inline void executeInstruction(Bvm *bvm) {
 				c = bvm->stack.stack[b._asU64];
 				stackPush(&bvm->stack, a._asI64);
 				memcpy(&bvm->stack.stack[b._asU64], &a, sizeof(Word));
+				bvm->IP++;
+				break;
+
+				}
+		case MEMSTACK: {
+				a = stackPop(&bvm->stack); // memaddres
+				b = stackPop(&bvm->stack); // value to print
+				stackPush(&bvm->stack, b._asI64);
+				memcpy(&bvm->stack.stack[a._asU64], &b, sizeof(Word));
 				bvm->IP++;
 				break;
 
