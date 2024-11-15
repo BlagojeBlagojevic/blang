@@ -96,7 +96,7 @@ Token* Tokeniser(char* input) {
 				tokens[counterTokens].type = TYPE_KEYWORD;
 				//printf("substr %s", tokens[counterTokens].value);
 				counterTokens++;
-				
+
 				//IF KEYWORD IS ELSE ADD 1 IF = TOKENS
 				if(!strcmp(subStr, keywords[KEYWORD_ELSE])) {
 					//counterTokens--;
@@ -115,7 +115,7 @@ Token* Tokeniser(char* input) {
 					strcpy(tokens[counterTokens].value, "if");
 					tokens[counterTokens].type = TYPE_KEYWORD;
 					counterTokens++;
-					
+
 					}
 				}
 
@@ -136,8 +136,51 @@ Token* Tokeniser(char* input) {
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_VAR;
-				counterTokens++;
+				int is = 0;
 
+
+				if(counterTokens >= 2) {
+					if(tokens[counterTokens - 2].type == TYPE_CONST &&
+					    (!strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_ARR]))) {
+					  is = 1;
+						char nameVar[100];
+						int numVars = ValueToNum(tokens[counterTokens - 2].value);
+						if(strlen(subStr) > 100) {
+							ERROR("To large word for tokeniser\n");
+							}
+						strcpy(nameVar, subStr);
+						free(tokens[counterTokens--].value); //First token
+						free(tokens[counterTokens--].value); //Second token
+						free(tokens[counterTokens].value);	 //Thirth token
+
+						tokens[counterTokens].value = malloc(sizeof(char) * 2);
+						tokens[counterTokens].value[0] = '0';
+						tokens[counterTokens].value[1] = '\0';
+						tokens[counterTokens].type = TYPE_CONST;
+						counterTokens++;
+						for(int i = 0; i < numVars; i++) {
+							//LET 
+							tokens[counterTokens].value = malloc(sizeof(char) * 5);
+							strcpy(tokens[counterTokens].value, keywords[KEYWORD_LET]);
+							tokens[counterTokens].type = TYPE_KEYWORD;
+							counterTokens++;
+							//VAR"index"
+							tokens[counterTokens].value = malloc(sizeof(char) * 100);
+							sprintf(tokens[counterTokens].value, "%s%d", nameVar, i);
+							tokens[counterTokens].type = TYPE_VAR;
+							counterTokens++;
+							
+							
+							}
+
+						//counterTokens-=2;
+
+						}
+					}
+
+				if(is == 0){
+					counterTokens++;
+				}
 				}
 
 
@@ -182,5 +225,4 @@ void DestroyTokens(Token* tokens) {
 		}
 	free(tokens);
 	}
-
 
