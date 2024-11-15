@@ -50,6 +50,7 @@ typedef enum {
 	MUL,
 	DEC,
 	DIV,
+	MOD,
 	DUP,
 	IF,
 	JMP,
@@ -60,6 +61,7 @@ typedef enum {
 	COPY,
 	SWAP,
 	MEM,
+	MEMSTACK,
 	NOP,
 	HALT,
 	INC,
@@ -81,6 +83,7 @@ const char* instructionNames[] = {
 	"MUL",
 	"DEC",
 	"DIV",
+	"MOD",
 	"DUP",
 	"IF",
 	"JMP",
@@ -91,6 +94,7 @@ const char* instructionNames[] = {
 	"COPY",
 	"SWAP",
 	"MEM",
+	"MEMSTACK",
 	"NOP",
 	"HALT",
 	"INC",
@@ -222,7 +226,7 @@ static inline void executeInstruction(Bvm *bvm) {
 #endif
 	//system("pause");
 	switch(bvm->instruction[bvm->IP].type) {
-			
+
 		case PUSH: {
 				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
 				bvm->IP++;
@@ -339,7 +343,15 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		case MOD: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				if(b._asI64 == 0) {
+					ERROR_BREAK("ERROR MOD BY 0 !!!\n");
+					}
+				stackPush(&bvm->stack, (i64)(a._asU64 % b._asU64));
+				break;
+				}
 		case DUP: {
 				a = stackPop(&bvm->stack);
 				stackPush(&bvm->stack, a._asI64);
@@ -443,7 +455,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-				
+
 		case RESTORE: {
 				//s[sp] -> sp, operand ->  sp
 				a = stackPop(&bvm->stack);
@@ -451,14 +463,14 @@ static inline void executeInstruction(Bvm *bvm) {
 				if(b._asU64 > STACK_CAPACITIY) {
 					ERROR_BREAK("STACK OVERFLOW ACCES!!!\n");
 					}
-				
-				bvm->stack.SP = b._asI64;	
+
+				bvm->stack.SP = b._asI64;
 				bvm->IP = a._asU64;
-				
-				
+
+
 				break;
 				}
-	
+
 
 		case COPY: {
 				//a = stackPop(&bvm->stack);
@@ -486,6 +498,15 @@ static inline void executeInstruction(Bvm *bvm) {
 				c = bvm->stack.stack[b._asU64];
 				stackPush(&bvm->stack, a._asI64);
 				memcpy(&bvm->stack.stack[b._asU64], &a, sizeof(Word));
+				bvm->IP++;
+				break;
+
+				}
+		case MEMSTACK: {
+				a = stackPop(&bvm->stack); // memaddres
+				b = stackPop(&bvm->stack); // value to print
+				stackPush(&bvm->stack, b._asI64);
+				memcpy(&bvm->stack.stack[a._asU64], &b, sizeof(Word));
 				bvm->IP++;
 				break;
 
