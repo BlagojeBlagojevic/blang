@@ -4,8 +4,8 @@
 
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT,KEYWORD_PRINTCHAR, KEYWORD_IF, KEYWORD_END,
       KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP,
-      KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR, 
-			KEYWORD_PTRVAL, KEYWORD_POP
+      KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
+      KEYWORD_PTRVAL, KEYWORD_POP
      };
 const char* keywords[] = { "var", "print","charprint", "if", "end", "else",
                            "dup", "let", "drop","while","endloop","breakloop",
@@ -85,13 +85,13 @@ char* returnSubstring(char* str, int start, int end) {
 	//int length = strlen(str);
 	int subLength = end - start + 1;
 	char* subStr = malloc((subLength + 1) * sizeof(char));
-	memset(subStr, '\0', (subLength + 1) * sizeof(char));
+	//memset(subStr, '\0', (subLength + 1) * sizeof(char));
 	strncpy(subStr, str + start, subLength);
 	subStr[subLength] = '\0';
 	return subStr;
 	}
-	
-	int ValueToNum(char *str) {
+
+int ValueToNum(char *str) {
 	long int num;
 	char *end;
 	num = strtol(str, &end, 10);
@@ -99,5 +99,5 @@ char* returnSubstring(char* str, int start, int end) {
 	return (int)num;
 	}
 
-	
+
 #endif
