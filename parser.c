@@ -236,6 +236,15 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 
 						}
+					if(WORD_COMPARE(KEYWORD_PRINTCHAR)) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+						bvm->instruction[counterInstruction].type = PRINT;
+						bvm->instruction[counterInstruction].operand._asI64 = 3;
+						printf("\n%s, print\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+
+						}	
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
