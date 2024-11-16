@@ -158,7 +158,7 @@ Token* Tokeniser(char* input) {
 						tokens[counterTokens].value[1] = '\0';
 						tokens[counterTokens].type = TYPE_CONST;
 						counterTokens++;
-						for(int i = 0; i < numVars; i++) {
+						for(int i = numVars; i >= 0; i--) {
 							//LET 
 							tokens[counterTokens].value = malloc(sizeof(char) * 5);
 							strcpy(tokens[counterTokens].value, keywords[KEYWORD_LET]);
