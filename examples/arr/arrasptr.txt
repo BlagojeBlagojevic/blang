@@ -1,0 +1,31 @@
+10 arr a
+0 let b
+while
+	b ptr a0 
+	b + print letarr 
+	1 b + let b
+	b 10 = 
+	if
+		breakloop
+	end
+endloop
+a0 print
+a1 print
+a2 print
+a3 print
+a4 print
+a5 print
+a6 print
+a7 print
+a8 print
+0 let c
+while
+	ptr a0 c + print
+	ptrval print
+	1 c + let c
+	c 10 = 
+	if
+		breakloop
+	end
+endloop
+endscript .
