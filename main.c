@@ -1,4 +1,5 @@
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +15,7 @@
 int main() {
 	char *code = malloc(MAX_TOKENS * sizeof(char));
 	memset(code, '\0', sizeof(char) * MAX_TOKENS);
-	//strcpy(code, "2 3 + print 5 * print");
+	//strcpy(code, "2 3 + print \5 * print");
 	//code[strlen(code) - 2] = '\n';
 	FILE *f = fopen("code.txt", "r");
 	if(f == NULL)
@@ -24,10 +25,12 @@ int main() {
 	fclose(f);
 	Bvm vm = initBVM();
 	Token *t = Tokeniser(code);
-	PrintTokens(t);
+	//DestroyTokens(t);
+	//return 0;
+	//PrintTokens(t);
 	//system("pause");
 	Parser(t, &vm);
-	programToBin("vm.bin", vm.instruction, vm.numOfInstructions);
+	//programToBin("vm.bin", vm.instruction, vm.numOfInstructions);
 	
 	//return 0;
 	
