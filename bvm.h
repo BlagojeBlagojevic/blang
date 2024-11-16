@@ -273,12 +273,12 @@ static inline void executeInstruction(Bvm *bvm) {
 		case PRINT: {
 				c = bvm->instruction[bvm->IP].operand;
 				if(c._asU64 == u)
-					LOG("PRINT %u\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					LOG("%u\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asU64);
 				else if(c._asU64 == i) {
-					LOG("PRINT %d\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
+					LOG("%d\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
 					}
 				else if(c._asU64 == f) {
-					LOG("PRINT %f\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asF64);
+					LOG("%f\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
 				else if(c._asU64 == ch) {
 					LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
