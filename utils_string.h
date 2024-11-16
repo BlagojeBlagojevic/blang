@@ -85,7 +85,7 @@ char* returnSubstring(char* str, int start, int end) {
 	//int length = strlen(str);
 	int subLength = end - start + 1;
 	char* subStr = malloc((subLength + 1) * sizeof(char));
-	memset(subStr, '\0', (subLength + 1) * sizeof(char));
+	//memset(subStr, '\0', (subLength + 1) * sizeof(char));
 	strncpy(subStr, str + start, subLength);
 	subStr[subLength] = '\0';
 	return subStr;
