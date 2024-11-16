@@ -136,51 +136,7 @@ Token* Tokeniser(char* input) {
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_VAR;
-				int is = 0;
-
-
-				if(counterTokens >= 2) {
-					if(tokens[counterTokens - 2].type == TYPE_CONST &&
-					    (!strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_ARR]))) {
-					  is = 1;
-						char nameVar[100];
-						int numVars = ValueToNum(tokens[counterTokens - 2].value);
-						if(strlen(subStr) > 100) {
-							ERROR("To large word for tokeniser\n");
-							}
-						strcpy(nameVar, subStr);
-						free(tokens[counterTokens--].value); //First token
-						free(tokens[counterTokens--].value); //Second token
-						free(tokens[counterTokens].value);	 //Thirth token
-
-						tokens[counterTokens].value = malloc(sizeof(char) * 2);
-						tokens[counterTokens].value[0] = '0';
-						tokens[counterTokens].value[1] = '\0';
-						tokens[counterTokens].type = TYPE_CONST;
-						counterTokens++;
-						for(int i = numVars; i >= 0; i--) {
-							//LET 
-							tokens[counterTokens].value = malloc(sizeof(char) * 5);
-							strcpy(tokens[counterTokens].value, keywords[KEYWORD_LET]);
-							tokens[counterTokens].type = TYPE_KEYWORD;
-							counterTokens++;
-							//VAR"index"
-							tokens[counterTokens].value = malloc(sizeof(char) * 100);
-							sprintf(tokens[counterTokens].value, "%s%d", nameVar, i);
-							tokens[counterTokens].type = TYPE_VAR;
-							counterTokens++;
-							
-							
-							}
-
-						//counterTokens-=2;
-
-						}
-					}
-
-				if(is == 0){
-					counterTokens++;
-				}
+				counterTokens++;
 				}
 
 
@@ -225,4 +181,3 @@ void DestroyTokens(Token* tokens) {
 		}
 	free(tokens);
 	}
-

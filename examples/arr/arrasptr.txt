@@ -1,4 +1,4 @@
-10 arr a
+arr a 10 
 0 let b
 while
 	b ptr a0 
