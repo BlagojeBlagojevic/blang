@@ -236,7 +236,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 
 						}
-					if(WORD_COMPARE(KEYWORD_PRINTCHAR)) {
+					else if(WORD_COMPARE(KEYWORD_PRINTCHAR)) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINT;
 						bvm->instruction[counterInstruction].operand._asI64 = 3;
