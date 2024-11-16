@@ -8,7 +8,7 @@
 
 
 //void Parser(Token *tokens);
-#define MAX_VARS 100
+#define MAX_VARS 500
 #define MAX_VARS_NAME 100
 //asumed that a var has global lifespawn
 typedef struct {
@@ -25,7 +25,7 @@ void VarStackPush(VarStack* varstack,  char* name) {
 		}
 	//int lenName = strlen(name);
 	int adress = STACK_CAPACITIY - 1 - varstack->sp;
-	varstack->name[varstack->sp] = name;//malloc(sizeof(char)*(lenName+1));
+	varstack->name[varstack->sp] = name;//malloc(sizeof(char)*(lenName+1);
 	//strcpy(varstack->name[varstack->sp], name);
 	varstack->adress[varstack->sp] = adress;
 	printf("Var %s", name);
@@ -142,7 +142,22 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 						stackSize++;
 						}
-
+					else if(tokens[counterTokens-1].type == TYPE_KEYWORD
+					        && !strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_ARR])
+					        && (tokens[counterTokens + 1].type == TYPE_CONST)) {
+						int numOfVars = ValueToNum(tokens[counterTokens + 1].value);
+						
+						for(int i = numOfVars; i >= 0; i--) {
+							char *name = malloc(100*sizeof(char));
+							sprintf(name, "%s%d", tokens[counterTokens].value, i);
+							printf("\nname %s\n", name);
+							VarStackPush(&varStack, name);
+							}
+						//PrintVarStack(varStack);
+						//system("pause");
+						counterTokens++;
+						counterInstruction++;
+						}
 					else {
 						int is = VarStackGet(tokens[counterTokens].value, &varStack);
 						if(is == -1) {
@@ -236,6 +251,15 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 
 						}
+					else if(WORD_COMPARE(KEYWORD_PRINTCHAR)) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+						bvm->instruction[counterInstruction].type = PRINT;
+						bvm->instruction[counterInstruction].operand._asI64 = 3;
+						printf("\n%s, print\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+
+						}
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
@@ -300,6 +324,13 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+					else if(WORD_COMPARE(KEYWORD_ARR)) {
+						bvm->instruction[counterInstruction].type = NOP;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+
 					else if(WORD_COMPARE(KEYWORD_LETARR)) {
 						bvm->instruction[counterInstruction].type = MEMSTACK;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
@@ -313,7 +344,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-					
+
 					else if(WORD_COMPARE(KEYWORD_PTRVAL)) {
 						bvm->instruction[counterInstruction].type = COPYSTACK;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
