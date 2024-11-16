@@ -8,7 +8,7 @@
 #define LOG(...)         fprintf(stdout, __VA_ARGS__)
 #define LOGSTACK()        LOG("Value %d\n", (i16)vm.stack[SP].asI64);
 #define ERROR_BREAK(...) {fprintf(stdout, __VA_ARGS__); exit(-1);}
-#define PAUSE()        	 system("pause")
+#define PAUSE()        	 {char ch; scanf("%c", &ch);}
 
 #define DEBUG 1
 #define TRUE  1
@@ -59,6 +59,7 @@ typedef enum {
 	SETSP,
 	RESTORE,
 	COPY,
+	COPYSTACK,
 	SWAP,
 	MEM,
 	MEMSTACK,
@@ -92,6 +93,7 @@ const char* instructionNames[] = {
 	"SETSP",
 	"RESTORE",
 	"COPY",
+	"COPYSTACK",
 	"SWAP",
 	"MEM",
 	"MEMSTACK",
@@ -483,6 +485,17 @@ static inline void executeInstruction(Bvm *bvm) {
 
 				}
 
+		case COPYSTACK: {
+				a = stackPop(&bvm->stack); //memadress
+				//b = bvm->instruction[bvm->IP].operand;
+				c = bvm->stack.stack[a._asU64]; //value of memadress
+				stackPush(&bvm->stack, c._asI64);
+				bvm->IP++;
+				break;
+
+				}
+
+
 		case SWAP: {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
@@ -506,7 +519,8 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack); // memaddres
 				b = stackPop(&bvm->stack); // value to print
 				stackPush(&bvm->stack, b._asI64);
-				memcpy(&bvm->stack.stack[a._asU64], &b, sizeof(Word));
+				//bvm->stack.stack[a._asI64]._asI64 = 100;
+				memcpy(&bvm->stack.stack[a._asI64], &b, sizeof(Word));
 				bvm->IP++;
 				break;
 

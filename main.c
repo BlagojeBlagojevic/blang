@@ -27,7 +27,7 @@ int main() {
 	PrintTokens(t);
 	//system("pause");
 	Parser(t, &vm);
-	//programToBin("vm.bin", &vm.instruction, vm.numOfInstructions);
+	programToBin("vm.bin", vm.instruction, vm.numOfInstructions);
 	
 	//return 0;
 	

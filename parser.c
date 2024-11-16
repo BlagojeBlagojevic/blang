@@ -277,7 +277,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						printf("StackSize %d\n", stackSize);
 						stackPush(&ifStack, stackSize);
 						}
-	
+
 					else if(WORD_COMPARE(KEYWORD_ELSE)) {
 						bvm->instruction[counterInstruction].type = SETSP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&ifStack)._asI64;
@@ -286,28 +286,41 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-	
+
 					else if(WORD_COMPARE(KEYWORD_END)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
 						}
-	
+
 					else if(WORD_COMPARE(KEYWORD_LET)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
 						}
-	
+					else if(WORD_COMPARE(KEYWORD_LETARR)) {
+						bvm->instruction[counterInstruction].type = MEMSTACK;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						stackSize--;
+						counterTokens++;
+						counterInstruction++;
+						}
 					else if(WORD_COMPARE(KEYWORD_PTR)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
 						}
-	
+					
+					else if(WORD_COMPARE(KEYWORD_PTRVAL)) {
+						bvm->instruction[counterInstruction].type = COPYSTACK;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+
 					else if(WORD_COMPARE(KEYWORD_DROP)) {
 						//stackSize--;
 						bvm->instruction[counterInstruction].type = POP;
