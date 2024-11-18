@@ -167,7 +167,7 @@ Example:
 | `ptrval`     | `<stack> ptrval` | Push a value from mem addres from top of the stack on top of the stack. |
 | `letarr`     | `<stack> <stack> ptrval` | Store a value from <sp-1> to mem addres on sp                   |
 
-####System
+#### System
 
 - `syscall<n>` - TBD
 - `c functions` - TBD
