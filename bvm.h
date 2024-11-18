@@ -213,8 +213,7 @@ static inline Bvm initBVM(void) {
 	LOG("Init BVM\n");
 	LOG("\n SP = %lu\n", bvm.stack.SP);
 	LOG("\n IP = %lu\n", bvm.IP);
-	bvm.jumpReg = 0;
-
+	bvm.numOfInstructions = 0;
 	return bvm;
 
 
@@ -664,11 +663,11 @@ static inline u64 textToProgram(const char* name, Instruction *instrucion) {
 
 static inline void programToBin(const char* name, Instruction *instruction, u64 numOfInstruction) {
 
-	FILE *f = fopen(name, "wb");
+	FILE *f = fopen(name, "wb+");
 	if(f == NULL) {
 		ERROR_BREAK("FILE ERROR !!!\n");
 		}
-	fwrite(instruction, sizeof(Instruction), numOfInstruction, f);
+	fwrite(instruction, sizeof(Instruction), numOfInstruction+1, f);
 	fclose(f);
 
 

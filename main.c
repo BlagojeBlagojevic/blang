@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,35 +10,39 @@
 #include "lex.c"
 #include "parser.c"
 
-int main() {
-	char *code = malloc(MAX_TOKENS * sizeof(char));
-	memset(code, '\0', sizeof(char) * MAX_TOKENS);
-	//strcpy(code, "2 3 + print \5 * print");
-	//code[strlen(code) - 2] = '\n';
-	FILE *f = fopen("code.txt", "r");
-	if(f == NULL)
-		return 60;
-	fread(code, sizeof(char), MAX_TOKENS, f);
-	printf("\n%s\n\n", code);
-	fclose(f);
-	Bvm vm = initBVM();
-	Token *t = Tokeniser(code);
-	//DestroyTokens(t);
-	//return 0;
-	//PrintTokens(t);
-	//system("pause");
-	Parser(t, &vm);
-	//programToBin("vm.bin", vm.instruction, vm.numOfInstructions);
+int main(int argc, char **argv) {
 	
-	//return 0;
-	
-	//return 0;
-	//vm.numOfInstructions = textToProgram("vm.txt", vm.instruction);
-	printf("\n-------------Runtime-------------\n");
-	loop(&vm);
-	printf("\n---------------------------------\n");
-	//system("pause");
-	DestroyTokens(t);
-	return 0;
+	if(argc <= 1) {
+		printf("Usage:  Compile -c <path to program> <path to save>\n\tRun -r <path to saved>\n");
+		return 0 ;
+		exit(EXIT_SUCCESS);
+		}
+	if(!strcmp(argv[1], "-c") && (argc > 3)) {
+		char *code = malloc(MAX_TOKENS * sizeof(char));
+		memset(code, '\0', sizeof(char) * MAX_TOKENS);
+		FILE *f = fopen(argv[2], "r");
+		if(f == NULL)
+			return 60;
+		fread(code, sizeof(char), MAX_TOKENS, f);
+		printf("\n%s\n\n", code);
+		fclose(f);
+		Bvm vm = initBVM();
+		Token *t = Tokeniser(code);
+		Parser(t, &vm);
+		DestroyTokens(t);
+		programToBin(argv[3], vm.instruction, vm.numOfInstructions);
+		return 0;
+		}
+	else if(!strcmp(argv[1], "-r") && (argc > 2)) {
+		Bvm vm = initBVM();
+		binToProgram(argv[2], vm.instruction);
+		printf("\n-------------Runtime-------------\n");
+		loop(&vm);
+		printf("\n---------------------------------\n");
+		//char end;
+		//scanf("%c", &end);
+		return 0;
+		
+		}
 
 	}
