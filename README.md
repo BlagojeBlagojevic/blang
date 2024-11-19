@@ -69,17 +69,24 @@ endscript .
 ```
 
 ## Quick Start
+Compile project:
+
 ```c
   gcc main.c
 ```
- 
+Compile to bytcode:
+
+```console
+ main.out -c <path to program> <path to save>
+``` 
+Run the bytcode:
+```console
+ main.out -r <path to bytcode> 
+```
 ```console
 Usage:  Compile -c <path to program> <path to save>
         Run -r <path to saved>
 ```
-
-Compilation(-c) generates bytecode. 
-Run -r <path to saved> 
 
 
 ## Language Reference
