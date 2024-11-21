@@ -1,14 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-//#define LOG_VALUE
-//#define LOG_STACK
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
-#include "lex.c"
-#include "parser.c"
+#include "lex.h"
+#include "parser.h"
 
 int main(int argc, char **argv) {
 	
@@ -39,8 +35,6 @@ int main(int argc, char **argv) {
 		printf("\n-------------Runtime-------------\n");
 		loop(&vm);
 		printf("\n---------------------------------\n");
-		//char end;
-		//scanf("%c", &end);
 		return 0;
 		
 		}

@@ -1,7 +1,7 @@
 #ifndef LEX_H
 #define LEX_H
 
-//#include "utils_string.h"
+#include "utils_string.h"
 
 #define NUM_OF_TOKENS 5
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
@@ -21,7 +21,7 @@ typedef enum TokenType_t {
 
 	} TokenType;
 
-const char* TokenString[] = {
+static const char* TokenString[] = {
 	"CONST",
 	"VAR",
 	"KEYWORD",
@@ -44,13 +44,5 @@ typedef struct {
 Token* Tokeniser(char* input);
 void DestroyTokens(Token* tokens);
 void PrintTokens(Token* tokens);
-
-
-
-
-
-
-
-
 
 #endif

@@ -1,25 +1,7 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<string.h>
-#include "lex.h"
-#define LOG_STACK
-#include "bvm.h"
+#include "parser.h"
 
 
-//void Parser(Token *tokens);
-#define MAX_VARS 500
-#define MAX_VARS_NAME 100
-//asumed that a var has global lifespawn
-typedef struct {
-	int adress[MAX_VARS];
-	char* name[MAX_VARS];
-	int sp;
-
-	} VarStack;
-
-
-void VarStackPush(VarStack* varstack,  char* name) {
+static void VarStackPush(VarStack* varstack,  char* name) {
 	if(varstack->sp > MAX_VARS) {
 		ERROR_BREAK("We have get more var then max amount max num of vars is %d\n", MAX_VARS);
 		}
@@ -32,7 +14,7 @@ void VarStackPush(VarStack* varstack,  char* name) {
 	varstack->sp++;
 	}
 
-void StackMemMove(Stack *stack, int index) {
+static void StackMemMove(Stack *stack, int index) {
 	if(index >=  stack->SP) {
 		ERROR_BREAK("Stack acces violation memmove\n");
 		}
@@ -43,7 +25,7 @@ void StackMemMove(Stack *stack, int index) {
 	}
 
 
-int VarStackGet(const char* name, VarStack *varstack) {
+static int VarStackGet(const char* name, VarStack *varstack) {
 	for(int i = 0; i < varstack->sp; i++) {
 		if(!strcmp(name, varstack->name[i])) {
 			return i;
@@ -63,14 +45,14 @@ int VarStackGet(const char* name, VarStack *varstack) {
 //		}
 //	}
 
-void PrintVarStack(VarStack v) {
+static void PrintVarStack(VarStack v) {
 	for(int i = 0; i <= v.sp; i++) {
 		printf("Var %s addres %d\n", v.name[i], v.adress[i]);
 		}
 	}
 
 
-void PrintStack(Stack v) {
+static void PrintStack(Stack v) {
 	for(int i = 0; i < v.SP; i++) {
 		printf("Stack(%d) = %d\n", i, v.stack[i]);
 		}
