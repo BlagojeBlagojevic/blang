@@ -73,7 +73,7 @@ typedef enum {
 
 	} InstructionType;
 
-const char* instructionNames[] = {
+static const char* instructionNames[] = {
 
 	"PUSH",
 	"PUSHF",
