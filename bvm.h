@@ -51,7 +51,15 @@ typedef enum {
 	DEC,
 	DIV,
 	MOD,
+	NOT,
+	SHR,
+	SHL,
+	OR,
+	AND,
+	BNOT,
 	DUP,
+	OVER,
+	ROT,
 	IF,
 	JMP,
 	JMPT,
@@ -85,7 +93,15 @@ static const char* instructionNames[] = {
 	"DEC",
 	"DIV",
 	"MOD",
+	"NOT",
+	"SHR",
+	"SHL",
+	"OR",
+	"AND",
+	"BNOT",
 	"DUP",
+	"OVER",
+	"ROT",
 	"IF",
 	"JMP",
 	"JMPT",
@@ -203,10 +219,8 @@ static inline void initStack(Stack *stack) {
 
 static inline Bvm initBVM(void) {
 	Bvm bvm;
-
 	//PROBOBLY DYNAMIC ALLOCATION OF STACK AND INSTRUCTION WHEN FAIL
 	//ALL mem FUNCTIONS
-
 	memset(&bvm, 0, sizeof(bvm));
 	bvm.isRuning = TRUE;
 	initStack(&bvm.stack);
@@ -215,8 +229,6 @@ static inline Bvm initBVM(void) {
 	LOG("\n IP = %lu\n", bvm.IP);
 	bvm.numOfInstructions = 0;
 	return bvm;
-
-
 	}
 
 static inline void executeInstruction(Bvm *bvm) {
@@ -267,7 +279,6 @@ static inline void executeInstruction(Bvm *bvm) {
 				else {}; //PTR MAYBE
 				bvm->IP++;
 				break;
-
 				}
 		case PRINT: {
 				c = bvm->instruction[bvm->IP].operand;
@@ -287,10 +298,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
-
 		case MUL: {
-
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
 				c = bvm->instruction[bvm->IP].operand;
@@ -353,14 +361,80 @@ static inline void executeInstruction(Bvm *bvm) {
 				stackPush(&bvm->stack, (i64)(a._asU64 % b._asU64));
 				break;
 				}
-		case DUP: {
+		case NOT: {
 				a = stackPop(&bvm->stack);
-				stackPush(&bvm->stack, a._asI64);
-				stackPush(&bvm->stack, a._asI64);
+				a._asI64 = !a._asI64;
+				stackPushWord(&bvm->stack, a);
+				bvm->IP++;
+				break;
+				}
+		case SHR: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				a._asU64 = a._asU64 >> b._asU64;
+				stackPushWord(&bvm->stack, a);
+				bvm->IP++;
+				break;
+				}
+		case SHL: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				a._asU64 = a._asU64 << b._asU64;
+				stackPushWord(&bvm->stack, a);
+				bvm->IP++;
+				break;
+				}
+		case OR: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				a._asU64 = a._asU64 | b._asU64;
+				stackPushWord(&bvm->stack, a);
+				bvm->IP++;
+				break;
+				}
+		case AND: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				a._asU64 = a._asU64 & b._asU64;
+				stackPushWord(&bvm->stack, a);
+				bvm->IP++;
+				break;
+				}
+		case BNOT: {
+				a = stackPop(&bvm->stack);
+				a._asU64 = ~a._asU64;
+				stackPushWord(&bvm->stack, a);
 				bvm->IP++;
 				break;
 				}
 
+		case DUP: {
+				a = stackPop(&bvm->stack);
+				stackPushWord(&bvm->stack, a);
+				stackPushWord(&bvm->stack, a);
+				bvm->IP++;
+				break;
+				}
+
+		case OVER: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				stackPushWord(&bvm->stack, b);
+				stackPushWord(&bvm->stack, a);
+				stackPushWord(&bvm->stack, b);
+				bvm->IP++;
+				break;
+				}
+		case ROT: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				c = stackPop(&bvm->stack);
+				stackPushWord(&bvm->stack, a);
+				stackPushWord(&bvm->stack, c);
+				stackPushWord(&bvm->stack, b);
+				bvm->IP++;
+				break;
+				}
 		case IF: {
 
 				a = stackPop(&bvm->stack);
@@ -436,7 +510,6 @@ static inline void executeInstruction(Bvm *bvm) {
 
 				if(!a._asU64) {
 					bvm->IP = c._asU64;
-					bvm->jumpReg = 1;
 					//stackPush(&bvm->stack, a._asI64);
 					}
 				else {
@@ -477,7 +550,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				//a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[b._asU64];
-				stackPush(&bvm->stack, c._asI64);
+				stackPushWord(&bvm->stack, c);
 				//bvm->stack.stack[b._asU64] = a;
 				bvm->IP++;
 				break;
@@ -488,7 +561,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack); //memadress
 				//b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[a._asU64]; //value of memadress
-				stackPush(&bvm->stack, c._asI64);
+				stackPushWord(&bvm->stack, c);
 				bvm->IP++;
 				break;
 
@@ -499,7 +572,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[b._asU64];
-				stackPush(&bvm->stack, c._asI64);
+				stackPushWord(&bvm->stack, c);
 				bvm->stack.stack[b._asU64] = a;
 				bvm->IP++;
 				break;
@@ -508,7 +581,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[b._asU64];
-				stackPush(&bvm->stack, a._asI64);
+				stackPushWord(&bvm->stack, a);
 				memcpy(&bvm->stack.stack[b._asU64], &a, sizeof(Word));
 				bvm->IP++;
 				break;
@@ -517,7 +590,7 @@ static inline void executeInstruction(Bvm *bvm) {
 		case MEMSTACK: {
 				a = stackPop(&bvm->stack); // memaddres
 				b = stackPop(&bvm->stack); // value to print
-				stackPush(&bvm->stack, b._asI64);
+				stackPushWord(&bvm->stack, b);
 				//bvm->stack.stack[a._asI64]._asI64 = 100;
 				memcpy(&bvm->stack.stack[a._asI64], &b, sizeof(Word));
 				bvm->IP++;
