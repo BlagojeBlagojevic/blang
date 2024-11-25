@@ -128,7 +128,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 					        && !strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_ARR])
 					        && (tokens[counterTokens + 1].type == TYPE_CONST)) {
 						int numOfVars = ValueToNum(tokens[counterTokens + 1].value);
-						
+
 						for(int i = numOfVars; i >= 0; i--) {
 							char *name = malloc(100*sizeof(char));
 							sprintf(name, "%s%d", tokens[counterTokens].value, i);
@@ -170,9 +170,9 @@ void Parser(Token *tokens, Bvm *bvm) {
 			case TYPE_OPERATION: {
 					switch(tokens[counterTokens].value[0]) {
 						case '+': {
-								int valueNum = ValueToNum(tokens[counterTokens].value);
+								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = ADD;
-								bvm->instruction[counterInstruction].operand._asI64 = valueNum;
+								bvm->instruction[counterInstruction].operand._asI64 = 0;
 								printf("\noperation %s, add\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -181,9 +181,9 @@ void Parser(Token *tokens, Bvm *bvm) {
 								}
 						case '-': {
 
-								int valueNum = ValueToNum(tokens[counterTokens].value);
+								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = DEC;
-								bvm->instruction[counterInstruction].operand._asI64 = valueNum;
+								bvm->instruction[counterInstruction].operand._asI64 = 0;
 								printf("\noperation %s, dec\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -192,9 +192,9 @@ void Parser(Token *tokens, Bvm *bvm) {
 								}
 						case '*': {
 
-								int valueNum = ValueToNum(tokens[counterTokens].value);
+								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = MUL;
-								bvm->instruction[counterInstruction].operand._asI64 = valueNum;
+								bvm->instruction[counterInstruction].operand._asI64 = 0;
 								printf("\noperation %s, mul\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -203,13 +203,21 @@ void Parser(Token *tokens, Bvm *bvm) {
 								}
 						case '/': {
 
-								int valueNum = ValueToNum(tokens[counterTokens].value);
-								bvm->instruction[counterInstruction].type = DIV;
-								bvm->instruction[counterInstruction].operand._asI64 = valueNum;
+								//int valueNum = ValueToNum(tokens[counterTokens].value);
+								bvm->instruction[counterInstruction].type = NOT;
+								bvm->instruction[counterInstruction].operand._asI64 = 0;
 								printf("\noperation %s, div\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
-								stackSize--;
+								break;
+								}
+						case '!': {
+								//int valueNum = ValueToNum(tokens[counterTokens].value);
+								bvm->instruction[counterInstruction].type = NOT;
+								bvm->instruction[counterInstruction].operand._asI64 = 0;
+								printf("\noperation %s, notLogic\n", tokens[counterTokens].value);
+								counterTokens++;
+								counterInstruction++;
 								break;
 								}
 
@@ -342,6 +350,22 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 						stackSize--;
 						}
+					else if(WORD_COMPARE(KEYWORD_OVER)) {
+						bvm->instruction[counterInstruction].type = OVER;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						}
+					else if(WORD_COMPARE(KEYWORD_ROT)) {
+						bvm->instruction[counterInstruction].type = ROT;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+
+
+
 					else if(WORD_COMPARE(KEYWORD_ENDLOOP)) {
 						bvm->instruction[counterInstruction].type = JMP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&whileStack)._asI64;
@@ -385,6 +409,41 @@ void Parser(Token *tokens, Bvm *bvm) {
 						counterInstruction++;
 
 						}
+					else if(WORD_COMPARE(KEYWORD_SHL)) {
+						bvm->instruction[counterInstruction].type = SHL;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_SHR)) {
+						bvm->instruction[counterInstruction].type = SHR;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_AND)) {
+						bvm->instruction[counterInstruction].type = AND;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_OR)) {
+						bvm->instruction[counterInstruction].type = OR;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_BNOT)) {
+						bvm->instruction[counterInstruction].type = BNOT;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
 					else {
 						//counterInstruction++;
 						counterTokens++;
@@ -412,6 +471,14 @@ void Parser(Token *tokens, Bvm *bvm) {
 					else if(!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_L])) {
 						bvm->instruction[counterInstruction].type = IF;
 						bvm->instruction[counterInstruction].operand._asI64 = 1;
+						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_I])) {
+						bvm->instruction[counterInstruction].type = IF;
+						bvm->instruction[counterInstruction].operand._asI64 = 2;
 						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
