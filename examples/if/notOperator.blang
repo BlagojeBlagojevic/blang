@@ -1,0 +1,9 @@
+10 10 = ! dup if
+	30 print
+	end
+	else
+		50 print
+	end
+endscript .
+
+
