@@ -1,0 +1,6 @@
+1 10 shr print 
+1 10 shl print 
+1 10 and print 
+1 10 or print
+0 bnot print 
+endscript .
