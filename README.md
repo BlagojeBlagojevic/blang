@@ -138,11 +138,11 @@ Example:
 | Name | Signature                              | Description                                                       |
 | ---  | ---                                    | ---                                                               |
 | `= ` | `[a: int] [b: int] -- [a == b : int]` | checks if two elements on top of the stack are equal.              |
-| `!=` | `[a: int] [b: int] -- [a != b : int]` | checks if two elements on top of the stack are not equal. TBD      |
+| `=!` | `[a: int] [b: int] -- [a != b : int]` | checks if two elements on top of the stack are not equal.          |
 | `> ` | `[a: int] [b: int] -- [a > b  : int]` | applies the greater comparison on top two elements.                |
 | `< ` | `[a: int] [b: int] -- [a < b  : int]` | applies the less comparison on top two elements.                   |
-| `>=` | `[a: int] [b: int] -- [a >= b : int]` | applies the greater or equal comparison on top two elements. TBD   |
-| `<=` | `[a: int] [b: int] -- [a <= b : int]` | applies the greater or equal comparison on top two elements. TBD   |
+| `<!` | `[a: int] [b: int] -- [a >= b : int]` | applies the greater or equal comparison on top two elements.       |
+| `>!` | `[a: int] [b: int] -- [a <= b : int]` | applies the greater or equal comparison on top two elements.       |
 
 #### Arithmetic
 
@@ -154,7 +154,7 @@ Example:
 | `/`      | `[a: int] [b: int] -- [a / b: int]`              | divide two elements on top of the stack
 | `%`      | `[a: int] [b: int] -- [a % b: int]`              | mod two elements on top of the stack                                                                                      |
 
-#### Bitwise TBD
+#### Bitwise 
 
 | Name  | Signature                            | Description                   |
 | ---   | ---                                  | ---                           |
