@@ -31,21 +31,46 @@ Token* Tokeniser(char* input) {
 		if (isEndChar(input[right]) && left == right) {
 			if (isOperator(input[right])) {
 				//CHECK FOR A LOGICAL OPERATOR
-				if(isLogicOperator(input[right])) {
+				//TBD parsing floats maybe
+				//TBD parsing negative numbers
+						int next_right = right+1;
+						if(isDigit(input[next_right]) &&
+						    ((input[right] == '-') || (input[right] == '+')) ) {
+							while(isDigit(input[next_right]) && next_right <= len) {
+								next_right++;
+								}
+							tokens[counterTokens].value = returnSubstring(input, right, next_right);
+							tokens[counterTokens].type = TYPE_CONST;
+
+#ifdef LOG_VAL
+							printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
+							system("pause");
+#endif
+							right = next_right;
+							counterTokens++;
+							}
+				
+				
+				
+				else if(isLogicOperator(input[right])) {
 					//IF OPERATOR CHECK FOR A = SIGN
 						{
+						
+						{
 
-						tokens[counterTokens].type = TYPE_LOGICOPERATOR;
-						tokens[counterTokens].value = malloc(2*sizeof(char));
-						tokens[counterTokens].value[0] = input[right];
-						tokens[counterTokens].value[1] = '\0';
+							tokens[counterTokens].type = TYPE_LOGICOPERATOR;
+							tokens[counterTokens].value = malloc(2*sizeof(char));
+							tokens[counterTokens].value[0] = input[right];
+							tokens[counterTokens].value[1] = '\0';
+
+
 #ifdef LOG_VAL
-						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
+							printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
 #endif
-						counterTokens++;
+							counterTokens++;
+							}
 						}
 					}
-
 				else {
 #ifdef LOG_VAL
 					printf("Token: Operator, Value: %c\n", input[right]);
