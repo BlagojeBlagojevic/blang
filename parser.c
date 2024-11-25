@@ -1,3 +1,4 @@
+
 #include "parser.h"
 
 
@@ -442,7 +443,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
-						stackSize--;
+				
 						}
 					else {
 						//counterInstruction++;
