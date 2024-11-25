@@ -130,8 +130,8 @@ Example:
 | `swap`  | `a b -- b a`     | swap 2 elements on the top of the stack. TBD                                                      |
 | `drop`  | `a b -- a`       | drops the top element of the stack.                                                               |
 | `print` | `a b -- a`       | print the element on top of the stack in a free form to stdout and remove it from the stack.      |
-| `over`  | `a b -- a b a`   | copy the element below the top of the stack. TBD                                                  |
-| `rot`   | `a b c -- b c a` | rotate the top three stack elements. TBD                                                          |
+| `over`  | `a b -- a b a`   | copy the element below the top of the stack.                                                      |
+| `rot`   | `a b c -- b c a` | rotate the top three stack elements.                                                              |
 
 #### Comparison
 
