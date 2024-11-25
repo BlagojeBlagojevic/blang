@@ -6,7 +6,7 @@
 
 #define NUM_OF_TOKENS 5
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
-
+#define LOG_VALUE
 #define MAX_TOKENS 10000
 #define MAX_LENGHT  100
 #include "lex.h"
@@ -33,22 +33,7 @@ Token* Tokeniser(char* input) {
 				//CHECK FOR A LOGICAL OPERATOR
 				if(isLogicOperator(input[right])) {
 					//IF OPERATOR CHECK FOR A = SIGN
-					if(input[right+1] == '=') {
-
-						tokens[counterTokens].type = TYPE_LOGICOPERATOR;
-						tokens[counterTokens].value = malloc(3*sizeof(char));
-						tokens[counterTokens].value[0] = input[right];
-						tokens[counterTokens].value[1] = input[right + 1];//CHECK
-						tokens[counterTokens].value[2] = '\0';
-
-#ifdef LOG_VAL
-						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
-#endif
-						counterTokens++;
-						right++;
-
-						}
-					else {
+						{
 
 						tokens[counterTokens].type = TYPE_LOGICOPERATOR;
 						tokens[counterTokens].value = malloc(2*sizeof(char));
@@ -65,13 +50,10 @@ Token* Tokeniser(char* input) {
 #ifdef LOG_VAL
 					printf("Token: Operator, Value: %c\n", input[right]);
 #endif
-
-
 					tokens[counterTokens].type = TYPE_OPERATION;
 					tokens[counterTokens].value = malloc(2*sizeof(char));
 					tokens[counterTokens].value[0] = input[right];
 					tokens[counterTokens].value[1] = '\0';
-
 					counterTokens++;
 					}
 
