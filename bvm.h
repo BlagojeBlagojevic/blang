@@ -16,7 +16,7 @@
 #define FALSE 0
 
 //#define LOG_STACK
-enum {i, f, u, ch};
+enum {i = 0, f, u, ch};
 
 //
 
@@ -277,7 +277,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					stackPush(&bvm->stack, (a._asI64 + b._asI64));
 					}
 				else if(c._asU64 == f) {
-					stackPushF64(&bvm->stack, (a._asF64 + b._asF64));
+					stackPushF64(&bvm->stack, (f64)(a._asF64 + b._asF64));
 					}
 				else {}; //PTR MAYBE
 				bvm->IP++;
@@ -291,7 +291,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					LOG("%d\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
 					}
 				else if(c._asU64 == f) {
-					LOG("%f\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asF64);
+					LOG("%f\n\n", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
 				else if(c._asU64 == ch) {
 					//LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
