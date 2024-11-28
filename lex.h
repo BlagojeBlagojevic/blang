@@ -2,7 +2,7 @@
 #define LEX_H
 
 #include "utils_string.h"
-
+#include<stdint.h>
 #define NUM_OF_TOKENS 5
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
 
@@ -32,11 +32,14 @@ static const char* TokenString[] = {
 	};
 
 //static_assert(NUM_OF_TOKENS==TYPE_EOF, "we have more tokens then max");
+enum {I , F, U, CH, STR};
+
+
 
 typedef struct {
 	TokenType type;
 	char* value;     //IT EXIST TRUE ALL LIFTIME OF A PROGRAM
-	int jumpValue;
+	uint8_t valType;
 	} Token;
 
 
