@@ -1,60 +1,57 @@
-35 let taraba 
-32 let space 
-10 let newLine  
-0 let pattern111
-1 let pattern110
-1 let pattern101
-0 let pattern100
-1 let pattern011
-1 let pattern010
-1 let pattern001
-0 let pattern000
+35 ? taraba 
+32 ? space 
+10 ? newLine  
+0 ? pattern111
+1 ? pattern110
+1 ? pattern101
+0 ? pattern100
+1 ? pattern011
+1 ? pattern010
+1 ? pattern001
+0 ? pattern000
 arr row 100 
 arr newrow 200
-1 let row0
-
-0 let counterIteration
-0 let counterElements
-0 let value
+1 ? row0
+0 ? counterIteration
+0 ? counterElements
+0 ? value
 while
 	while
-		ptr row0 counterElements +  
-		ptrval let value
-		ptr row0 counterElements + 1 +  
-		ptrval 2 * value  + let value
-		ptr row0 counterElements + 2 + 
-		ptrval 4 * value  + let value
-		ptr pattern000 value + ptrval let value
+		& row0 counterElements +  
+		@ ? value
+		& row0 counterElements + 1 +  
+		@ 2 * value  + ? value
+		& row0 counterElements + 2 + 
+		@ 4 * value  + ? value
+		& pattern000 value + @ ? value
 		1 = dup if
 			taraba charprint
 		end
 		else
 			space charprint
 		end	
-		value ptr newrow0 counterElements + 1 + letarr 
-		0 let value
-		1 counterElements + let counterElements
+		value 
+		& newrow0 counterElements + 1 + ?? 
+		0 ? value
+		1 counterElements + ? counterElements
 		100 counterElements > if
-			0 let  counterElements
+			0 ? counterElements
 			breakloop
 		end
 	endloop
 	newLine charprint
 	while
-		ptr newrow0 counterElements + ptrval
-		ptr row0 counterElements + letarr
-	
-	
-		1 counterElements + let counterElements
+		& newrow0 counterElements + @
+		& row0 counterElements + ??
+		1 counterElements + ? counterElements
 			100 counterElements > if
-				0 let  counterElements
+				0 ?  counterElements
 				breakloop
 			end
 	endloop
-	1 counterIteration + let counterIteration
+	1 counterIteration + ? counterIteration
 	100 counterIteration = if
 		breakloop
 		end
 endloop
-
 endscript .

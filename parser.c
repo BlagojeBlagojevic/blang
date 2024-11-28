@@ -1,8 +1,6 @@
-
 #include "parser.h"
 
-
-static void VarStackPush(VarStack* varstack,  char* name) {
+static void VarStackPush(VarStack* varstack,  char* name, uint8_t type) {
 	if(varstack->sp > MAX_VARS) {
 		ERROR_BREAK("We have get more var then max amount max num of vars is %d\n", MAX_VARS);
 		}
@@ -10,6 +8,7 @@ static void VarStackPush(VarStack* varstack,  char* name) {
 	int adress = STACK_CAPACITIY - 1 - varstack->sp;
 	varstack->name[varstack->sp] = name;//malloc(sizeof(char)*(lenName+1);
 	//strcpy(varstack->name[varstack->sp], name);
+	varstack->adress[varstack->sp] = type;
 	varstack->adress[varstack->sp] = adress;
 	printf("Var %s", name);
 	varstack->sp++;
@@ -100,7 +99,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 					    && !strcmp(tokens[counterTokens - 1].value, keywords[KEYWORD_LET])) {
 						int is = VarStackGet(tokens[counterTokens].value, &varStack);
 						if(is == -1) {
-							VarStackPush(&varStack, tokens[counterTokens].value);
+							VarStackPush(&varStack, tokens[counterTokens].value, tokens[counterTokens].type);
 							is = varStack.sp - 1;
 							}
 						else {
@@ -134,13 +133,15 @@ void Parser(Token *tokens, Bvm *bvm) {
 							char *name = malloc(100*sizeof(char));
 							sprintf(name, "%s%d", tokens[counterTokens].value, i);
 							printf("\nname %s\n", name);
-							VarStackPush(&varStack, name);
+							VarStackPush(&varStack, name, tokens[counterTokens].valType);
 							}
 						//PrintVarStack(varStack);
 						//system("pause");
 						counterTokens++;
 						counterInstruction++;
 						}
+
+
 					else {
 						int is = VarStackGet(tokens[counterTokens].value, &varStack);
 						if(is == -1) {
@@ -157,15 +158,30 @@ void Parser(Token *tokens, Bvm *bvm) {
 					}
 
 			case TYPE_CONST: {
-					//char buffer[100];
-					int valueNum = ValueToNum(tokens[counterTokens].value);
-					bvm->instruction[counterInstruction].type = PUSH;
-					bvm->instruction[counterInstruction].operand._asI64 = valueNum;
-					printf("\nconst %d, push\n", valueNum);
-					counterTokens++;
-					counterInstruction++;
-					stackSize++;
-					break;
+					if(tokens[counterTokens].valType == F) {
+						printf("%s", tokens[counterTokens].value);
+						float valueNum = strtof(tokens[counterTokens].value,NULL);
+						bvm->instruction[counterInstruction].type = PUSHF;
+						bvm->instruction[counterInstruction].operand._asF64 = valueNum;
+						printf("\nconst %f, push\n", valueNum);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						break;
+						}
+					else {
+						int valueNum = ValueToNum(tokens[counterTokens].value);
+						bvm->instruction[counterInstruction].type = PUSH;
+						bvm->instruction[counterInstruction].operand._asI64 = valueNum;
+						printf("\nconst %d, push\n", valueNum);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						break;
+						}
+
+
+
 					}
 			//MATH
 			case TYPE_OPERATION: {
@@ -173,7 +189,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 						case '+': {
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = ADD;
-								bvm->instruction[counterInstruction].operand._asI64 = 0;
+								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
 								printf("\noperation %s, add\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -184,7 +200,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = DEC;
-								bvm->instruction[counterInstruction].operand._asI64 = 0;
+								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
 								printf("\noperation %s, dec\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -195,7 +211,7 @@ void Parser(Token *tokens, Bvm *bvm) {
 
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = MUL;
-								bvm->instruction[counterInstruction].operand._asI64 = 0;
+								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
 								printf("\noperation %s, mul\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -205,8 +221,8 @@ void Parser(Token *tokens, Bvm *bvm) {
 						case '/': {
 
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
-								bvm->instruction[counterInstruction].type = NOT;
-								bvm->instruction[counterInstruction].operand._asI64 = 0;
+								bvm->instruction[counterInstruction].type = DIV;
+								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
 								printf("\noperation %s, div\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -246,6 +262,16 @@ void Parser(Token *tokens, Bvm *bvm) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINT;
 						bvm->instruction[counterInstruction].operand._asI64 = 3;
+						printf("\n%s, print\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+
+						}
+
+					else if(WORD_COMPARE(KEYWORD_PRINTFLOAT)) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+						bvm->instruction[counterInstruction].type = PRINT;
+						bvm->instruction[counterInstruction].operand._asI64 = F;
 						printf("\n%s, print\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
@@ -443,7 +469,16 @@ void Parser(Token *tokens, Bvm *bvm) {
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
-				
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_SETSP)) {
+						bvm->instruction[counterInstruction].type = SETSPSTACK;
+						bvm->instruction[counterInstruction].operand._asI64 = 1234;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
 						}
 					else {
 						//counterInstruction++;

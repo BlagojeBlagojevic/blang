@@ -7,8 +7,6 @@
 #define NUM_OF_TOKENS 5
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
 #define LOG_VALUE
-#define MAX_TOKENS 10000
-#define MAX_LENGHT  100
 #include "lex.h"
 //#include "utils_string.h"
 
@@ -31,21 +29,46 @@ Token* Tokeniser(char* input) {
 		if (isEndChar(input[right]) && left == right) {
 			if (isOperator(input[right])) {
 				//CHECK FOR A LOGICAL OPERATOR
-				if(isLogicOperator(input[right])) {
+				//TBD parsing floats maybe
+				//TBD parsing negative numbers
+				int next_right = right+1;
+				if(isDigit(input[next_right]) &&
+				    ((input[right] == '-') || (input[right] == '+')) ) {
+					while(isDigit(input[next_right]) && next_right <= len) {
+						next_right++;
+						}
+					tokens[counterTokens].value = returnSubstring(input, right, next_right);
+					tokens[counterTokens].type = TYPE_CONST;
+					tokens[counterTokens].valType = I;
+#ifdef LOG_VAL
+					printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
+					//system("pause");
+#endif
+					right = next_right;
+					counterTokens++;
+					}
+				//TBD NEGATIVE FLOAT
+
+
+				else if(isLogicOperator(input[right])) {
 					//IF OPERATOR CHECK FOR A = SIGN
 						{
 
-						tokens[counterTokens].type = TYPE_LOGICOPERATOR;
-						tokens[counterTokens].value = malloc(2*sizeof(char));
-						tokens[counterTokens].value[0] = input[right];
-						tokens[counterTokens].value[1] = '\0';
+							{
+
+							tokens[counterTokens].type = TYPE_LOGICOPERATOR;
+							tokens[counterTokens].value = malloc(2*sizeof(char));
+							tokens[counterTokens].value[0] = input[right];
+							tokens[counterTokens].value[1] = '\0';
+
+
 #ifdef LOG_VAL
-						printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
+							printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
 #endif
-						counterTokens++;
+							counterTokens++;
+							}
 						}
 					}
-
 				else {
 #ifdef LOG_VAL
 					printf("Token: Operator, Value: %c\n", input[right]);
@@ -102,12 +125,23 @@ Token* Tokeniser(char* input) {
 
 
 			else if (isInteger(subStr)) {
+				tokens[counterTokens].value = subStr;
+				tokens[counterTokens].type = TYPE_CONST;
+				tokens[counterTokens].valType = U;
 #ifdef LOG_VAL
 				printf("Token: Integer, Value: %s\n", subStr);
 #endif
+				counterTokens++;
+				}
+			else if(isFloat(subStr)) {
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_CONST;
+				tokens[counterTokens].valType = F;
+#ifdef LOG_VAL
+				printf("Token: Float, Value: %s\n", subStr);
+#endif
 				counterTokens++;
+				//system("pause");
 				}
 
 
@@ -117,6 +151,7 @@ Token* Tokeniser(char* input) {
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_VAR;
+				tokens[counterTokens].valType = tokens[counterTokens-1].valType;
 				counterTokens++;
 				}
 

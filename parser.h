@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<string.h>
+#include<stdint.h>
 #include "lex.h"
 #define LOG_STACK
 #define BVM_IMPLEMENTATION
@@ -14,8 +15,8 @@
 typedef struct {
 	int adress[MAX_VARS];
 	char* name[MAX_VARS];
+	uint8_t type[MAX_VARS];
 	int sp;
-
 	} VarStack;
 	
 void Parser(Token *tokens, Bvm *bvm);

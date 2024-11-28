@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+#include<unistd.h>
 
 #define LOG(...)         fprintf(stdout, __VA_ARGS__)
 #define LOGSTACK()        LOG("Value %d\n", (i16)vm.stack[SP].asI64);
@@ -15,7 +16,7 @@
 #define FALSE 0
 
 //#define LOG_STACK
-enum {i, f, u, ch};
+enum {i = 0, f, u, ch};
 
 //
 
@@ -65,6 +66,7 @@ typedef enum {
 	JMPT,
 	JMPF,
 	SETSP,
+	SETSPSTACK,
 	RESTORE,
 	COPY,
 	COPYSTACK,
@@ -107,6 +109,7 @@ static const char* instructionNames[] = {
 	"JMPT",
 	"JMPF",
 	"SETSP",
+	"SETSPSTACK",
 	"RESTORE",
 	"COPY",
 	"COPYSTACK",
@@ -128,7 +131,7 @@ typedef struct {
 	} Instruction;
 
 
-#define STACK_CAPACITIY     102400
+#define STACK_CAPACITIY     1024
 #define MAX_SIZE_OF_PROGRAM 10024
 #define MAX_LINE 100
 typedef struct {
@@ -233,7 +236,7 @@ static inline Bvm initBVM(void) {
 
 static inline void executeInstruction(Bvm *bvm) {
 
-	static Word a, b, c;
+	Word a, b, c;
 #ifdef LOG_STACK
 	printf("\n- %s\n", instructionNames[bvm->instruction[bvm->IP].type]);
 #endif
@@ -260,7 +263,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 
 		case POP: {
-				a = 	stackPop(&bvm->stack);
+				a = stackPop(&bvm->stack);
 				bvm->IP++;
 				break;
 				}
@@ -274,7 +277,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					stackPush(&bvm->stack, (a._asI64 + b._asI64));
 					}
 				else if(c._asU64 == f) {
-					stackPushF64(&bvm->stack, (a._asF64 + b._asF64));
+					stackPushF64(&bvm->stack, (f64)(a._asF64 + b._asF64));
 					}
 				else {}; //PTR MAYBE
 				bvm->IP++;
@@ -288,10 +291,11 @@ static inline void executeInstruction(Bvm *bvm) {
 					LOG("%d\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
 					}
 				else if(c._asU64 == f) {
-					LOG("%f\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asF64);
+					LOG("%f\n\n", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
 				else if(c._asU64 == ch) {
-					LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					//LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					write(2, &bvm->stack.stack[bvm->stack.SP - 1]._asU64, 1);
 					}
 
 				//system("pause");
@@ -529,6 +533,17 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+		
+		case SETSPSTACK: {
+				a = stackPop(&bvm->stack);
+				if(a._asU64 >= STACK_CAPACITIY) {
+					ERROR_BREAK("STACK OVERFLOW ACCES!!!\n");
+					}
+				bvm->stack.SP = a._asI64;
+				bvm->IP++;
+				break;
+				}
+
 
 		case RESTORE: {
 				//s[sp] -> sp, operand ->  sp
@@ -537,11 +552,8 @@ static inline void executeInstruction(Bvm *bvm) {
 				if(b._asU64 > STACK_CAPACITIY) {
 					ERROR_BREAK("STACK OVERFLOW ACCES!!!\n");
 					}
-
 				bvm->stack.SP = b._asI64;
 				bvm->IP = a._asU64;
-
-
 				break;
 				}
 
@@ -566,8 +578,6 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 
 				}
-
-
 		case SWAP: {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
@@ -585,7 +595,6 @@ static inline void executeInstruction(Bvm *bvm) {
 				memcpy(&bvm->stack.stack[b._asU64], &a, sizeof(Word));
 				bvm->IP++;
 				break;
-
 				}
 		case MEMSTACK: {
 				a = stackPop(&bvm->stack); // memaddres
