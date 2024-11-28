@@ -1,9 +1,9 @@
 arr a 10 
-0 let b
+0 ? b
 while
-	b ptr a0 
-	b + print letarr 
-	1 b + let b
+	b & a0 
+	b + print ?? 
+	1 b + ? b
 	b 10 = 
 	if
 		breakloop
@@ -18,11 +18,11 @@ a5 print
 a6 print
 a7 print
 a8 print
-0 let c
+0 ? c
 while
-	ptr a0 c + print
-	ptrval print
-	1 c + let c
+	& a0 c + print
+	@ print
+	1 c + ? c
 	c 10 = 
 	if
 		breakloop
