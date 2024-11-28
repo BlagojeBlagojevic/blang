@@ -1,9 +1,9 @@
-65 let a
+65 ? a
 while
 	a charprint 
 	89 < if
 		breakloop
 	end 
-1 a + let a
+1 a + ? a
 endloop
 endscript .
