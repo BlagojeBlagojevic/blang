@@ -26,26 +26,26 @@ Blang is a [Concatenative](https://en.wikipedia.org/wiki/Concatenative_programmi
 Hello, World:
 
 ```blang
-10  let newline
-33  let exc2
-33  let exc1
-33  let exc
-100 let d
-105 let l2
-114 let r
-111 let o1
-87  let W
-32  let space
-111 let o
-105 let l1
-105 let l
-101 let e
-72  let H
-0 let counter
+10  ? newline
+33  ? exc2
+33  ? exc1
+33  ? exc
+100 ? d
+105 ? l2
+114 ? r
+111 ? o1
+87  ? W
+32  ? space
+111 ? o
+105 ? l1
+105 ? l
+101 ? e
+72  ? H
+0 ? counter
 while
-	ptr H counter + ptrval
+	& H counter + @
 	charprint
-	1 counter + let counter
+	1 counter + ? counter
 	counter 14 = if
 		breakloop
 	end
@@ -57,23 +57,22 @@ endscript .
 Simple program that prints all upper letters:
 
 ```blang
-65 let a
+65 ? a
 while
 	a charprint 
 	89 < if
 		breakloop
 	end 
-1 a + let a
+1 a + ? a
 endloop
 endscript .
 ```
 
 ## Quick Start
-Compile project:
+Compile project  :
 
-```c
-  gcc main.c
-```
+`gcc main.c` OR  `make all`
+
 Compile to bytcode:
 
 ```console
@@ -87,6 +86,7 @@ Run the bytcode:
 Usage:  Compile -c <path to program> <path to save>
         Run -r <path to saved>
 ```
+
 
 
 ## Language Reference
@@ -115,9 +115,9 @@ Currently a character is a only used as a var on heap
 Example:
 
 ```blang
-  35 let taraba 
-  32 let space 
-  10 let newLine
+  35 ? taraba 
+  32 ? space 
+  10 ? newLine
 ```
 
 ### Intrinsics (Built-in Words)
@@ -168,11 +168,11 @@ Example:
 
 | Name         | Signature                      | Description                                                                                               |
 | ---          | ---                            | ---                                                                                                       |
-| `let`        | `<stack> let <name>  ` | Store a value from <sp> at the var addres. If var is not declared create the var on <stacksize - numofvars - 1>.  |  
+| `?`        | `<stack> let <name>  ` | Store a value from <sp> at the var addres. If var is not declared create the var on <stacksize - numofvars - 1>.  |  
 | `arr`        | `arr <name> <size>` | Create a array on first free addres on stacksize - numofvars - 1.    |
-| `ptr`        | `ptr <name>` | Push a mem addres of a var on top of the stack.                             |                         
-| `ptrval`     | `<stack> ptrval` | Push a value from mem addres from top of the stack on top of the stack. |
-| `letarr`     | `<stack> <stack> ptrval` | Store a value from <sp-1> to mem addres on sp                   |
+| `&`        | `ptr <name>` | Push a mem addres of a var on top of the stack.                             |                         
+| `@`     | `<stack> ptrval` | Push a value from mem addres from top of the stack on top of the stack. |
+| `??`     | `<stack> <stack> ptrval` | Store a value from <sp-1> to mem addres on sp                   |
 
 #### System
 
