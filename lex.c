@@ -41,10 +41,10 @@ Token* Tokeniser(char* input) {
 								}
 							tokens[counterTokens].value = returnSubstring(input, right, next_right);
 							tokens[counterTokens].type = TYPE_CONST;
-
+							tokens[counterTokens].valType = I;
 #ifdef LOG_VAL
 							printf("Token: LogicOperator, Value: %s\n", tokens[counterTokens].value);
-							system("pause");
+							//system("pause");
 #endif
 							right = next_right;
 							counterTokens++;
@@ -132,6 +132,8 @@ Token* Tokeniser(char* input) {
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_CONST;
+				//TBD add all other types
+				tokens[counterTokens].valType = U;
 				counterTokens++;
 				}
 
@@ -142,6 +144,7 @@ Token* Tokeniser(char* input) {
 #endif
 				tokens[counterTokens].value = subStr;
 				tokens[counterTokens].type = TYPE_VAR;
+				tokens[counterTokens].valType = tokens[counterTokens-1].valType; 
 				counterTokens++;
 				}
 
