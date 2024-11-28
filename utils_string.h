@@ -3,14 +3,15 @@
 //#include<string.h>
 
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT,KEYWORD_PRINTCHAR, KEYWORD_IF, KEYWORD_END,
-      KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_OVER, KEYWORD_ROT,
+      KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
-      KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,KEYWORD_POP
+      KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT, 
+			KEYWORD_INC, KEYWORD_POP
      };
 static const char* keywords[] = { "var", "print","charprint", "if", "end", "else",
-                                  "dup", "let", "drop", "over","rot", "while","endloop","breakloop",
+                                  "dup", "let", "drop", "setsp", "over","rot", "while","endloop","breakloop",
                                   "ptr", "arr", "letarr", "ptrval","shr","shl","or","and",
-                                  "bnot", "pop",
+                                  "bnot", "inc", "pop",
                                 };
 static const char* endScriptToken = "endscript";
 enum {LOGIC_G, LOGIC_L, LOGIC_E, LOGIC_I};
