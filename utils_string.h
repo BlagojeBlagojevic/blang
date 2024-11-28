@@ -2,15 +2,15 @@
 #define UTILS_STRINGS
 //#include<string.h>
 
-enum {KEYWORD_VAR = 0, KEYWORD_PRINT,KEYWORD_PRINTCHAR, KEYWORD_IF, KEYWORD_END,
+enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_IF, KEYWORD_END,
       KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
-      KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT, 
-			KEYWORD_INC, KEYWORD_POP
+      KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
+      KEYWORD_INC, KEYWORD_POP
      };
-static const char* keywords[] = { "var", "print","charprint", "if", "end", "else",
-                                  "dup", "let", "drop", "setsp", "over","rot", "while","endloop","breakloop",
-                                  "ptr", "arr", "letarr", "ptrval","shr","shl","or","and",
+static const char* keywords[] = { "var", "print","charprint", "floatprint" ,"if", "end", "else",
+                                  "dup", "?", "drop", "setsp", "over","rot", "while","endloop","breakloop",
+                                  "&", "arr", "??", "@","shr","shl","or","and",
                                   "bnot", "inc", "pop",
                                 };
 static const char* endScriptToken = "endscript";
@@ -82,6 +82,15 @@ static char isInteger(char* str) {
 		}
 	return str[i] == '\0';
 	}
+
+static char isFloat(char* str) {
+	if (str == NULL || *str == '\0' || strtof(str, NULL) == 0.0F) {
+		return 0;
+		}
+	return 1;
+	}
+
+
 
 static char* returnSubstring(char* str, int start, int end) {
 	//int length = strlen(str);
