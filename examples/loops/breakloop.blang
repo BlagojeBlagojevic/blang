@@ -1,6 +1,6 @@
-0 let a
+0 ? a
 while
-a 1 + let a
+a 1 + ? a
 	10 a < dup if
 		100 a - print
 	end
