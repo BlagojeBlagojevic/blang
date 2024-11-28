@@ -1,7 +1,7 @@
-0 let a
-0 let b 
+0 ? a
+0 ? b 
 while
-a 1 + let a
+a 1 + ? a
 	10 a < dup if
 		100 a - print
 	end
@@ -9,12 +9,12 @@ a 1 + let a
 		breakloop
 	end
 while
-b 1 + let b
+b 1 + ? b
 	10 b < dup if
 		b print
 	end
 	else
-		0 let b
+		0 ? b
 		1234 print
 		breakloop
 	end
