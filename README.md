@@ -142,7 +142,7 @@ Example:
 | `> ` | `[a: int] [b: int] -- [a > b  : int]` | applies the greater comparison on top two elements.                |
 | `< ` | `[a: int] [b: int] -- [a < b  : int]` | applies the less comparison on top two elements.                   |
 | `<!` | `[a: int] [b: int] -- [a >= b : int]` | applies the greater or equal comparison on top two elements.       |
-| `>!` | `[a: int] [b: int] -- [a <= b : int]` | applies the greater or equal comparison on top two elements.       |
+| `>!` | `[a: int] [b: int] -- [a <= b : int]` | applies the less or equal comparison on top two elements.          |
 
 #### Arithmetic
 
