@@ -158,15 +158,28 @@ void Parser(Token *tokens, Bvm *bvm) {
 					}
 
 			case TYPE_CONST: {
+					if(tokens[counterTokens].valType == F) {
+						printf("%s", tokens[counterTokens].value);
+						float valueNum = strtof(tokens[counterTokens].value,NULL);
+						bvm->instruction[counterInstruction].type = PUSHF;
+						bvm->instruction[counterInstruction].operand._asF64 = valueNum;
+						printf("\nconst %f, push\n", valueNum);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						break;
+						}
+					else {
+						int valueNum = ValueToNum(tokens[counterTokens].value);
+						bvm->instruction[counterInstruction].type = PUSH;
+						bvm->instruction[counterInstruction].operand._asI64 = valueNum;
+						printf("\nconst %d, push\n", valueNum);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						break;
+						}
 
-					int valueNum = ValueToNum(tokens[counterTokens].value);
-					bvm->instruction[counterInstruction].type = PUSH;
-					bvm->instruction[counterInstruction].operand._asI64 = valueNum;
-					printf("\nconst %d, push\n", valueNum);
-					counterTokens++;
-					counterInstruction++;
-					stackSize++;
-					break;
 
 
 					}
@@ -249,6 +262,16 @@ void Parser(Token *tokens, Bvm *bvm) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINT;
 						bvm->instruction[counterInstruction].operand._asI64 = 3;
+						printf("\n%s, print\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+
+						}
+
+					else if(WORD_COMPARE(KEYWORD_PRINTFLOAT)) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+						bvm->instruction[counterInstruction].type = PRINT;
+						bvm->instruction[counterInstruction].operand._asI64 = F;
 						printf("\n%s, print\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
