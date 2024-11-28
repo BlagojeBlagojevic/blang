@@ -25,9 +25,11 @@ int main(int argc, char **argv) {
 		fclose(f);
 		Bvm vm = initBVM();
 		Token *t = Tokeniser(code);
+		PrintTokens(t);
 		Parser(t, &vm);
 		DestroyTokens(t);
 		programToBin(argv[3], vm.instruction, vm.numOfInstructions);
+		//system("pause");
 		return 0;
 		}
 	else if(!strcmp(argv[1], "-r") && (argc > 2)) {
@@ -36,6 +38,7 @@ int main(int argc, char **argv) {
 		printf("\n-------------Runtime-------------\n");
 		loop(&vm);
 		printf("\n---------------------------------\n");
+		//system("pause");
 		return 0;
 		
 		}
