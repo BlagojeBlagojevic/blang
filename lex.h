@@ -8,12 +8,13 @@
 
 #define MAX_TOKENS 5000
 #define MAX_LENGHT  20
-
+#define MAX_NUM_OF_TOKENS_IN_A_WORD 30
 
 typedef enum TokenType_t {
 	TYPE_CONST = 0,
 	TYPE_VAR,
 	TYPE_KEYWORD,
+	TYPE_USER_DEFINE_KEYWORD,
 	TYPE_UNREGISTER,
 	TYPE_OPERATION,
 	TYPE_LOGICOPERATOR,
@@ -25,6 +26,7 @@ static const char* TokenString[] = {
 	"CONST",
 	"VAR",
 	"KEYWORD",
+	"TYPE_USER_DEFINE_KEYWORD",
 	"UNREGISTER",
 	"OPERATION",
 	"LOGICOPERATOR",
@@ -42,9 +44,17 @@ typedef struct {
 	uint8_t valType;
 	} Token;
 
+typedef struct {
+	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD];
+	int numOfTokens;
+	char *name;
+}Words;
+
+static int numOfUserDefiendWords = 0;
 
 
-Token* Tokeniser(char* input);
+
+Token* Tokeniser(char* input, Words *words);
 void DestroyTokens(Token* tokens);
 void PrintTokens(Token* tokens);
 
