@@ -1,17 +1,17 @@
 #ifndef UTILS_STRINGS
 #define UTILS_STRINGS
-//#include<string.h>
+#include<string.h>
 
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_IF, KEYWORD_END,
       KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
-      KEYWORD_INC, KEYWORD_POP
+      KEYWORD_INC,  KEYWORD_POP
      };
-static const char* keywords[] = { "var", "print","charprint", "floatprint" ,"if", "end", "else",
+static const char* keywords[] = { "var", "print","charprint", "floatprint","if", "end", "else",
                                   "dup", "?", "drop", "setsp", "over","rot", "while","endloop","breakloop",
-                                  "&", "arr", "??", "@","shr","shl","or","and",
-                                  "bnot", "inc", "pop",
+                                  "&", "arr", "??", "@","shr","shl","or","and","bnot",
+                                  "inc", "pop",
                                 };
 static const char* endScriptToken = "endscript";
 enum {LOGIC_G, LOGIC_L, LOGIC_E, LOGIC_I};
@@ -19,7 +19,7 @@ static const char* logicOperators[] = {">", "<", "=", "!"};
 //we hear nead to put wat will sep our code
 static char isEndChar(char c) {
 	const char temp = (
-	                    (c == ' ')  || (c == '+') || (c == '-')
+	                       (c == ' ')  || (c == '+') || (c == '-')
 	                    || (c == '*')  || (c == '/') || (c == ',')
 	                    || (c == ';')  || (c == '%') || (c == '>')
 	                    || (c == '<')  || (c == '=') || (c == '(')
@@ -90,6 +90,15 @@ static char isFloat(char* str) {
 	return 1;
 	}
 
+
+static char isStrEqual(const char *comp ,char *str) {
+	if(!strcmp(comp, str)) {
+		return 1;
+		}
+	else {
+		return 0;
+		}
+	}
 
 
 static char* returnSubstring(char* str, int start, int end) {

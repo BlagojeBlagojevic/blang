@@ -19,5 +19,5 @@ typedef struct {
 	int sp;
 	} VarStack;
 	
-void Parser(Token *tokens, Bvm *bvm);
+void Parser(Token *tokens, Words *words , Bvm *bvm);
 #endif

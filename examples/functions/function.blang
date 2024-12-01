@@ -1,0 +1,14 @@
+word increment 1 + endword
+word twice increment increment endword
+0 ? counter 
+0 ? value
+while
+	counter increment 
+	? counter
+	counter 20 = if
+		breakloop
+	end
+	value twice print ? value 
+endloop
+
+endscript .

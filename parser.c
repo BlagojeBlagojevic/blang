@@ -63,7 +63,7 @@ static void PrintStack(Stack v) {
 #define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
 
 
-void Parser(Token *tokens, Bvm *bvm) {
+void Parser(Token *tokens, Words *words, Bvm *bvm) {
 
 	//system("pause");
 
@@ -80,6 +80,49 @@ void Parser(Token *tokens, Bvm *bvm) {
 	initStack(&whileStack);
 	initStack(&endloopStack);
 	int stackSize = 0;
+	int numOfTokens = 0;
+	while(tokens[numOfTokens].type != TYPE_EOF) {
+		printf("num of token %d defiend words %d\n", numOfTokens, numOfUserDefiendWords);
+		numOfTokens++;
+		}
+	numOfTokens++;//take EOF
+	//INITAL PASS TO CHANGE A TOKENS BASED OF A NAME IN A WORDS TABLE
+	//WE DO A SHIFT RIGHT FOR A NUM OF A TOKENS IN A WORD
+	//THEN WE COPY CONTENT IN A WORD STARTING FROM TOKEN+1 OR TIL word[i].token[j].value == NULL
+
+	while(tokens[counterTokens++].type != TYPE_EOF) {
+		if(tokens[counterTokens].type == TYPE_VAR) {
+			for(int i = 0; words[i].name != NULL; i++) {
+				if(!strcmp(tokens[counterTokens].value, words[i].name)) {
+					const int endShift = counterTokens+1;
+					const int shiftOfset = words[i].numOfTokens - 2;  //CUZZ OF FIRST IS A NAME
+
+					for(int j = numOfTokens; j >= endShift; j--) {
+						memcpy(&tokens[j + shiftOfset], &tokens[j], sizeof(Token));
+					//	printf("shifting\n");
+						//tokens[i + shiftOfset] = tokens[i];
+						}
+					numOfTokens+=shiftOfset;
+					//	PrintTokens(tokens);
+					//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+					//																											endShift, shiftOfset);
+					//	system("pause");
+					int counter = 1;
+					for(int j = endShift - 1; words[i].tokens[counter].value != NULL; j++) {
+						memcpy(&tokens[j], &words[i].tokens[counter], sizeof(Token));
+						counter++;
+						}
+						counterTokens--;
+				//	PrintTokens(tokens);
+				//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+				//	       endShift, shiftOfset);
+					//system("pause");
+					}
+				}
+			}
+		}
+	counterTokens = 0;
+	PrintTokens(tokens);
 	while(tokens[counterTokens].type != TYPE_EOF) {
 
 		//printf("Num of token %d\n", counterTokens);
