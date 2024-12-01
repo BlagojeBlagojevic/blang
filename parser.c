@@ -63,7 +63,7 @@ static void PrintStack(Stack v) {
 #define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
 
 
-void Parser(Token *tokens, Bvm *bvm) {
+void Parser(Token *tokens, Words *words, Bvm *bvm) {
 
 	//system("pause");
 
@@ -80,6 +80,38 @@ void Parser(Token *tokens, Bvm *bvm) {
 	initStack(&whileStack);
 	initStack(&endloopStack);
 	int stackSize = 0;
+	int numOfTokens = 0;
+	while(tokens[numOfTokens].type != TYPE_EOF) {
+		printf("num of token %d defiend words %d\n", numOfTokens, numOfUserDefiendWords);
+		numOfTokens++;
+		}
+	numOfTokens++;
+	//INITAL PASS TO CHANGE A TOKENS BASED OF A NAME IN A WORDS TABLE
+	while(tokens[counterTokens++].type != TYPE_EOF) {
+		if(tokens[counterTokens].type == TYPE_VAR) {
+			for(int i = 0; words[i].name != NULL; i++) {
+				if(!strcmp(tokens[counterTokens].value, words[i].name)) {
+					int startToken = counterTokens;  //shift starts from
+					int numOfTokensForCopy = words[i].numOfTokens; //how mutch
+					printf("start token %d numOf token %d\n", startToken, numOfTokensForCopy);
+					//	system("pause");
+					for(int j = numOfTokens; j > startToken; j--) {
+						tokens[j + numOfTokensForCopy] = tokens[j];
+						}
+					int counter = 1;
+					for(int j = startToken; counter < numOfTokensForCopy+1; j++) {
+						tokens[j] = words[i].tokens[counter++];
+						}
+					PrintTokens(tokens);
+					numOfTokens+=numOfTokensForCopy;
+					//numOfTokens--;
+					break;
+					}
+				}
+			}
+		}
+	counterTokens = 0;
+	PrintTokens(tokens);
 	while(tokens[counterTokens].type != TYPE_EOF) {
 
 		//printf("Num of token %d\n", counterTokens);
