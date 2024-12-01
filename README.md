@@ -14,7 +14,7 @@ Blang is a [Concatenative](https://en.wikipedia.org/wiki/Concatenative_programmi
 - [x] [Turing-complete](./examples/celluarautomata/rule110.blang)
 - [x] Crossplatform
 - [ ] Strings support
-- [ ] Functions
+- [x] Functions
 - [ ] Self hosted
 - [ ] Statically typed
 - [ ] Optimized
