@@ -85,27 +85,38 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 		printf("num of token %d defiend words %d\n", numOfTokens, numOfUserDefiendWords);
 		numOfTokens++;
 		}
-	numOfTokens++;
+	numOfTokens++;//take EOF
 	//INITAL PASS TO CHANGE A TOKENS BASED OF A NAME IN A WORDS TABLE
+	//WE DO A SHIFT RIGHT FOR A NUM OF A TOKENS IN A WORD
+	//THEN WE COPY CONTENT IN A WORD STARTING FROM TOKEN+1 OR TIL word[i].token[j].value == NULL
+
 	while(tokens[counterTokens++].type != TYPE_EOF) {
 		if(tokens[counterTokens].type == TYPE_VAR) {
 			for(int i = 0; words[i].name != NULL; i++) {
 				if(!strcmp(tokens[counterTokens].value, words[i].name)) {
-					int startToken = counterTokens;  //shift starts from
-					int numOfTokensForCopy = words[i].numOfTokens; //how mutch
-					printf("start token %d numOf token %d\n", startToken, numOfTokensForCopy);
+					const int endShift = counterTokens+1;
+					const int shiftOfset = words[i].numOfTokens - 2;  //CUZZ OF FIRST IS A NAME
+
+					for(int j = numOfTokens; j >= endShift; j--) {
+						memcpy(&tokens[j + shiftOfset], &tokens[j], sizeof(Token));
+					//	printf("shifting\n");
+						//tokens[i + shiftOfset] = tokens[i];
+						}
+					numOfTokens+=shiftOfset;
+					//	PrintTokens(tokens);
+					//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+					//																											endShift, shiftOfset);
 					//	system("pause");
-					for(int j = numOfTokens; j > startToken; j--) {
-						tokens[j + numOfTokensForCopy] = tokens[j];
-						}
 					int counter = 1;
-					for(int j = startToken; counter < numOfTokensForCopy+1; j++) {
-						tokens[j] = words[i].tokens[counter++];
+					for(int j = endShift - 1; words[i].tokens[counter].value != NULL; j++) {
+						memcpy(&tokens[j], &words[i].tokens[counter], sizeof(Token));
+						counter++;
 						}
-					PrintTokens(tokens);
-					numOfTokens+=numOfTokensForCopy;
-					//numOfTokens--;
-					break;
+						counterTokens--;
+				//	PrintTokens(tokens);
+				//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+				//	       endShift, shiftOfset);
+					//system("pause");
 					}
 				}
 			}
