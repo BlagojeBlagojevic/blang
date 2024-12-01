@@ -45,6 +45,7 @@ typedef struct {
 	} Token;
 
 typedef struct {
+	//TBD malloc alocation
 	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD];
 	int numOfTokens;
 	char *name;
