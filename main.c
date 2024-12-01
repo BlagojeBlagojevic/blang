@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define LOG_VALUE
+
+
+#define LOG_VAL
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
 #include "lex.h"
 #include "parser.h"
 
+
 int main(int argc, char **argv) {
-	
+
+
 	if(argc <= 1) {
 		printf("Usage:  Compile -c <path to program> <path to save>\n\tRun -r <path to saved>\n");
 		return 0 ;
@@ -24,10 +28,13 @@ int main(int argc, char **argv) {
 		printf("\n%s\n\n", code);
 		fclose(f);
 		Bvm vm = initBVM();
-		Token *t = Tokeniser(code);
+		Words *words = malloc(100 * sizeof(Words));
+		Token *t = Tokeniser(code, words);
 		PrintTokens(t);
-		Parser(t, &vm);
-		DestroyTokens(t);
+		Parser(t, words, &vm);
+		//system("pause");
+		//TBD rewrite to a dynamic arrays 
+		//DestroyTokens(t);
 		programToBin(argv[3], vm.instruction, vm.numOfInstructions);
 		//system("pause");
 		return 0;
@@ -40,7 +47,7 @@ int main(int argc, char **argv) {
 		printf("\n---------------------------------\n");
 		//system("pause");
 		return 0;
-		
+
 		}
 
 	}
