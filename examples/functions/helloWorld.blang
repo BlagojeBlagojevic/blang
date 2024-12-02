@@ -1,0 +1,38 @@
+0   ? enstra
+0   ? enstr
+10  ? newline
+33  ? exc2
+33  ? exc1
+33  ? exc
+100 ? d
+105 ? l2
+114 ? r
+111 ? o1
+87  ? W
+32  ? space
+111 ? o
+105 ? l1
+105 ? l
+101 ? e
+72  ? H
+0 ? ps_counter
+word printString 
+	? strSTART
+	0 ? ps_counter
+	while 
+	 strSTART ps_counter + @  
+		charprint
+		0 = if
+			print
+			0 ? ps_counter
+			breakloop
+		end
+		1 ps_counter + ? ps_counter 
+	endloop 
+endword
+& H printString
+& H printString
+& H printString
+
+
+endscript .

@@ -320,6 +320,15 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 
 						}
+					else if(WORD_COMPARE(KEYWORD_PRINTSTACK)) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+						bvm->instruction[counterInstruction].type = PRINTSTACK;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						printf("\n%s, printstack\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+						}
+					
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
@@ -574,7 +583,6 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 					}
 			}
 		}
-
 	bvm->instruction[counterInstruction].type = END;
 	bvm->instruction[counterInstruction].operand._asU64 = 0;
 	bvm->numOfInstructions = (u64)counterTokens;
