@@ -47,6 +47,7 @@ typedef enum {
 	PUSHIP,
 	POP,
 	PRINT,
+	PRINTSTACK,
 	ADD,
 	MUL,
 	DEC,
@@ -90,6 +91,7 @@ static const char* instructionNames[] = {
 	"PUSHIP",
 	"POP",
 	"PRINT",
+	"PRINTSTACK",
 	"ADD",
 	"MUL",
 	"DEC",
@@ -294,14 +296,24 @@ static inline void executeInstruction(Bvm *bvm) {
 					LOG("%f\n\n", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
 				else if(c._asU64 == ch) {
-					//LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
-					write(2, &bvm->stack.stack[bvm->stack.SP - 1]._asU64, 1);
+					LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					//write(2, &bvm->stack.stack[bvm->stack.SP - 1]._asU64, 1);
 					}
 
 				//system("pause");
 				bvm->IP++;
 				break;
 				}
+		case PRINTSTACK:{
+				LOG("\n-----------------------------------\n");
+				LOG("Stack : \n");
+			for(int i = bvm->stack.SP-1; i >= 0 ; i--){
+				LOG("%u\n", bvm->stack.stack[i]);
+			}
+			LOG("\n-----------------------------------\n");
+			bvm->IP++;
+			break;
+		}
 		case MUL: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
