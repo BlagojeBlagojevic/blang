@@ -8,7 +8,7 @@
 
 #define MAX_TOKENS 5000
 #define MAX_LENGHT  20
-#define MAX_NUM_OF_TOKENS_IN_A_WORD 30
+#define MAX_NUM_OF_TOKENS_IN_A_WORD 100
 
 typedef enum TokenType_t {
 	TYPE_CONST = 0,
@@ -44,6 +44,11 @@ typedef struct {
 	uint8_t valType;
 	} Token;
 
+//DYNAMIC ARRAY FOR A TOKENS name dArr_Token
+
+
+
+
 typedef struct {
 	//TBD malloc alocation
 	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD];
@@ -54,6 +59,7 @@ typedef struct {
 static int numOfUserDefiendWords = 0;
 
 
+//DYNAIC ARRAY FOR A WORD name dArr_Words
 
 Token* Tokeniser(char* input, Words *words);
 void DestroyTokens(Token* tokens);
