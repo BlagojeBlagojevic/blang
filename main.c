@@ -11,7 +11,7 @@
 
 #define MAX_SIZE 1000000
 #define MAX_NUM_OF_WORDS 1000
-//cd \Desktop\ev\image_reconstruction\lengSomting\blang-main>
+
 
 int main(int argc, char **argv) {
 
