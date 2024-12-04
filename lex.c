@@ -147,6 +147,28 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			*counterTokens = *counterTokens+1;
 			//system("pause");
 			}
+		else if (isValidString(subStr)) {
+			int counter = strlen(subStr) - 2;
+			while(subStr[counter] != '"') {
+				tokens[*counterTokens].value  = malloc(2 * sizeof(char));
+				tokens[*counterTokens].value[0] = subStr[counter];
+				tokens[*counterTokens].value[1] = '\0';
+				tokens[*counterTokens].type = TYPE_CONST;
+				tokens[*counterTokens].valType = CH;
+				*counterTokens = *counterTokens+1;
+				counter--;
+				}
+			//TBD Maybe implement that we add a termainating string
+			//tokens[*counterTokens].value  = malloc(2 * sizeof(char));
+			//tokens[*counterTokens].value[0] = '0';
+			//tokens[*counterTokens].value[1] = '\0';
+			//tokens[*counterTokens].type = TYPE_CONST;
+			//tokens[*counterTokens].valType = CH;
+			//*counterTokens = *counterTokens+1;
+#ifdef LOG_VAL
+			printf("Token: String, Value: %s\n", subStr);
+#endif
+			}
 
 
 		else if (isValidVar(subStr) && !isEndChar(input[*right - 1])) {
@@ -201,13 +223,13 @@ Token* Tokeniser(char* input, Words *words) {
 					//printf("Name %s\n", words[numOfUserDefiendWords].name);
 					right++;
 					}
-					words[numOfUserDefiendWords].name[count++] = '\0';
+				words[numOfUserDefiendWords].name[count++] = '\0';
 				//left = right;
 				//left = right-1;
 				printf("Word %s\n", words[numOfUserDefiendWords].name);
 				//system("pause");
 				isWordTokens = 1;
-				
+
 				}
 			else if(ret == END_WORD_TOKEN) {
 				ERROR("End word token\n");
@@ -251,7 +273,7 @@ void PrintTokens(Token *tokens) {
 		//system("pause");
 		counter++;
 		}
-	
+
 	printf("Num of tokens %d\n", counter - 1);
 	printf("\n_________________________\n");
 	}
