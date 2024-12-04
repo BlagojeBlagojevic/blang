@@ -13,7 +13,7 @@ Blang is a [Concatenative](https://en.wikipedia.org/wiki/Concatenative_programmi
 - [x] Loops 
 - [x] [Turing-complete](./examples/celluarautomata/rule110.blang)
 - [x] Crossplatform
-- [ ] Strings support
+- [X] Strings support
 - [x] Functions
 - [ ] Self hosted
 - [ ] Statically typed
@@ -25,38 +25,15 @@ Blang is a [Concatenative](https://en.wikipedia.org/wiki/Concatenative_programmi
 
 Hello, World:
 
-```blang
-10  ? newline
-33  ? exc2
-33  ? exc1
-33  ? exc
-100 ? d
-105 ? l2
-114 ? r
-111 ? o1
-87  ? W
-32  ? space
-111 ? o
-105 ? l1
-105 ? l
-101 ? e
-72  ? H
-0 ? counter
-while
-	& H counter + @
-	charprint
-	1 counter + ? counter
-	counter 14 = if
-		breakloop
-	end
-endloop
+```forth
+0 "HelloWorld" printstring
 
-endscript .
+endscript . 
 ```
 
 Simple program that prints all upper letters:
 
-```blang
+```forth
 65 ? a
 while
 	a charprint 
@@ -101,7 +78,7 @@ Currently an integer is a sequence of decimal digits. When an integer is encount
 
 Example:
 
-```blang
+```forth
 10 20 +
 ```
 
@@ -111,10 +88,11 @@ The code above pushes 10 and 20 onto the data stack and sums them up with `+` op
 TBD
 #### Character
 
-Currently a character is a only used as a var on heap 
+Currently a character is a only used as a var on heap. For printing of a char ther is a function called charprint.
+Also for working of a strings ther is a function called printstring. You are obliged to provide end token that is 0.
 Example:
 
-```blang
+```forth
   35 ? taraba 
   32 ? space 
   10 ? newLine
@@ -201,7 +179,7 @@ end
 
 Example: 
 
-```blang
+```forth
 0 10 
 = dup
 if
@@ -243,13 +221,25 @@ while
 endloop
 ```
 
-### Procedures
-TBD
+### Procedures and functions
+
+Keyword word declare a procedure or function. We coude pass values thru stack so for example we push them on stack and then do with a stack.
+Also we coude provide a value thru heap.
+```forth
+word printString 
+	while
+		dup @ charprint 
+		0 = if
+			breakloop
+		end
+		1 + 
+	endloop
+	drop
+endword
 
 
-#### Inline Procedures
-
-TBD
+& H printString
+```
 
 #### Procedure Pointers
 
@@ -257,21 +247,23 @@ TBD
 
 ### Constants
 
-TBD
+Const is declared like this:
+
+```forth
+word pi 3.1415 endword
+
+```
+
 
 ### Memory
 
-TBD
+There is a heap witch is build on top of the stack.  
+Vars are global for entire duration of a program.
 
-#### Global Memory
-
-TBD
 
 ### Type Checking
 
-TBD
+There are 4 types: int64 , float64 , uint64, ch (basicly uint64 just used in strings).
+Type is inferd for math operation based on a last element on a stack. 
+For example if we have 10 10.2 on stack and we do + + operation will use float type be send as a operand.
 
-
-#### Types of blang 
-
-TBD

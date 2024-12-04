@@ -212,6 +212,16 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						stackSize++;
 						break;
 						}
+					else if (tokens[counterTokens].valType == CH) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value);
+						bvm->instruction[counterInstruction].type = PUSH;
+						bvm->instruction[counterInstruction].operand._asI64 = (i64)tokens[counterTokens].value[0];
+						printf("\nconst %d, push\n", tokens[counterTokens].value[0]);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						break;
+						}
 					else {
 						int valueNum = ValueToNum(tokens[counterTokens].value);
 						bvm->instruction[counterInstruction].type = PUSH;
@@ -308,7 +318,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						printf("\n%s, print\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
-
+						stackSize--;
 						}
 
 					else if(WORD_COMPARE(KEYWORD_PRINTFLOAT)) {
@@ -328,6 +338,16 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+					
+					else if(WORD_COMPARE(KEYWORD_PRINTSTRING)) {
+						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+						bvm->instruction[counterInstruction].type = PRINTSTRING;
+						bvm->instruction[counterInstruction].operand._asI64 = 456654;
+						printf("\n%s, printstring\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+						}
+					
 					
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
 						//stackSize++;
@@ -424,7 +444,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 					else if(WORD_COMPARE(KEYWORD_DROP)) {
 						//stackSize--;
 						bvm->instruction[counterInstruction].type = POP;
-						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						bvm->instruction[counterInstruction].operand._asI64 = U;
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
