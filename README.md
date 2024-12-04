@@ -265,5 +265,5 @@ Vars are global for entire duration of a program.
 
 There are 4 types: int64 , float64 , uint64, ch (basicly uint64 just used in strings).
 Type is inferd for math operation based on a last element on a stack. 
-For example if we have 10 10.2 on stack and we do + + operation will use float type be send as a operand
+For example if we have 10 10.2 on stack and we do + + operation will use float type be send as a operand.
 
