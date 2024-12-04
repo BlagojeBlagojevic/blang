@@ -48,6 +48,7 @@ typedef enum {
 	POP,
 	PRINT,
 	PRINTSTACK,
+	PRINTSTRING,
 	ADD,
 	MUL,
 	DEC,
@@ -92,6 +93,7 @@ static const char* instructionNames[] = {
 	"POP",
 	"PRINT",
 	"PRINTSTACK",
+	"PRINTSTRING",
 	"ADD",
 	"MUL",
 	"DEC",
@@ -238,7 +240,7 @@ static inline Bvm initBVM(void) {
 
 static inline void executeInstruction(Bvm *bvm) {
 
-	Word a, b, c;
+	static Word a, b, c;
 #ifdef LOG_STACK
 	printf("\n- %s\n", instructionNames[bvm->instruction[bvm->IP].type]);
 #endif
@@ -296,7 +298,9 @@ static inline void executeInstruction(Bvm *bvm) {
 					LOG("%f\n\n", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
 				else if(c._asU64 == ch) {
-					LOG("%c", (char)bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					a = stackPop(&bvm->stack);
+					LOG("%c", (char)a._asU64);
+
 					//write(2, &bvm->stack.stack[bvm->stack.SP - 1]._asU64, 1);
 					}
 
@@ -304,16 +308,26 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		case PRINTSTACK:{
+
+		case PRINTSTACK: {
 				LOG("\n-----------------------------------\n");
 				LOG("Stack : \n");
-			for(int i = bvm->stack.SP-1; i >= 0 ; i--){
-				LOG("%u\n", bvm->stack.stack[i]);
-			}
-			LOG("\n-----------------------------------\n");
-			bvm->IP++;
-			break;
-		}
+				for(int i = bvm->stack.SP-1; i >= 0 ; i--) {
+					LOG("%u\n", bvm->stack.stack[i]);
+					}
+				LOG("\n-----------------------------------\n");
+				bvm->IP++;
+				break;
+				}
+
+		case PRINTSTRING: {
+				for(int i = bvm->stack.SP-1;bvm->stack.stack[i]._asU64 != 0 || i>0 ; i--) {
+					LOG("%c", bvm->stack.stack[i]);
+					}
+				bvm->IP++;
+				break;
+				}
+
 		case MUL: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
@@ -545,7 +559,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		
+
 		case SETSPSTACK: {
 				a = stackPop(&bvm->stack);
 				if(a._asU64 >= STACK_CAPACITIY) {
