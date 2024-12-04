@@ -2,14 +2,16 @@
 #define UTILS_STRINGS
 #include<string.h>
 
-enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT,
+
+
+enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_PRINTSTRING,
       KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END,
       KEYWORD_ELSE, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
       KEYWORD_INC,  KEYWORD_POP
      };
-static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstack",
+static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstring", "printstack", 
                                   "if", "end", "else",
                                   "dup", "?", "drop", "setsp", "over","rot", "while","endloop","breakloop",
                                   "&", "arr", "??", "@","shr","shl","or","and","bnot",
@@ -120,6 +122,20 @@ static int ValueToNum(char *str) {
 	//printf("Num is %d", (int)num);
 	return (int)num;
 	}
+
+static int isValidString(char *str){
+	if(str[0] != '"')
+		return 0;
+	int counter = 1;
+	while(str[counter] != '\0'){
+		if(str[counter] == '"' && str[counter + 1] == '\0')
+		return 1;
+		counter++;
+	}
+	return 0;
+	
+	
+}
 
 
 #endif
