@@ -31,7 +31,4 @@ word memchr
 endword
 
 
-10 20 30 40 50 60 + & str0 1 10 memchr printstack halt
-1 + @ printstack halt
-
 endscript . 
