@@ -9,8 +9,8 @@
 #define LOG_STACK
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
-#define MAX_VARS 500
-#define MAX_VARS_NAME 100
+#define MAX_VARS 5000
+#define MAX_VARS_NAME 20
 
 typedef struct {
 	int adress[MAX_VARS];
