@@ -41,11 +41,11 @@ typedef union {
 	} Word;
 
 typedef enum {
-
+	POP,
 	PUSH,
 	PUSHF,
 	PUSHIP,
-	POP,
+	PUSHSP,
 	PRINT,
 	PRINTSTACK,
 	PRINTSTRING,
@@ -63,6 +63,7 @@ typedef enum {
 	DUP,
 	OVER,
 	ROT,
+	SWAP_NO,
 	IF,
 	JMP,
 	JMPT,
@@ -87,10 +88,11 @@ typedef enum {
 
 static const char* instructionNames[] = {
 
+	"POP",
 	"PUSH",
 	"PUSHF",
 	"PUSHIP",
-	"POP",
+	"PUSHSP",
 	"PRINT",
 	"PRINTSTACK",
 	"PRINTSTRING",
@@ -108,6 +110,7 @@ static const char* instructionNames[] = {
 	"DUP",
 	"OVER",
 	"ROT",
+	"SWAP_NO",
 	"IF",
 	"JMP",
 	"JMPT",
@@ -135,7 +138,7 @@ typedef struct {
 	} Instruction;
 
 
-#define STACK_CAPACITIY     1024
+#define STACK_CAPACITIY     10024
 #define MAX_SIZE_OF_PROGRAM 10024
 #define MAX_LINE 100
 typedef struct {
@@ -247,6 +250,12 @@ static inline void executeInstruction(Bvm *bvm) {
 	//system("pause");
 	switch(bvm->instruction[bvm->IP].type) {
 
+		case POP: {
+				a = stackPop(&bvm->stack);
+				bvm->IP++;
+				break;
+				}
+		
 		case PUSH: {
 				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
 				bvm->IP++;
@@ -265,12 +274,12 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
-
-		case POP: {
-				a = stackPop(&bvm->stack);
-				bvm->IP++;
-				break;
-				}
+		case PUSHSP:{
+			stackPush(&bvm->stack, (i64)bvm->stack.SP);
+			bvm->IP++;
+			break;
+		}
+		
 		case ADD: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
@@ -321,7 +330,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 		case PRINTSTRING: {
-				for(int i = bvm->stack.SP-1;bvm->stack.stack[i]._asU64 != 0 || i>0 ; i--) {
+				for(int i = bvm->stack.SP-1;bvm->stack.stack[i]._asU64 != 0 && i>0 ; i--) {
 					LOG("%c", bvm->stack.stack[i]);
 					}
 				bvm->IP++;
@@ -465,6 +474,16 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+		
+		case SWAP_NO:{
+			a = stackPop(&bvm->stack);
+			b = stackPop(&bvm->stack);
+			stackPushWord(&bvm->stack, a);
+			stackPushWord(&bvm->stack, b);
+			bvm->IP++;
+			break;
+		}
+		
 		case IF: {
 
 				a = stackPop(&bvm->stack);
@@ -613,6 +632,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+		
 		case MEM: {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
