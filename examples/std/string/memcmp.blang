@@ -1,0 +1,44 @@
+0
+arr str 40
+1 ? str6
+drop
+56 ? str7
+drop
+arr strr 40
+1 ? strr6
+drop
+56 ? strr7
+drop
+
+
+word memcmp
+	? memcmpSize 
+	drop
+	? memcmpStr1
+	drop
+	? memcmpStr2
+	drop
+	while
+		 memcmpStr2 @ memcmpStr1 @ - dup
+		 0 = ! if
+			0 -
+			? memcmpStr1
+			breakloop
+		end
+	memcmpStr1 1 + ? memcmpStr1
+	memcmpStr2 1 + ? memcmpStr2
+	memcmpSize -1 + ? memcmpSize
+	-1 = if
+		0 ? memcmpStr1
+		drop 
+		breakloop
+	end 
+	endloop
+	memcmpStr1
+endword
+
+
+printstack halt & str0 & strr0 39 memcmp print halt
+
+
+endscript . 

@@ -1,0 +1,57 @@
+0
+
+word memchr
+	-1 +
+	? memchrNum
+	drop
+	? memchrValue
+	drop
+	? memchrPtr
+	drop
+	while
+		memchrPtr memchrNum + @
+		memchrValue = if
+			memchrPtr memchrNum + ? memchrPtr
+			breakloop
+		end
+	1 memchrNum - ?	memchrNum
+	0 = if
+		0 ? memchrPtr
+		breakloop
+	end
+	endloop
+	memchrPtr -1 +
+	rot  
+	drop 
+	drop
+endword
+
+word memcmp
+	? memcmpSize 
+	drop
+	? memcmpStr1
+	drop
+	? memcmpStr2
+	drop
+	while
+		 memcmpStr2 @ memcmpStr1 @ - dup
+		 0 = ! if
+			0 -
+			? memcmpStr1
+			breakloop
+		end
+	memcmpStr1 1 + ? memcmpStr1
+	memcmpStr2 1 + ? memcmpStr2
+	memcmpSize -1 + ? memcmpSize
+	-1 = if
+		0 ? memcmpStr1
+		drop 
+		breakloop
+	end 
+	endloop
+	memcmpStr1
+endword
+
+
+
+endscript . 
