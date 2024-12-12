@@ -1,0 +1,37 @@
+0
+arr str 13
+1 ? str6
+drop 
+56 ? str7
+drop
+word memchr
+	-1 +
+	? memchrNum
+	drop
+	? memchrValue
+	drop
+	? memchrPtr
+	drop
+	while
+		memchrPtr memchrNum + @
+		memchrValue = if
+			memchrPtr memchrNum + ? memchrPtr
+			breakloop
+		end
+	1 memchrNum - ?	memchrNum
+	0 = if
+		0 ? memchrPtr
+		breakloop
+	end
+	endloop
+	memchrPtr -1 +
+	rot  
+	drop 
+	drop
+endword
+
+
+10 20 30 40 50 60 + & str0 1 10 memchr printstack halt
+1 + @ printstack halt
+
+endscript . 
