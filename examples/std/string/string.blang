@@ -1,9 +1,5 @@
 0
-arr str 13
-1 ? str6
-drop 
-56 ? str7
-drop
+
 word memchr
 	-1 +
 	? memchrNum
@@ -29,6 +25,33 @@ word memchr
 	drop 
 	drop
 endword
+
+word memcmp
+	? memcmpSize 
+	drop
+	? memcmpStr1
+	drop
+	? memcmpStr2
+	drop
+	while
+		 memcmpStr2 @ memcmpStr1 @ - dup
+		 0 = ! if
+			0 -
+			? memcmpStr1
+			breakloop
+		end
+	memcmpStr1 1 + ? memcmpStr1
+	memcmpStr2 1 + ? memcmpStr2
+	memcmpSize -1 + ? memcmpSize
+	-1 = if
+		0 ? memcmpStr1
+		drop 
+		breakloop
+	end 
+	endloop
+	memcmpStr1
+endword
+
 
 
 endscript . 
