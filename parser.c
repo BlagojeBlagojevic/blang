@@ -358,6 +358,17 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize++;
 						}
+					
+					else if (WORD_COMPARE(KEYWORD_PUSHSPMEM)) {
+						//stackSize++;
+						bvm->instruction[counterInstruction].type = PUSHSP;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						printf("\n%s, SP push\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						}
+
 
 					else if(WORD_COMPARE(KEYWORD_IF)) {
 						//stackSize-=2;
@@ -402,6 +413,13 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 
 					else if(WORD_COMPARE(KEYWORD_END)) {
 						bvm->instruction[counterInstruction].type = NOP;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
+						counterTokens++;
+						counterInstruction++;
+						}
+					
+					else if(WORD_COMPARE(KEYWORD_HALT)) {
+						bvm->instruction[counterInstruction].type = HALT;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
@@ -463,7 +481,12 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						}
 
-
+					else if(WORD_COMPARE(KEYWORD_SWAP)) {
+						bvm->instruction[counterInstruction].type = SWAP_NO;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						counterTokens++;
+						counterInstruction++;
+						}
 
 					else if(WORD_COMPARE(KEYWORD_ENDLOOP)) {
 						bvm->instruction[counterInstruction].type = JMP;
@@ -545,7 +568,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						}
 					else if(WORD_COMPARE(KEYWORD_SETSP)) {
 						bvm->instruction[counterInstruction].type = SETSPSTACK;
-						bvm->instruction[counterInstruction].operand._asI64 = 1234;
+						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
 						printf("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
