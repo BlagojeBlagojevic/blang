@@ -76,6 +76,27 @@ endword
 
 word memmove memcpy endword
 
+word memset 
+	? memsetSize
+	drop
+	? memsetSrc
+	drop
+	? memsetDest
+	drop
+	while
+		
+		memsetSrc memsetDest ??		
+		memsetDest 1 + ? memsetDest
+		memsetSize 0 = if
+			breakloop
+		end
+		memsetSize -1 + ? memsetSize
+	
+	endloop
+endword
+
+
+
 
 
 endscript . 
