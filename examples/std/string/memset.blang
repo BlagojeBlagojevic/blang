@@ -1,30 +1,16 @@
 0
-
-word memchr
-	-1 +
-	? memchrNum
-	drop
-	? memchrValue
-	drop
-	? memchrPtr
-	drop
-	while
-		memchrPtr memchrNum + @
-		memchrValue = if
-			memchrPtr memchrNum + ? memchrPtr
-			breakloop
-		end
-	1 memchrNum - ?	memchrNum
-	0 = if
-		0 ? memchrPtr
-		breakloop
-	end
-	endloop
-	memchrPtr -1 +
-	rot  
-	drop 
-	drop
-endword
+arr str 40
+1 ? str6
+drop
+56 ? str7
+drop
+arr strr 40
+1 ? strr6
+drop
+1 ? strr0
+56 ? strr7
+drop
+arr toCopyInto 50 
 
 word memcmp
 	? memcmpSize 
@@ -63,13 +49,16 @@ word memcpy
 	while
 	
 		memcpySrc @ memcpyDest ??
-		memcpySrc 1 + ? memcpySrc 
+		memcpySrc 1 + ? memcpySrc
+		drop 
 		memcpyDest 1 + ? memcpyDest
+		drop
 		memcpySize 0 = if
+			drop
 			breakloop
 		end
 		memcpySize -1 + ? memcpySize
-		
+		drop
 	endloop
 	
 endword
@@ -97,6 +86,8 @@ endword
 
 
 
-
-
+printstack halt & toCopyInto0 123 10 memset 
+ 0 0 0 0 0 0 0 0 0 0 0 0  
+10 & toCopyInto0 SP -12 + memcpy 
+printstack halt
 endscript . 
