@@ -52,6 +52,30 @@ word memcmp
 	memcmpStr1
 endword
 
+word memcpy
+	
+	? memcpySize
+	drop
+	? memcpySrc
+	drop
+	? memcpyDest
+	drop
+	while
+	
+		memcpySrc @ memcpyDest ??
+		memcpySrc 1 + ? memcpySrc 
+		memcpyDest 1 + ? memcpyDest
+		memcpySize 0 = if
+			breakloop
+		end
+		memcpySize -1 + ? memcpySize
+		
+	endloop
+	
+endword
+
+word memmove memcpy endword
+
 
 
 endscript . 
