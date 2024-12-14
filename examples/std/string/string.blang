@@ -95,7 +95,7 @@ word memset
 	endloop
 endword
 
-
+word strcnmp memcmp endoword
 
 
 
