@@ -99,7 +99,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 
 					for(int j = numOfTokens; j >= endShift; j--) {
 						memcpy(&tokens[j + shiftOfset], &tokens[j], sizeof(Token));
-					//	printf("shifting\n");
+						//	printf("shifting\n");
 						//tokens[i + shiftOfset] = tokens[i];
 						}
 					numOfTokens+=shiftOfset;
@@ -112,10 +112,10 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						memcpy(&tokens[j], &words[i].tokens[counter], sizeof(Token));
 						counter++;
 						}
-						counterTokens--;
-				//	PrintTokens(tokens);
-				//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
-				//	       endShift, shiftOfset);
+					counterTokens--;
+					//	PrintTokens(tokens);
+					//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+					//	       endShift, shiftOfset);
 					//system("pause");
 					}
 				}
@@ -338,7 +338,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-					
+
 					else if(WORD_COMPARE(KEYWORD_PRINTSTRING)) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINTSTRING;
@@ -347,8 +347,8 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-					
-					
+
+
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
@@ -358,7 +358,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize++;
 						}
-					
+
 					else if (WORD_COMPARE(KEYWORD_PUSHSPMEM)) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = PUSHSP;
@@ -410,6 +410,14 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+					
+					else if(WORD_COMPARE(KEYWORD_SET)) {
+						bvm->instruction[counterInstruction].type = SETSPSTACK;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
 
 					else if(WORD_COMPARE(KEYWORD_END)) {
 						bvm->instruction[counterInstruction].type = NOP;
@@ -417,7 +425,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-					
+
 					else if(WORD_COMPARE(KEYWORD_HALT)) {
 						bvm->instruction[counterInstruction].type = HALT;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
