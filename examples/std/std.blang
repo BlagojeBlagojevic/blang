@@ -54,7 +54,7 @@ word memcmp
 endword
 
 word memcpy
-	
+	-1 +
 	? memcpySize
 	drop
 	? memcpySrc
