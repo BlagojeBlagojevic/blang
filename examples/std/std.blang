@@ -1,5 +1,4 @@
 
-0
 
 word memchr
 	-1 +
@@ -96,8 +95,6 @@ word memset
 	endloop
 endword
 
-word strcnmp memcmp endoword
-
-
-
-endscript . 
+word strcnmp 
+	memcmp 
+endword
