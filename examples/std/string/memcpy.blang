@@ -20,8 +20,9 @@ word memcpy
 	drop
 	? memcpyDest
 	drop
+	SP ? memcpySP
+	drop
 	while
-	
 		memcpySrc @ memcpyDest ??
 		memcpySrc 1 + ? memcpySrc 
 		memcpyDest 1 + ? memcpyDest
@@ -29,9 +30,8 @@ word memcpy
 			breakloop
 		end
 		memcpySize -1 + ? memcpySize
-		
 	endloop
-	
+	memcpySP SET	
 endword
 
 word memmove memcpy endword

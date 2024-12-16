@@ -18,6 +18,8 @@ word memcmp
 	drop
 	? memcmpStr2
 	drop
+	SP ? memcmpSP
+	drop
 	while
 		 memcmpStr2 @ memcmpStr1 @ - dup
 		 0 = ! if
@@ -34,11 +36,12 @@ word memcmp
 		breakloop
 	end 
 	endloop
+	memcmpSP SET
 	memcmpStr1
 endword
 
 
-printstack halt & str0 & strr0 39 memcmp print halt
+printstack halt & str0 & strr0 39 printstack memcmp printstack halt
 
 
 endscript . 

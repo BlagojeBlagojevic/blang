@@ -1,14 +1,10 @@
-
 0
 
 word memchr
 	-1 +
 	? memchrNum
-	drop
 	? memchrValue
-	drop
 	? memchrPtr
-	drop
 	while
 		memchrPtr memchrNum + @
 		memchrValue = if
@@ -28,13 +24,17 @@ word memchr
 endword
 
 word memcmp
-	? memcmpSize 
-	drop
+	
+	? memcmpSize
+	drop 
 	? memcmpStr1
 	drop
 	? memcmpStr2
 	drop
+	SP ? memcmpSP
+	drop
 	while
+		
 		 memcmpStr2 @ memcmpStr1 @ - dup
 		 0 = ! if
 			0 -
@@ -46,20 +46,22 @@ word memcmp
 	memcmpSize -1 + ? memcmpSize
 	-1 = if
 		0 ? memcmpStr1
-		drop 
 		breakloop
 	end 
 	endloop
+	memcmpSP SET
 	memcmpStr1
 endword
 
 word memcpy
-	
+	-1 +
 	? memcpySize
 	drop
 	? memcpySrc
 	drop
 	? memcpyDest
+	drop
+	SP ? memcpySP
 	drop
 	while
 	
@@ -72,7 +74,7 @@ word memcpy
 		memcpySize -1 + ? memcpySize
 		
 	endloop
-	
+	memcpySP SET
 endword
 
 word memmove memcpy endword
@@ -84,6 +86,8 @@ word memset
 	drop
 	? memsetDest
 	drop
+	SP ? memsetSP
+	drop
 	while
 		
 		memsetSrc memsetDest ??		
@@ -92,12 +96,12 @@ word memset
 			breakloop
 		end
 		memsetSize -1 + ? memsetSize
-	
 	endloop
+	memsetSP SET
 endword
 
-word strcnmp memcmp endoword
-
-
+word strcnmp 
+	memcmp 
+endword
 
 endscript . 
