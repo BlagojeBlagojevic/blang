@@ -583,6 +583,18 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize--;
 						}
+					//SYSCALLS posix
+					else if(WORD_COMPARE(KEYWORD_WRITE)) {
+						bvm->instruction[counterInstruction].type = WRITE;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nwrite = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize-=2;
+						}
+					
+
 					else {
 						//counterInstruction++;
 						counterTokens++;
