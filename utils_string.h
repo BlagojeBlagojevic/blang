@@ -14,7 +14,7 @@ enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEY
 static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstring", "printstack", 
                                   "if", "end", "else", "SP", "SET",
                                   "dup", "?", "drop", "setsp", "over","rot","swap", 
-																	"while","endloop","breakloop",
+                                  "while","endloop","breakloop",
                                   "&", "arr", "??", "@","shr","shl","or","and","bnot",
                                   "inc", "halt", "write", "pop", 
                                 };
