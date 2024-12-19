@@ -15,6 +15,8 @@
 #define TRUE  1
 #define FALSE 0
 
+
+
 //#define LOG_STACK
 enum {i = 0, f, u, ch};
 
@@ -79,8 +81,10 @@ typedef enum {
 	NOP,
 	HALT,
 	INC,
+	WRITE,
 	NEWLINE,
 	LABEL,
+	FFI,
 	END,
 
 
@@ -126,8 +130,10 @@ static const char* instructionNames[] = {
 	"NOP",
 	"HALT",
 	"INC",
+	"WRITE",
 	"\n",
 	"LABEL",
+	"FFI",
 	"END",
 	};
 
@@ -243,7 +249,7 @@ static inline Bvm initBVM(void) {
 
 static inline void executeInstruction(Bvm *bvm) {
 
-	static Word a, b, c;
+	Word a, b, c;
 #ifdef LOG_STACK
 	printf("\n- %s\n", instructionNames[bvm->instruction[bvm->IP].type]);
 #endif
@@ -255,7 +261,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		
+
 		case PUSH: {
 				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
 				bvm->IP++;
@@ -274,12 +280,12 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
-		case PUSHSP:{
-			stackPush(&bvm->stack, (i64)bvm->stack.SP);
-			bvm->IP++;
-			break;
-		}
-		
+		case PUSHSP: {
+				stackPush(&bvm->stack, (i64)bvm->stack.SP);
+				bvm->IP++;
+				break;
+				}
+
 		case ADD: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
@@ -330,7 +336,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 		case PRINTSTRING: {
-				for(int i = bvm->stack.SP-1;bvm->stack.stack[i]._asU64 != 0 && i>0 ; i--) {
+				for(int i = bvm->stack.SP-1; bvm->stack.stack[i]._asU64 != 0 && i>0 ; i--) {
 					LOG("%c", bvm->stack.stack[i]);
 					}
 				bvm->IP++;
@@ -474,16 +480,16 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		
-		case SWAP_NO:{
-			a = stackPop(&bvm->stack);
-			b = stackPop(&bvm->stack);
-			stackPushWord(&bvm->stack, a);
-			stackPushWord(&bvm->stack, b);
-			bvm->IP++;
-			break;
-		}
-		
+
+		case SWAP_NO: {
+				a = stackPop(&bvm->stack);
+				b = stackPop(&bvm->stack);
+				stackPushWord(&bvm->stack, a);
+				stackPushWord(&bvm->stack, b);
+				bvm->IP++;
+				break;
+				}
+
 		case IF: {
 
 				a = stackPop(&bvm->stack);
@@ -632,7 +638,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		
+
 		case MEM: {
 				a = stackPop(&bvm->stack);
 				b = bvm->instruction[bvm->IP].operand;
@@ -671,6 +677,26 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+
+	//SYSCALL
+		case WRITE:{
+			a = stackPop(&bvm->stack);//size
+			b = stackPop(&bvm->stack);//data
+			c = stackPop(&bvm->stack);//fd
+			//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
+			u8 bytes[a._asI64];
+			int counter = 0;
+			
+			//TBD Order of a strings when pushed on stack
+			for(int i = a._asI64; i >=0 ; i--){
+				bytes[counter++] = (u8)((bvm->stack.stack[b._asI64+i])._asU64); 
+			} 
+			//printf("str: %s\n", bytes);
+			const i64 temp = write((int)c._asI64, bytes, (u32)a._asU64); 
+			stackPush(&bvm->stack, temp);
+			bvm->IP++;
+			break;
+		}
 
 		case END: {
 				bvm->isRuning = FALSE;
@@ -813,4 +839,5 @@ static inline void binToProgram(const char* name, Instruction *instruction) {
 	}
 
 #endif
+
 #endif
