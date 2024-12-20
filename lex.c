@@ -148,7 +148,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			//system("pause");
 			}
 		else if (isValidString(subStr)) {
-			int counter = strlen(subStr) - 2;
+			int counter = 1;
 			while(subStr[counter] != '"') {
 				tokens[*counterTokens].value  = malloc(2 * sizeof(char));
 				tokens[*counterTokens].value[0] = subStr[counter];
@@ -156,7 +156,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				tokens[*counterTokens].type = TYPE_CONST;
 				tokens[*counterTokens].valType = CH;
 				*counterTokens = *counterTokens+1;
-				counter--;
+				counter++;
 				}
 			//TBD Maybe implement that we add a termainating string
 			//tokens[*counterTokens].value  = malloc(2 * sizeof(char));
@@ -167,6 +167,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			//*counterTokens = *counterTokens+1;
 #ifdef LOG_VAL
 			printf("Token: String, Value: %s\n", subStr);
+
 #endif
 			}
 
