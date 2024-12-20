@@ -410,7 +410,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-					
+
 					else if(WORD_COMPARE(KEYWORD_SET)) {
 						bvm->instruction[counterInstruction].type = SETSPSTACK;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
@@ -593,7 +593,51 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize-=2;
 						}
-					
+					else if(WORD_COMPARE(KEYWORD_CLOSE)) {
+						bvm->instruction[counterInstruction].type = CLOSE;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nclose = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						}
+
+					else if(WORD_COMPARE(KEYWORD_DUPF)) {
+						bvm->instruction[counterInstruction].type = DUPF;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\ndupFd = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						}
+
+					else if(WORD_COMPARE(KEYWORD_DUP2)) {
+						bvm->instruction[counterInstruction].type = DUPF;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\ndupFd2 = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_EXIT)) {
+						bvm->instruction[counterInstruction].type = EXIT;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nexit = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					else if(WORD_COMPARE(KEYWORD_TRUNC)) {
+						bvm->instruction[counterInstruction].type = TRUNCATE;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\ntrunc = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
 
 					else {
 						//counterInstruction++;
