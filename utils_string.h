@@ -9,14 +9,16 @@ enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEY
 			KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
-      KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE,  KEYWORD_POP
+      KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
+			KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_POP
      };
 static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstring", "printstack", 
                                   "if", "end", "else", "SP", "SET",
                                   "dup", "?", "drop", "setsp", "over","rot","swap", 
                                   "while","endloop","breakloop",
                                   "&", "arr", "??", "@","shr","shl","or","and","bnot",
-                                  "inc", "halt", "write", "pop", 
+                                  "inc", "halt", "write", "close", "dupF", "dup2",
+																	"exit", "truncate", "pop", 
                                 };
 static const char* endScriptToken = "endscript";
 enum {LOGIC_G, LOGIC_L, LOGIC_E, LOGIC_I};
