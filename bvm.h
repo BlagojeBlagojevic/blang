@@ -5,7 +5,8 @@
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
-
+#include<signal.h>
+#include<stddef.h>
 #define LOG(...)         fprintf(stdout, __VA_ARGS__)
 #define LOGSTACK()        LOG("Value %d\n", (i16)vm.stack[SP].asI64);
 #define ERROR_BREAK(...) {fprintf(stdout, __VA_ARGS__); exit(-1);}
@@ -14,6 +15,7 @@
 #define DEBUG 1
 #define TRUE  1
 #define FALSE 0
+
 
 
 
@@ -82,6 +84,11 @@ typedef enum {
 	HALT,
 	INC,
 	WRITE,
+	CLOSE,
+	DUPF,
+	DUP2,
+	EXIT,
+	TRUNCATE,
 	NEWLINE,
 	LABEL,
 	FFI,
@@ -131,6 +138,11 @@ static const char* instructionNames[] = {
 	"HALT",
 	"INC",
 	"WRITE",
+	"CLOSE",
+	"DUPF",
+	"DUP2",
+	"EXIT",
+	"TRUNCATE",
 	"\n",
 	"LABEL",
 	"FFI",
@@ -336,7 +348,12 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 		case PRINTSTRING: {
-				for(int i = bvm->stack.SP-1; bvm->stack.stack[i]._asU64 != 0 && i>0 ; i--) {
+				int counter = 0;
+				for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--){
+					//printf("counter %d\n", counter);
+				}
+				//
+				for(int i = counter; i < bvm->stack.SP; i++) {
 					LOG("%c", bvm->stack.stack[i]);
 					}
 				bvm->IP++;
@@ -685,11 +702,12 @@ static inline void executeInstruction(Bvm *bvm) {
 			c = stackPop(&bvm->stack);//fd
 			//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
 			u8 bytes[a._asI64];
+			memset(bytes, 0, sizeof(u8)*a._asI64);
 			int counter = 0;
 			
 			//TBD Order of a strings when pushed on stack
-			for(int i = a._asI64; i >=0 ; i--){
-				bytes[counter++] = (u8)((bvm->stack.stack[b._asI64+i])._asU64); 
+			for(int i = 1; i < a._asI64 ; i++){
+				bytes[i] = (u8)((bvm->stack.stack[b._asI64+i])._asU64); 
 			} 
 			//printf("str: %s\n", bytes);
 			const i64 temp = write((int)c._asI64, bytes, (u32)a._asU64); 
@@ -697,7 +715,44 @@ static inline void executeInstruction(Bvm *bvm) {
 			bvm->IP++;
 			break;
 		}
-
+		
+		case CLOSE:{
+			a = stackPop(&bvm->stack);//size
+			const int temp = close(a._asI64);
+			stackPush(&bvm->stack, (i64)temp);
+			bvm->IP++;
+			break;
+		}
+		
+		case DUPF:{
+			a = stackPop(&bvm->stack);//size
+			const int temp = dup(a._asI64);
+			stackPush(&bvm->stack, (i64)temp);
+			bvm->IP++;
+			break;
+		}
+		case DUP2:{
+			a = stackPop(&bvm->stack);//size
+			b = stackPop(&bvm->stack);
+			const int temp = dup2(b._asI64, a._asI64);
+			stackPush(&bvm->stack, (i64)temp);
+			bvm->IP++;
+			break;
+		}
+		case EXIT:{
+			a = stackPop(&bvm->stack);
+			_exit(a._asI64);
+			bvm->IP++;
+			break;
+		}
+		case TRUNCATE:{
+			a = stackPop(&bvm->stack);//ofset
+			b = stackPop(&bvm->stack);//fd
+			const i64 temp = ftruncate(b._asI64, a._asI64);
+			stackPush(&bvm->stack, temp);
+			bvm->IP++;
+			break;
+		}
 		case END: {
 				bvm->isRuning = FALSE;
 				LOG("\n\nExiting VM\n\n!!!");
