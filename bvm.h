@@ -89,6 +89,10 @@ typedef enum {
 	DUP2,
 	EXIT,
 	TRUNCATE,
+	ISATTY,
+	READ,
+	SWAB,
+	SLEEP,
 	NEWLINE,
 	LABEL,
 	FFI,
@@ -143,6 +147,10 @@ static const char* instructionNames[] = {
 	"DUP2",
 	"EXIT",
 	"TRUNCATE",
+	"ISATTY",
+	"READ",
+	"SWAB",
+	"SLEEP",
 	"\n",
 	"LABEL",
 	"FFI",
@@ -349,9 +357,9 @@ static inline void executeInstruction(Bvm *bvm) {
 
 		case PRINTSTRING: {
 				int counter = 0;
-				for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--){
+				for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--) {
 					//printf("counter %d\n", counter);
-				}
+					}
 				//
 				for(int i = counter; i < bvm->stack.SP; i++) {
 					LOG("%c", bvm->stack.stack[i]);
@@ -695,64 +703,111 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
-	//SYSCALL
-		case WRITE:{
-			a = stackPop(&bvm->stack);//size
-			b = stackPop(&bvm->stack);//data
-			c = stackPop(&bvm->stack);//fd
-			//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
-			u8 bytes[a._asI64];
-			memset(bytes, 0, sizeof(u8)*a._asI64);
-			int counter = 0;
-			
-			//TBD Order of a strings when pushed on stack
-			for(int i = 1; i < a._asI64 ; i++){
-				bytes[i] = (u8)((bvm->stack.stack[b._asI64+i])._asU64); 
-			} 
-			//printf("str: %s\n", bytes);
-			const i64 temp = write((int)c._asI64, bytes, (u32)a._asU64); 
-			stackPush(&bvm->stack, temp);
-			bvm->IP++;
-			break;
-		}
-		
-		case CLOSE:{
-			a = stackPop(&bvm->stack);//size
-			const int temp = close(a._asI64);
-			stackPush(&bvm->stack, (i64)temp);
-			bvm->IP++;
-			break;
-		}
-		
-		case DUPF:{
-			a = stackPop(&bvm->stack);//size
-			const int temp = dup(a._asI64);
-			stackPush(&bvm->stack, (i64)temp);
-			bvm->IP++;
-			break;
-		}
-		case DUP2:{
-			a = stackPop(&bvm->stack);//size
-			b = stackPop(&bvm->stack);
-			const int temp = dup2(b._asI64, a._asI64);
-			stackPush(&bvm->stack, (i64)temp);
-			bvm->IP++;
-			break;
-		}
-		case EXIT:{
-			a = stackPop(&bvm->stack);
-			_exit(a._asI64);
-			bvm->IP++;
-			break;
-		}
-		case TRUNCATE:{
-			a = stackPop(&bvm->stack);//ofset
-			b = stackPop(&bvm->stack);//fd
-			const i64 temp = ftruncate(b._asI64, a._asI64);
-			stackPush(&bvm->stack, temp);
-			bvm->IP++;
-			break;
-		}
+		//SYSCALL
+		case WRITE: {
+				a = stackPop(&bvm->stack);//size
+				b = stackPop(&bvm->stack);//data
+				c = stackPop(&bvm->stack);//fd
+				//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
+				u8 bytes[a._asI64];
+				memset(bytes, 0, sizeof(u8)*a._asI64);
+				int counter = 0;
+
+				//TBD Order of a strings when pushed on stack
+				for(int i = 1; i < a._asI64 ; i++) {
+					bytes[i] = (u8)((bvm->stack.stack[b._asI64+i])._asU64);
+					}
+				//printf("str: %s\n", bytes);
+				const i64 temp = write((int)c._asI64, bytes, (u32)a._asU64);
+				stackPush(&bvm->stack, temp);
+				bvm->IP++;
+				break;
+				}
+
+		case CLOSE: {
+				a = stackPop(&bvm->stack);//size
+				const int temp = close(a._asI64);
+				stackPush(&bvm->stack, (i64)temp);
+				bvm->IP++;
+				break;
+				}
+
+		case DUPF: {
+				a = stackPop(&bvm->stack);//size
+				const int temp = dup(a._asI64);
+				stackPush(&bvm->stack, (i64)temp);
+				bvm->IP++;
+				break;
+				}
+		case DUP2: {
+				a = stackPop(&bvm->stack);//size
+				b = stackPop(&bvm->stack);
+				const int temp = dup2(b._asI64, a._asI64);
+				stackPush(&bvm->stack, (i64)temp);
+				bvm->IP++;
+				break;
+				}
+		case EXIT: {
+				a = stackPop(&bvm->stack);
+				_exit(a._asI64);
+				bvm->IP++;
+				break;
+				}
+		case TRUNCATE: {
+				a = stackPop(&bvm->stack);//ofset
+				b = stackPop(&bvm->stack);//fd
+				const i64 temp = ftruncate(b._asI64, a._asI64);
+				stackPush(&bvm->stack, temp);
+				bvm->IP++;
+				break;
+				}
+
+		case ISATTY: {
+				a = stackPop(&bvm->stack);//ofset
+				const i64 temp = isatty(a._asI64);
+				stackPush(&bvm->stack, temp);
+				bvm->IP++;
+				break;
+				}
+		case READ: {
+				a = stackPop(&bvm->stack);//size
+				b = stackPop(&bvm->stack);//data
+				c = stackPop(&bvm->stack);//fd
+				//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
+				u8 bytes[a._asI64];
+				//memset(bytes, 0, sizeof(u8)*a._asI64);
+				const i64 temp = read((int)c._asI64, bytes, (u32)a._asU64);
+				int counter = 0;
+
+				//TBD Order of a strings when pushed on stack
+				for(int i = 0; i < a._asI64 ; i++) {
+					bvm->stack.stack[b._asI64+i]._asU64 = (u64)bytes[i];
+					}
+				//printf("str: %s\n", bytes);
+
+				stackPush(&bvm->stack, temp);
+				bvm->IP++;
+				break;
+				}
+
+		case SWAB: {
+				a = stackPop(&bvm->stack);//size
+				b = stackPop(&bvm->stack);//dest
+				c = stackPop(&bvm->stack);//source
+				//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
+				swab((char*)&bvm->stack.stack[b._asI64]._asU64, (char*)&bvm->stack.stack[a._asI64], a._asI64 * sizeof(Word));
+				bvm->IP++;
+				break;
+				}
+
+		case SLEEP: {
+				a = stackPop(&bvm->stack);
+				const u64 temp = sleep(a._asU64);
+				stackPush(&bvm->stack, (i64)temp);
+				bvm->IP++;
+				break;
+				}
+
 		case END: {
 				bvm->isRuning = FALSE;
 				LOG("\n\nExiting VM\n\n!!!");
