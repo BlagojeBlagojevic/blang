@@ -638,6 +638,36 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize--;
 						}
+				else if(WORD_COMPARE(KEYWORD_ISATTY)) {
+						bvm->instruction[counterInstruction].type = ISATTY;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\ntisatty = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize--;
+						}
+					
+					else if(WORD_COMPARE(KEYWORD_READ)) {
+						bvm->instruction[counterInstruction].type = READ;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nread = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize-=2;
+						}
+					
+					else if(WORD_COMPARE(KEYWORD_SLEEP)) {
+						bvm->instruction[counterInstruction].type = SLEEP;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nsleep = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						}
+
+
 
 					else {
 						//counterInstruction++;
