@@ -6,11 +6,11 @@
 
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_PRINTSTRING,
       KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_PUSHSPMEM, KEYWORD_SET,
-			KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
+      KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
-      KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
-			KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_POP
+      KEYWORD_INC, KEYWORD_HALT, KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
+			KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_ISATTY, KEYWORD_READ, KEYWORD_SLEEP, KEYWORD_POP
      };
 static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstring", "printstack", 
                                   "if", "end", "else", "SP", "SET",
@@ -18,7 +18,7 @@ static const char* keywords[] = { "var", "print","charprint", "floatprint", "pri
                                   "while","endloop","breakloop",
                                   "&", "arr", "??", "@","shr","shl","or","and","bnot",
                                   "inc", "halt", "write", "close", "dupF", "dup2",
-																	"exit", "truncate", "pop", 
+																	"exit", "truncate", "isatty", "read", "sleep", "pop", 
                                 };
 static const char* endScriptToken = "endscript";
 enum {LOGIC_G, LOGIC_L, LOGIC_E, LOGIC_I};
