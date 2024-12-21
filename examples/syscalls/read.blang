@@ -1,0 +1,40 @@
+0
+arr toCopyInto 50 
+
+word memcpy
+	
+	? memcpySize
+	drop
+	? memcpySrc
+	drop
+	? memcpyDest
+	drop
+	SP ? memcpySP
+	drop
+	while
+		memcpySrc @ memcpyDest ??
+		memcpySrc 1 + ? memcpySrc 
+		memcpyDest 1 + ? memcpyDest
+		memcpySize 0 = if
+			breakloop
+		end
+		memcpySize -1 + ? memcpySize
+	endloop
+	memcpySP SET	
+endword
+
+word memmove memcpy endword
+
+
+SP ? temp
+drop
+
+0 "HelloWorld" 10 
+& toCopyInto0 temp 14 memcpy
+
+1 & toCopyInto0 11 write 
+0 & toCopyInto0 11 read 
+1 & toCopyInto0 11 write halt
+
+endscript . 
+
