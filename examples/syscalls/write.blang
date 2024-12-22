@@ -28,11 +28,14 @@ word memmove memcpy endword
 
 SP ? temp
 drop
-temp print
-0 "HelloWorld"
-& toCopyInto0 temp 20 memcpy
 
-1 & toCopyInto0 12 write halt
+0 "HelloWorld" 10 
+& toCopyInto0 temp 12 memcpy
 
-
+1 & toCopyInto0 12 write 
+0 & toCopyInto0 12 read 
+1 & toCopyInto0 6 write 
+10 sleep 
+1 & toCopyInto0 6 write
 endscript . 
+

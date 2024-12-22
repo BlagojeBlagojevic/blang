@@ -16,6 +16,7 @@
 #define TRUE  1
 #define FALSE 0
 
+//#define SYSCALLS
 
 
 
@@ -83,6 +84,7 @@ typedef enum {
 	NOP,
 	HALT,
 	INC,
+#ifdef SYSCALLS
 	WRITE,
 	CLOSE,
 	DUPF,
@@ -93,6 +95,7 @@ typedef enum {
 	READ,
 	SWAB,
 	SLEEP,
+#endif
 	NEWLINE,
 	LABEL,
 	FFI,
@@ -141,6 +144,7 @@ static const char* instructionNames[] = {
 	"NOP",
 	"HALT",
 	"INC",
+#ifdef SYSCALLS
 	"WRITE",
 	"CLOSE",
 	"DUPF",
@@ -151,6 +155,7 @@ static const char* instructionNames[] = {
 	"READ",
 	"SWAB",
 	"SLEEP",
+#endif
 	"\n",
 	"LABEL",
 	"FFI",
@@ -704,6 +709,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 		//SYSCALL
+#ifdef SYSCALLS
 		case WRITE: {
 				a = stackPop(&bvm->stack);//size
 				b = stackPop(&bvm->stack);//data
@@ -807,7 +813,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+#endif
 		case END: {
 				bvm->isRuning = FALSE;
 				LOG("\n\nExiting VM\n\n!!!");

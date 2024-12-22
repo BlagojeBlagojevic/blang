@@ -584,6 +584,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						stackSize--;
 						}
 					//SYSCALLS posix
+#ifdef SYSCALLS
 					else if(WORD_COMPARE(KEYWORD_WRITE)) {
 						bvm->instruction[counterInstruction].type = WRITE;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
@@ -666,7 +667,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
-
+#endif
 
 
 					else {
