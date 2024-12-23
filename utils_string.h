@@ -9,16 +9,18 @@ enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEY
       KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
-      KEYWORD_INC, KEYWORD_HALT, KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
-			KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_ISATTY, KEYWORD_READ, KEYWORD_SLEEP, KEYWORD_POP
+      KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
+      KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_ISATTY, KEYWORD_READ, KEYWORD_SLEEP,
+      KEYWORD_SYSTEM, KEYWORD_POP
      };
-static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstring", "printstack", 
+static const char* keywords[] = { "var", "print","charprint", "floatprint", "printstring", "printstack",
                                   "if", "end", "else", "SP", "SET",
-                                  "dup", "?", "drop", "setsp", "over","rot","swap", 
+                                  "dup", "?", "drop", "setsp", "over","rot","swap",
                                   "while","endloop","breakloop",
                                   "&", "arr", "??", "@","shr","shl","or","and","bnot",
                                   "inc", "halt", "write", "close", "dupF", "dup2",
-																	"exit", "truncate", "isatty", "read", "sleep", "pop", 
+                                  "exit", "truncate", "isatty", "read", "sleep",
+                                  "system", "pop",
                                 };
 static const char* endScriptToken = "endscript";
 enum {LOGIC_G, LOGIC_L, LOGIC_E, LOGIC_I};
@@ -126,19 +128,19 @@ static int ValueToNum(char *str) {
 	return (int)num;
 	}
 
-static int isValidString(char *str){
+static int isValidString(char *str) {
 	if(str[0] != '"')
 		return 0;
 	int counter = 1;
-	while(str[counter] != '\0'){
+	while(str[counter] != '\0') {
 		if(str[counter] == '"' && str[counter + 1] == '\0')
-		return 1;
+			return 1;
 		counter++;
-	}
+		}
 	return 0;
-	
-	
-}
+
+
+	}
 
 
 #endif
