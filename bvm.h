@@ -16,8 +16,8 @@
 #define TRUE  1
 #define FALSE 0
 
-//#define SYSCALLS
-
+#define SYSCALLS
+#define SYSTEM
 
 
 //#define LOG_STACK
@@ -95,6 +95,9 @@ typedef enum {
 	READ,
 	SWAB,
 	SLEEP,
+#ifdef SYSTEM
+	SYSTEMS,
+#endif
 #endif
 	NEWLINE,
 	LABEL,
@@ -155,6 +158,9 @@ static const char* instructionNames[] = {
 	"READ",
 	"SWAB",
 	"SLEEP",
+#ifdef SYSTEM
+	"SYSTEM",
+#endif
 #endif
 	"\n",
 	"LABEL",
@@ -708,7 +714,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 
-		//SYSCALL
+			//SYSCALL
 #ifdef SYSCALLS
 		case WRITE: {
 				a = stackPop(&bvm->stack);//size
@@ -813,6 +819,28 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+#ifdef SYSTEM
+		case SYSTEMS: {
+			
+				int counter = 0, counter1 = 0;
+				char bytes[100] = {'\0'};
+				for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--) {
+					
+					}
+				for(int i = counter; i < bvm->stack.SP; i++) {
+					bytes[counter1++] = (char)bvm->stack.stack[i]._asU64;
+					//printf("%c\n", bytes[counter1-1]);
+					if(counter1 == 99){
+						break;
+					}
+					}
+				bytes[counter1] = '\0';
+				const int temp = system(&bytes[1]);
+				stackPush(&bvm->stack, temp);
+				bvm->IP++;
+				break;
+				}
+#endif
 #endif
 		case END: {
 				bvm->isRuning = FALSE;
