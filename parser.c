@@ -639,7 +639,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize--;
 						}
-				else if(WORD_COMPARE(KEYWORD_ISATTY)) {
+					else if(WORD_COMPARE(KEYWORD_ISATTY)) {
 						bvm->instruction[counterInstruction].type = ISATTY;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
@@ -648,7 +648,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize--;
 						}
-					
+
 					else if(WORD_COMPARE(KEYWORD_READ)) {
 						bvm->instruction[counterInstruction].type = READ;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
@@ -658,7 +658,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterInstruction++;
 						stackSize-=2;
 						}
-					
+
 					else if(WORD_COMPARE(KEYWORD_SLEEP)) {
 						bvm->instruction[counterInstruction].type = SLEEP;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
@@ -667,6 +667,17 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						counterTokens++;
 						counterInstruction++;
 						}
+#ifdef SYSTEM
+					else if(WORD_COMPARE(KEYWORD_SYSTEM)) {
+						bvm->instruction[counterInstruction].type = SYSTEMS;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nsystem = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize++;
+						}
+#endif
 #endif
 
 
