@@ -821,18 +821,18 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 #ifdef SYSTEM
 		case SYSTEMS: {
-			
+
 				int counter = 0, counter1 = 0;
 				char bytes[100] = {'\0'};
 				for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--) {
-					
+
 					}
 				for(int i = counter; i < bvm->stack.SP; i++) {
 					bytes[counter1++] = (char)bvm->stack.stack[i]._asU64;
 					//printf("%c\n", bytes[counter1-1]);
-					if(counter1 == 99){
+					if(counter1 == 99) {
 						break;
-					}
+						}
 					}
 				bytes[counter1] = '\0';
 				const int temp = system(&bytes[1]);
