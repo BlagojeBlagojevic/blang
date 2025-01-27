@@ -6,7 +6,7 @@ static void VarStackPush(VarStack* varstack,  char* name, uint8_t type) {
 		}
 	//int lenName = strlen(name);
 	int adress = STACK_CAPACITIY - 1 - varstack->sp;
-	varstack->name[varstack->sp] = name;//malloc(sizeof(char)*(lenName+1);
+	varstack->name[varstack->sp] = name;//arena_alloc(sizeof(char)*(lenName+1);
 	//strcpy(varstack->name[varstack->sp], name);
 	varstack->adress[varstack->sp] = type;
 	varstack->adress[varstack->sp] = adress;
@@ -63,7 +63,7 @@ static void PrintStack(Stack v) {
 #define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
 
 
-void Parser(Token *tokens, Words *words, Bvm *bvm) {
+void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 	//system("pause");
 
@@ -109,7 +109,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 					//	system("pause");
 					int counter = 1;
 					for(int j = endShift - 1; words[i].tokens[counter].value != NULL; j++) {
-						memcpy(&tokens[j], &words[i].tokens[counter], sizeof(Token));
+						memmove(&tokens[j], &words[i].tokens[counter], sizeof(Token));
 						counter++;
 						}
 					counterTokens--;
@@ -173,7 +173,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm) {
 						int numOfVars = ValueToNum(tokens[counterTokens + 1].value);
 
 						for(int i = numOfVars; i >= 0; i--) {
-							char *name = malloc(100*sizeof(char));
+							char *name = arena_alloc(mainArena, 100*sizeof(char));
 							sprintf(name, "%s%d", tokens[counterTokens].value, i);
 							printf("\nname %s\n", name);
 							VarStackPush(&varStack, name, tokens[counterTokens].valType);
