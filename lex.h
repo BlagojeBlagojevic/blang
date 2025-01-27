@@ -50,8 +50,8 @@ typedef struct {
 
 
 typedef struct {
-	//TBD malloc alocation
-	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD];
+	//TBD arena_alloc alocation
+	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD]; //TBD AS A DYNAMIC ARRAY
 	int numOfTokens;
 	char *name;
 }Words;
@@ -61,7 +61,7 @@ static int numOfUserDefiendWords = 0;
 
 //DYNAIC ARRAY FOR A WORD name dArr_Words
 
-Token* Tokeniser(char* input, Words *words);
+Token* Tokeniser(char* input, Words *words, Arena *mainArena);
 void DestroyTokens(Token* tokens);
 void PrintTokens(Token* tokens);
 

@@ -12,6 +12,7 @@
 #define MAX_VARS 5000
 #define MAX_VARS_NAME 20
 
+//TBD Dynamic arr
 typedef struct {
 	int adress[MAX_VARS];
 	char* name[MAX_VARS];
@@ -19,5 +20,5 @@ typedef struct {
 	int sp;
 	} VarStack;
 	
-void Parser(Token *tokens, Words *words , Bvm *bvm);
+void Parser(Token *tokens, Words *words , Bvm *bvm, Arena *mainArena);
 #endif
