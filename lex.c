@@ -13,7 +13,7 @@
 enum {END_SCRIPT_TOKEN = 0, CONTINUE_TOKEN, START_WORD_TOKEN, END_WORD_TOKEN };
 
 static inline int lexToken(char* input, int *left, int *right, int len,
-                           int *counterTokens, int LIMIT_TOKENS, Token *tokens) {
+                           int *counterTokens, int LIMIT_TOKENS, Token *tokens, Arena *mainArena) {
 	if(*counterTokens == LIMIT_TOKENS) {
 		ERROR("We have excide max amount of tokens\n\n");
 		}
@@ -28,7 +28,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				while(isDigit(input[next_right]) && next_right <= len) {
 					next_right++;
 					}
-				tokens[*counterTokens].value = returnSubstring(input, *right, next_right);
+				tokens[*counterTokens].value = returnSubstring(input, *right, next_right, mainArena);
 				tokens[*counterTokens].type = TYPE_CONST;
 				tokens[*counterTokens].valType = I;
 #ifdef LOG_VAL
@@ -48,7 +48,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 						{
 
 						tokens[*counterTokens].type = TYPE_LOGICOPERATOR;
-						tokens[*counterTokens].value = malloc(2*sizeof(char));
+						tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
 						tokens[*counterTokens].value[0] = input[*right];
 						tokens[*counterTokens].value[1] = '\0';
 
@@ -65,7 +65,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				printf("Token: Operator, Value: %c\n", input[*right]);
 #endif
 				tokens[*counterTokens].type = TYPE_OPERATION;
-				tokens[*counterTokens].value = malloc(2*sizeof(char));
+				tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
 				tokens[*counterTokens].value[0] = input[*right];
 				tokens[*counterTokens].value[1] = '\0';
 				*counterTokens = *counterTokens + 1;
@@ -73,14 +73,14 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 			}
 
-		*right = *right + 1 ;
+		*right = *right + 1;
 		*left = *right;
 		}
 	else if ((isEndChar(input[*right]) && (*left != *right)) || (*right == len
 	         && (*left != *right))) {
-		char* subStr = returnSubstring(input, *left, *right - 1);
+		char* subStr = returnSubstring(input, *left, *right - 1, mainArena);
 		if(!strcmp(subStr, "endscript")) {
-			free(subStr);
+			//free(subStr);
 			return END_SCRIPT_TOKEN;
 			}
 
@@ -97,17 +97,17 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			if(!strcmp(subStr, keywords[KEYWORD_ELSE])) {
 				//counterTokens--;
 				//free(tokens[counterTokens].value);
-				tokens[*counterTokens].value = malloc(2*sizeof(char));
+				tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
 				tokens[*counterTokens].value[0] = '0';
 				tokens[*counterTokens].value[1] = '\0';
 				tokens[*counterTokens].type = TYPE_CONST;
 				*counterTokens = *counterTokens+1;
-				tokens[*counterTokens].value = malloc(2*sizeof(char));
+				tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
 				tokens[*counterTokens].value[0] = '=';
 				tokens[*counterTokens].value[1] = '\0';
 				tokens[*counterTokens].type = TYPE_LOGICOPERATOR;
 				*counterTokens = *counterTokens+1;
-				tokens[*counterTokens].value = malloc(3*sizeof(char));
+				tokens[*counterTokens].value = arena_alloc(mainArena, 3*sizeof(char));
 				strcpy(tokens[*counterTokens].value, "if");
 				tokens[*counterTokens].type = TYPE_KEYWORD;
 				*counterTokens = *counterTokens+1;
@@ -116,14 +116,14 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			}
 		else if(isStrEqual("word",subStr)) {
 			printf("StartWord\n");
-			free(subStr);
+			//free(subStr);
 			*left = *right;
 			return START_WORD_TOKEN;
 			}
 
 		else if(isStrEqual("endword", subStr)) {
 			printf("EndWord\n");
-			free(subStr);
+			//free(subStr);
 			*left = *right;
 			return END_WORD_TOKEN;
 			}
@@ -150,7 +150,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 		else if (isValidString(subStr)) {
 			int counter = 1;
 			while(subStr[counter] != '"') {
-				tokens[*counterTokens].value  = malloc(2 * sizeof(char));
+				tokens[*counterTokens].value  = arena_alloc(mainArena, 2 * sizeof(char));
 				tokens[*counterTokens].value[0] = subStr[counter];
 				tokens[*counterTokens].value[1] = '\0';
 				tokens[*counterTokens].type = TYPE_CONST;
@@ -159,7 +159,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				counter++;
 				}
 			//TBD Maybe implement that we add a termainating string
-			//tokens[*counterTokens].value  = malloc(2 * sizeof(char));
+			//tokens[*counterTokens].value  = arena_alloc(2 * sizeof(char));
 			//tokens[*counterTokens].value[0] = '0';
 			//tokens[*counterTokens].value[1] = '\0';
 			//tokens[*counterTokens].type = TYPE_CONST;
@@ -198,9 +198,9 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 	}
 
 
-Token* Tokeniser(char* input, Words *words) {
+Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 
-	Token* tokens = malloc(MAX_TOKENS*sizeof(char));
+	Token* tokens = arena_alloc(mainArena, MAX_TOKENS*sizeof(char));
 
 	int left = 0, right = 0;
 	int len = strlen(input);
@@ -210,14 +210,14 @@ Token* Tokeniser(char* input, Words *words) {
 		//printf("CounterTokens %d, left %d right %d\n", counterTokens, left, right);
 		//system("pause");
 		if(isWordTokens == 0) {
-			int ret = lexToken(input, &left, &right, len, &counterTokens, MAX_TOKENS, tokens);
+			int ret = lexToken(input, &left, &right, len, &counterTokens, MAX_TOKENS, tokens, mainArena);
 			if(ret == END_SCRIPT_TOKEN) {
 				tokens[counterTokens].type = TYPE_EOF;
 				break;
 				}
 			else if(ret == START_WORD_TOKEN) {
 				right++;
-				words[numOfUserDefiendWords].name = malloc(20);
+				words[numOfUserDefiendWords].name = arena_alloc(mainArena, 20);
 				int count = 0;
 				while(!isEndChar(input[right])) {
 					words[numOfUserDefiendWords].name[count++] = input[right];
@@ -239,7 +239,7 @@ Token* Tokeniser(char* input, Words *words) {
 			}
 		else if(isWordTokens) {
 			int ret = lexToken(input, &left, &right, len, &counterWordTokens,
-			                   MAX_NUM_OF_TOKENS_IN_A_WORD, words[numOfUserDefiendWords].tokens);
+			                   MAX_NUM_OF_TOKENS_IN_A_WORD, words[numOfUserDefiendWords].tokens, mainArena);
 			if(ret == END_SCRIPT_TOKEN) {
 				counterWordTokens = 0;
 				break;
@@ -280,7 +280,7 @@ void PrintTokens(Token *tokens) {
 	}
 
 
-
+//DEPRICATED
 void DestroyTokens(Token* tokens) {
 	int counter = 0;
 	while(tokens[counter].type != TYPE_EOF) {
