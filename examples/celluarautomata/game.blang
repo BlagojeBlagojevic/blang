@@ -1,0 +1,238 @@
+0
+
+50 ? MAX_X_POS 
+35 ? MAX_Y_POS 
+word BACKGROUND_CHAR 32 endword  
+word CELL_CHAR 35 endword   
+word SLEEP_TIME 1 endword
+
+arr checkCoords 100
+
+arr mainMatrix 1800
+
+
+
+arr neighborCountBuffer 1800
+
+
+
+word increment 1 + endword
+
+word matrixIndex  MAX_X_POS updateCell_y * updateCell_x +   endword
+word matrixIndexP MAX_X_POS printCells_y * printCells_x +   endword
+word matrixIndexC MAX_X_POS tempY        *        tempX +   endword
+
+word matrixInit
+	0 ? printCells_x
+	0 ? printCells_y
+	SP ? printCells_SP
+	
+	while MAX_Y_POS printCells_y loopBreak
+		printCells_y 1 + ? printCells_y
+		
+		0 ? printCells_x
+		
+		while printCells_x MAX_X_POS  loopBreak
+			printCells_x 1 + ? printCells_x
+			BACKGROUND_CHAR
+			& mainMatrix0 matrixIndexP + ??  
+		endloop
+	endloop
+	0 SET
+endword
+
+
+word loopBreak 
+			= if
+				breakloop
+			end  
+endword
+
+
+word updateCell 
+	
+	0 ? updateCell_x
+	MAX_Y_POS ? updateCell_y
+	SP ? upadteCell_SP
+	
+	while 0 updateCell_y loopBreak
+		updateCell_y -1 + ? updateCell_y
+		
+		0 ? updateCell_x
+		
+		while updateCell_x MAX_X_POS  loopBreak
+			updateCell_x 1 + ? updateCell_x
+				
+			3 & neighborCountBuffer0 matrixIndex + @   
+			= if
+						CELL_CHAR
+						& mainMatrix0 matrixIndex + ??			
+			end
+			3 & neighborCountBuffer0 matrixIndex + @ >  
+			2 & neighborCountBuffer0 matrixIndex + @ <
+			or
+			1 = if
+						BACKGROUND_CHAR 
+						& mainMatrix0 matrixIndex + ??
+							
+			end
+		endloop
+			
+	endloop
+	 
+	upadteCell_SP SET
+endword
+
+
+word countNeighbors
+	
+	? posY
+	drop
+	 
+	? posX
+	drop
+	
+	SP ? countNeighbors_SP
+	
+	
+	1 posY  + ? checkCoords0
+ -1 posX  + ? checkCoords1
+	
+	1 posY  + ? checkCoords2
+	0 posX  + ? checkCoords3
+	
+	1 posY  + ? checkCoords4
+	1 posX  + ? checkCoords5
+
+	0 posY  + ? checkCoords6
+	1 posX  + ? checkCoords7
+
+ -1 posY  + ? checkCoords8
+	1 posX  + ? checkCoords9
+	
+ -1 posY  + ? checkCoords10
+	0 posX  + ? checkCoords11
+	
+ -1 posY  + ? checkCoords12
+ -1 posX  + ? checkCoords13
+	
+	0 posY  + ? checkCoords14
+ -1 posX  + ? checkCoords15
+	
+	0 ? i
+	0 ? neighbors
+	
+	
+	while
+		& checkCoords0 i + @ ? tempY	
+		& checkCoords1 i + @ ? tempX
+		
+		0 tempX < if
+			MAX_X_POS -1 + ? tempX 
+		end
+		
+		MAX_X_POS -1 + tempX > if
+			0 ? tempX 
+		end
+		
+		0 tempY < if
+			MAX_Y_POS -1 + ? tempY 
+		end
+		
+		MAX_Y_POS -1 + tempY > if
+			0 ? tempY 
+		end
+		
+				
+		& mainMatrix0 matrixIndexC + @ CELL_CHAR = if
+			neighbors 1 + ? neighbors	
+		end
+		
+					
+		i 2 + ? i 
+		i 16 = if 
+			neighbors 
+			breakloop
+		end
+	endloop
+
+	countNeighbors_SP SET
+	neighbors
+	 
+	
+endword
+
+
+word printCells 
+	
+	0 ? printCells_x
+	MAX_Y_POS ? printCells_y
+	SP ? printCells_SP
+	
+	while printCells_y 0  loopBreak
+		printCells_y -1 + ? printCells_y
+		
+		-1 ? printCells_x
+		
+		while printCells_x MAX_X_POS  loopBreak
+			printCells_x 1 + ? printCells_x
+			& mainMatrix0 matrixIndexP + @
+			charprint 0
+			printCells_x printCells_y	countNeighbors
+			& neighborCountBuffer0 matrixIndexP + ?? 		
+		endloop
+		10 charprint
+	endloop
+	 
+	 printCells_SP SET
+endword
+
+
+word convayLoop
+
+	SP print
+	while
+		0 SET
+		0 "cls" system
+	
+		printCells
+		updateCell			
+		SLEEP_TIME sleep
+		
+	endloop
+
+	
+endword
+
+
+
+0 SET 
+
+matrixInit
+
+
+
+
+
+
+CELL_CHAR ? mainMatrix925  
+CELL_CHAR ? mainMatrix926  
+CELL_CHAR ? mainMatrix927
+
+
+
+CELL_CHAR ? mainMatrix120  
+CELL_CHAR ? mainMatrix170  
+CELL_CHAR ? mainMatrix220
+
+
+CELL_CHAR ? mainMatrix1025  
+CELL_CHAR ? mainMatrix1026  
+CELL_CHAR ? mainMatrix1075
+CELL_CHAR ? mainMatrix1076
+
+
+
+convayLoop
+
+endscript . 
