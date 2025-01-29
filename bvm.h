@@ -175,8 +175,8 @@ typedef struct {
 	} Instruction;
 
 
-#define STACK_CAPACITIY     10024
-#define MAX_SIZE_OF_PROGRAM 10024
+#define STACK_CAPACITIY     200024
+#define MAX_SIZE_OF_PROGRAM 20024
 #define MAX_LINE 100
 typedef struct {
 	Word *stack;
