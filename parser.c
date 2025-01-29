@@ -10,7 +10,7 @@ static void VarStackPush(VarStack* varstack,  char* name, uint8_t type) {
 	//strcpy(varstack->name[varstack->sp], name);
 	varstack->adress[varstack->sp] = type;
 	varstack->adress[varstack->sp] = adress;
-	printf("Var %s", name);
+	//printf("Var %s", name);
 	varstack->sp++;
 	}
 
@@ -175,7 +175,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						for(int i = numOfVars; i >= 0; i--) {
 							char *name = arena_alloc(mainArena, 100*sizeof(char));
 							sprintf(name, "%s%d", tokens[counterTokens].value, i);
-							printf("\nname %s\n", name);
+							//printf("\nname %s\n", name);
 							VarStackPush(&varStack, name, tokens[counterTokens].valType);
 							}
 						//PrintVarStack(varStack);

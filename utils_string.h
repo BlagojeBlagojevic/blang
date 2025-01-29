@@ -9,7 +9,7 @@ enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEY
       KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
-      KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
+      KEYWORD_INC, KEYWORD_HALT, KEYWORD_WRITE, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
       KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_ISATTY, KEYWORD_READ, KEYWORD_SLEEP,
       KEYWORD_SYSTEM, KEYWORD_POP
      };
@@ -116,7 +116,7 @@ static char* returnSubstring(char* str, int start, int end, Arena *mainArena) {
 	char* subStr = arena_alloc(mainArena, (subLength + 1) * sizeof(char));
 	//memset(subStr, '\0', (subLength + 1) * sizeof(char));
 	//char* subStr = malloc((subLength + 1) * sizeof(char));
-	
+
 	strncpy(subStr, str + start, subLength);
 	//system("pause");
 	subStr[subLength] = '\0';

@@ -9,7 +9,7 @@
 #define LOG_STACK
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
-#define MAX_VARS 5000
+#define MAX_VARS 10000
 #define MAX_VARS_NAME 20
 
 //TBD Dynamic arr
