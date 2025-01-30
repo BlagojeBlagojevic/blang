@@ -192,9 +192,10 @@ word convayLoop
 
 	SP print
 	while
+		
 		0 SET
 		0 "cls" system
-	
+		0 10 10 9 9 "GameOfLife" 10 9 9 9 9 "By:" 32 "B.B." printstring
 		printCells
 		updateCell			
 		SLEEP_TIME sleep
@@ -208,12 +209,10 @@ endword
 
 0 SET 
 
+
 matrixInit
 
-
-
-
-
+0 "color" 32 "2" system
 
 CELL_CHAR ? mainMatrix925  
 CELL_CHAR ? mainMatrix926  
