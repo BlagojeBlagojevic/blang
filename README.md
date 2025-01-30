@@ -1,80 +1,100 @@
-# blang
 
-**EXTREMELY IMPORTANT! THIS LANGUAGE IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS LANGUAGE AT YOUR OWN RISK!
 
-Blang is a [Concatenative](https://en.wikipedia.org/wiki/Concatenative_programming_language) [Stack-Oriented](https://en.wikipedia.org/wiki/Stack-oriented_programming) [Programming Language](https://en.wikipedia.org/wiki/Programming_language) for [Computers](https://en.wikipedia.org/wiki/Computer)
+# Blang
 
-*(If you never heard about this kind of languages before check out [https://concatenative.org/](https://concatenative.org/))*
+**EXTREMELY IMPORTANT! THIS LANGUAGE IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS LANGUAGE AT YOUR OWN RISK!**
+
+Blang is a **[Concatenative](https://en.wikipedia.org/wiki/Concatenative_programming_language)**, **[Stack-Oriented](https://en.wikipedia.org/wiki/Stack-oriented_programming)** **[Programming Language](https://en.wikipedia.org/wiki/Programming_language)** for **[Computers](https://en.wikipedia.org/wiki/Computer)**.
+
+*(If you've never heard about this kind of language before, check out [https://concatenative.org/](https://concatenative.org/))*
+
+---
 
 ## Development Milestones
 
-- [x] Compiled to a custom instruction set (BVM bytcode)
+- [x] Compiled to a custom instruction set (BVM bytecode)
 - [x] Conditional/selection statements
-- [x] Loops 
+- [x] Loops
 - [x] [Turing-complete](./examples/celluarautomata/rule110.blang)
-- [x] Crossplatform
-- [X] Strings support
+- [x] Cross-platform
+- [x] Strings support
 - [x] Functions
-- [ ] Self hosted
+- [ ] Self-hosted
 - [ ] Statically typed
 - [ ] Optimized
-- [ ] Implement a vm as a custom cpu for fpga
+- [ ] Implement a VM as a custom CPU for FPGA
 
+---
 
 ## Examples
 
-Hello, World:
+### Hello, World:
 
 ```forth
 0 "HelloWorld" printstring
-
-endscript . 
+endscript .
 ```
 
-Simple program that prints all upper letters:
+### Simple program that prints all uppercase letters:
 
 ```forth
 65 ? a
 while
-	a charprint 
-	89 < if
-		breakloop
-	end 
-1 a + ? a
+    a charprint 
+    89 < if
+        breakloop
+    end 
+    1 a + ? a
 endloop
 endscript .
 ```
 
+---
+
 ## Quick Start
-Compile project  :
 
-`gcc main.c` OR  `make all`
+### Compile the project:
 
-Compile to bytcode:
-
-```console
- main.out -c <path to program> <path to save>
-``` 
-Run the bytcode:
-```console
- main.out -r <path to bytcode> 
-```
-```console
-Usage:  Compile -c <path to program> <path to save>
-        Run -r <path to saved>
+```bash
+gcc main.c
 ```
 
+OR
 
+```bash
+make all
+```
+
+### Compile to bytecode:
+
+```bash
+./main.out -c <path-to-program> <path-to-save>
+```
+
+### Run the bytecode:
+
+```bash
+./main.out -r <path-to-bytecode>
+```
+
+### Usage:
+
+```bash
+Usage:  Compile -c <path-to-program> <path-to-save>
+        Run -r <path-to-saved>
+```
+
+---
 
 ## Language Reference
 
-This is what the language supports so far. **Since the language is a work in progress everything in this section is the subject to change.**
+This section describes the features supported by the language so far. **Since the language is a work in progress, everything in this section is subject to change.**
 
 ### Literals
 
 #### Integer
 
-Currently an integer is a sequence of decimal digits. When an integer is encountered it is pushed onto the data stack for processing by the relevant operations.
+An integer is a sequence of decimal digits. When an integer is encountered, it is pushed onto the data stack for processing by the relevant operations.
 
 Example:
 
@@ -82,21 +102,25 @@ Example:
 10 20 +
 ```
 
-The code above pushes 10 and 20 onto the data stack and sums them up with `+` operation.
+The code above pushes `10` and `20` onto the data stack and sums them up with the `+` operation.
 
 #### String
+
 TBD
+
 #### Character
 
-Currently a character is a only used as a var on heap. For printing of a char ther is a function called charprint.
-Also for working of a strings ther is a function called printstring. You are obliged to provide end token that is 0.
+A character is currently used as a variable on the heap. For printing a character, there is a function called `charprint`. For working with strings, there is a function called `printstring`. You must provide an end token, which is `0`.
+
 Example:
 
 ```forth
-  35 ? taraba 
-  32 ? space 
-  10 ? newLine
+35 ? taraba 
+32 ? space 
+10 ? newLine
 ```
+
+---
 
 ### Intrinsics (Built-in Words)
 
@@ -104,103 +128,107 @@ Example:
 
 | Name    | Signature        | Description                                                                                       |
 | ---     | ---              | ---                                                                                               |
-| `dup`   | `a -- a a`       | duplicate an element on top of the stack.                                                         |
-| `swap`  | `a b -- b a`     | swap 2 elements on the top of the stack. TBD                                                      |
-| `drop`  | `a b -- a`       | drops the top element of the stack.                                                               |
-| `print` | `a b -- a`       | print the element on top of the stack in a free form to stdout and remove it from the stack.      |
-| `over`  | `a b -- a b a`   | copy the element below the top of the stack.                                                      |
-| `rot`   | `a b c -- b c a` | rotate the top three stack elements.                                                              |
+| `dup`   | `a -- a a`       | Duplicate an element on top of the stack.                                                         |
+| `swap`  | `a b -- b a`     | Swap 2 elements on the top of the stack.                                                          |
+| `drop`  | `a b -- a`       | Drop the top element of the stack.                                                                |
+| `print` | `a b -- a`       | Print the element on top of the stack in a free form to stdout and remove it from the stack.      |
+| `over`  | `a b -- a b a`   | Copy the element below the top of the stack.                                                      |
+| `rot`   | `a b c -- b c a` | Rotate the top three stack elements.                                                              |
 
 #### Comparison
 
 | Name | Signature                              | Description                                                       |
 | ---  | ---                                    | ---                                                               |
-| `= ` | `[a: int] [b: int] -- [a == b : int]` | checks if two elements on top of the stack are equal.              |
-| `=!` | `[a: int] [b: int] -- [a != b : int]` | checks if two elements on top of the stack are not equal.          |
-| `> ` | `[a: int] [b: int] -- [a > b  : int]` | applies the greater comparison on top two elements.                |
-| `< ` | `[a: int] [b: int] -- [a < b  : int]` | applies the less comparison on top two elements.                   |
-| `<!` | `[a: int] [b: int] -- [a >= b : int]` | applies the greater or equal comparison on top two elements.       |
-| `>!` | `[a: int] [b: int] -- [a <= b : int]` | applies the less or equal comparison on top two elements.          |
+| `= ` | `[a: int] [b: int] -- [a == b : int]` | Check if two elements on top of the stack are equal.              |
+| `=!` | `[a: int] [b: int] -- [a != b : int]` | Check if two elements on top of the stack are not equal.          |
+| `> ` | `[a: int] [b: int] -- [a > b  : int]` | Apply the greater comparison on top two elements.                |
+| `< ` | `[a: int] [b: int] -- [a < b  : int]` | Apply the less comparison on top two elements.                   |
+| `<!` | `[a: int] [b: int] -- [a >= b : int]` | Apply the greater or equal comparison on top two elements.       |
+| `>!` | `[a: int] [b: int] -- [a <= b : int]` | Apply the less or equal comparison on top two elements.          |
 
 #### Arithmetic
 
 | Name     | Signature                                        | Description                                                                                                              |
 | ---      | ---                                              | ---                                                                                                                      |
-| `+`      | `[a: int] [b: int] -- [a + b: int]`              | sums up two elements on the top of the stack.                                                                            |
-| `-`      | `[a: int] [b: int] -- [a - b: int]`              | subtracts two elements on the top of the stack                                                                           |
-| `*`      | `[a: int] [b: int] -- [a * b: int]`              | multiples two elements on top of the stack                                                                               |
-| `/`      | `[a: int] [b: int] -- [a / b: int]`              | divide two elements on top of the stack
-| `%`      | `[a: int] [b: int] -- [a % b: int]`              | mod two elements on top of the stack                                                                                      |
+| `+`      | `[a: int] [b: int] -- [a + b: int]`              | Sum up two elements on the top of the stack.                                                                            |
+| `-`      | `[a: int] [b: int] -- [a - b: int]`              | Subtract two elements on the top of the stack.                                                                           |
+| `*`      | `[a: int] [b: int] -- [a * b: int]`              | Multiply two elements on top of the stack.                                                                               |
+| `/`      | `[a: int] [b: int] -- [a / b: int]`              | Divide two elements on top of the stack.                                                                                 |
+| `%`      | `[a: int] [b: int] -- [a % b: int]`              | Modulo two elements on top of the stack.                                                                                 |
 
-#### Bitwise 
+#### Bitwise
 
 | Name  | Signature                            | Description                   |
 | ---   | ---                                  | ---                           |
-| `shr` | `[a: int] [b: int] -- [a >> b: int]` | right **unsigned** bit shift. |
-| `shl` | `[a: int] [b: int] -- [a << b: int]` | light bit shift.              |
-| `or`  | `[a: int] [b: int] -- [a \| b: int]` | bit `or`.                     |
-| `and` | `[a: int] [b: int] -- [a & b: int]`  | bit `and`.                    |
-| `not` | `[a: int] -- [~a: int]`              | bit `not`.                    |
+| `shr` | `[a: int] [b: int] -- [a >> b: int]` | Right **unsigned** bit shift. |
+| `shl` | `[a: int] [b: int] -- [a << b: int]` | Left bit shift.               |
+| `or`  | `[a: int] [b: int] -- [a \| b: int]` | Bitwise `OR`.                 |
+| `and` | `[a: int] [b: int] -- [a & b: int]`  | Bitwise `AND`.                |
+| `not` | `[a: int] -- [~a: int]`              | Bitwise `NOT`.                |
 
 #### Memory
 
 | Name         | Signature                      | Description                                                                                               |
 | ---          | ---                            | ---                                                                                                       |
-| `?`        | `<stack> let <name>  ` | Store a value from <sp> at the var addres. If var is not declared create the var on <stacksize - numofvars - 1>.  |  
-| `arr`        | `arr <name> <size>` | Create a array on first free addres on stacksize - numofvars - 1.    |
-| `&`        | `ptr <name>` | Push a mem addres of a var on top of the stack.                             |                         
-| `@`     | `<stack> ptrval` | Push a value from mem addres from top of the stack on top of the stack. |
-| `??`     | `<stack> <stack> ptrval` | Store a value from <sp-1> to mem addres on sp                   |
+| `?`          | `<stack> let <name>`           | Store a value from `<sp>` at the var address. If the var is not declared, create the var on `<stacksize - numofvars - 1>`.  |  
+| `arr`        | `arr <name> <size>`            | Create an array at the first free address on `stacksize - numofvars - 1`.                                 |
+| `&`          | `ptr <name>`                   | Push a memory address of a var onto the top of the stack.                                                 |                         
+| `@`          | `<stack> ptrval`               | Push a value from the memory address on top of the stack onto the top of the stack.                       |
+| `??`         | `<stack> <stack> ptrval`       | Store a value from `<sp-1>` to the memory address on `<sp>`.                                              |
 
 #### System
 
 - `syscall<n>` - TBD
 - `c functions` - TBD
 
+---
+
 ### Control Flow
 
-#### if-condition
-If only if 
+#### If-Condition
+
+Simple `if`:
+
 ```html
 <Comparison> if
   <body> 
-<end>
+end
 ```
-If/else if 
+
+`If/else`:
 
 ```html
 <Comparison> dup if
   <body> 
-<end>
+end
 else
   <body>
 end
 ```
 
-Example: 
+Example:
 
 ```forth
 0 10 
 = dup
 if
-	20 print
-	30 40 = dup
-	if 
-		30 print
-	end
-	else 
-		50 print
-	end
+    20 print
+    30 40 = dup
+    if 
+        30 print
+    end
+    else 
+        50 print
+    end
 end
 else
-	30 print
+    30 print
 end
 40 print
 endscript .
-end
 ```
 
-#### while-loop
+#### While-Loop
 
 Infinite loop:
 
@@ -209,7 +237,8 @@ while
    <body>
 endloop
 ```
-Condition loop use breakloop to exit a loop:
+
+Conditional loop (use `breakloop` to exit):
 
 ```html
 while
@@ -217,26 +246,29 @@ while
   <Comparison> if
     <body>
     breakloop 
-  <end>
+  end
 endloop
 ```
 
-### Procedures and functions
+---
 
-Keyword word declare a procedure or function. We coude pass values thru stack so for example we push them on stack and then do with a stack.
-Also we coude provide a value thru heap.
+### Procedures and Functions
+
+The `word` keyword declares a procedure or function. Values can be passed through the stack or the heap.
+
+Example:
+
 ```forth
 word printString 
-	while
-		dup @ charprint 
-		0 = if
-			breakloop
-		end
-		1 + 
-	endloop
-	drop
+    while
+        dup @ charprint 
+        0 = if
+            breakloop
+        end
+        1 + 
+    endloop
+    drop
 endword
-
 
 & H printString
 ```
@@ -245,25 +277,309 @@ endword
 
 TBD
 
+---
+
 ### Constants
 
-Const is declared like this:
+Constants are declared like this:
 
 ```forth
 word pi 3.1415 endword
-
 ```
 
+---
 
 ### Memory
 
-There is a heap witch is build on top of the stack.  
-Vars are global for entire duration of a program.
+The heap is built on top of the stack. Variables are global for the entire duration of the program.
 
+---
 
 ### Type Checking
 
-There are 4 types: int64 , float64 , uint64, ch (basicly uint64 just used in strings).
-Type is inferd for math operation based on a last element on a stack. 
-For example if we have 10 10.2 on stack and we do + + operation will use float type be send as a operand.
+There are 4 types: `int64`, `float64`, `uint64`, and `ch` (basically `uint64`, but used in strings). The type is inferred for math operations based on the last element on the stack. For example, if we have `10 10.2` on the stack and we perform the `+` operation, the `+` operation will use the `float` type as the operand.
 
+---
+
+## Example Programs
+
+### Memory Copy Example
+
+```forth
+0
+arr toCopyInto 50 
+
+word memcpy
+    ? memcpySize
+    drop
+    ? memcpySrc
+    drop
+    ? memcpyDest
+    drop
+    SP ? memcpySP
+    drop
+    while
+        memcpySrc @ memcpyDest ??
+        memcpySrc 1 + ? memcpySrc 
+        memcpyDest 1 + ? memcpyDest
+        memcpySize 0 = if
+            breakloop
+        end
+        memcpySize -1 + ? memcpySize
+    endloop
+    memcpySP SET	
+endword
+
+word memmove memcpy endword
+
+SP ? temp
+drop
+
+0 "HelloWorld" 10 
+& toCopyInto0 temp 12 memcpy
+
+1 & toCopyInto0 12 write 
+0 & toCopyInto0 12 read 
+1 & toCopyInto0 6 write 
+10 sleep 
+1 & toCopyInto0 6 write
+endscript .
+```
+
+### Game of Life Implementation
+![Screenshot_7](https://github.com/user-attachments/assets/570c8376-1456-491c-8ac7-4f36eb254b77)
+
+
+
+
+```forth
+0
+
+50 ? MAX_X_POS 
+35 ? MAX_Y_POS 
+word BACKGROUND_CHAR 32 endword  
+word CELL_CHAR 35 endword   
+word SLEEP_TIME 1 endword
+
+arr checkCoords 100
+arr mainMatrix 1800
+arr neighborCountBuffer 1800
+
+word increment 1 + endword
+
+word matrixIndex  MAX_X_POS updateCell_y * updateCell_x +   endword
+word matrixIndexP MAX_X_POS printCells_y * printCells_x +   endword
+word matrixIndexC MAX_X_POS tempY        *        tempX +   endword
+
+word matrixInit
+    0 ? printCells_x
+    0 ? printCells_y
+    SP ? printCells_SP
+    
+    while MAX_Y_POS printCells_y loopBreak
+        printCells_y 1 + ? printCells_y
+        
+        0 ? printCells_x
+        
+        while printCells_x MAX_X_POS  loopBreak
+            printCells_x 1 + ? printCells_x
+            BACKGROUND_CHAR
+            & mainMatrix0 matrixIndexP + ??  
+        endloop
+    endloop
+    0 SET
+endword
+
+word loopBreak 
+    = if
+        breakloop
+    end  
+endword
+
+word updateCell 
+    0 ? updateCell_x
+    MAX_Y_POS ? updateCell_y
+    SP ? upadteCell_SP
+    
+    while 0 updateCell_y loopBreak
+        updateCell_y -1 + ? updateCell_y
+        
+        0 ? updateCell_x
+        
+        while updateCell_x MAX_X_POS  loopBreak
+            updateCell_x 1 + ? updateCell_x
+                
+            3 & neighborCountBuffer0 matrixIndex + @   
+            = if
+                CELL_CHAR
+                & mainMatrix0 matrixIndex + ??			
+            end
+            3 & neighborCountBuffer0 matrixIndex + @ >  
+            2 & neighborCountBuffer0 matrixIndex + @ <
+            or
+            1 = if
+                BACKGROUND_CHAR 
+                & mainMatrix0 matrixIndex + ??
+            end
+        endloop
+    endloop
+     
+    upadteCell_SP SET
+endword
+
+word countNeighbors
+    ? posY
+    drop
+     
+    ? posX
+    drop
+    
+    SP ? countNeighbors_SP
+    
+    1 posY  + ? checkCoords0
+    -1 posX  + ? checkCoords1
+    
+    1 posY  + ? checkCoords2
+    0 posX  + ? checkCoords3
+    
+    1 posY  + ? checkCoords4
+    1 posX  + ? checkCoords5
+
+    0 posY  + ? checkCoords6
+    1 posX  + ? checkCoords7
+
+    -1 posY  + ? checkCoords8
+    1 posX  + ? checkCoords9
+    
+    -1 posY  + ? checkCoords10
+    0 posX  + ? checkCoords11
+    
+    -1 posY  + ? checkCoords12
+    -1 posX  + ? checkCoords13
+    
+    0 posY  + ? checkCoords14
+    -1 posX  + ? checkCoords15
+    
+    0 ? i
+    0 ? neighbors
+    
+    while
+        & checkCoords0 i + @ ? tempY	
+        & checkCoords1 i + @ ? tempX
+        
+        0 tempX < if
+            MAX_X_POS -1 + ? tempX 
+        end
+        
+        MAX_X_POS -1 + tempX > if
+            0 ? tempX 
+        end
+        
+        0 tempY < if
+            MAX_Y_POS -1 + ? tempY 
+        end
+        
+        MAX_Y_POS -1 + tempY > if
+            0 ? tempY 
+        end
+        
+        & mainMatrix0 matrixIndexC + @ CELL_CHAR = if
+            neighbors 1 + ? neighbors	
+        end
+        
+        i 2 + ? i 
+        i 16 = if 
+            neighbors 
+            breakloop
+        end
+    endloop
+
+    countNeighbors_SP SET
+    neighbors
+endword
+
+word printCells 
+    0 ? printCells_x
+    MAX_Y_POS ? printCells_y
+    SP ? printCells_SP
+    
+    while printCells_y 0  loopBreak
+        printCells_y -1 + ? printCells_y
+        
+        -1 ? printCells_x
+        
+        while printCells_x MAX_X_POS  loopBreak
+            printCells_x 1 + ? printCells_x
+            & mainMatrix0 matrixIndexP + @
+            charprint 0
+            printCells_x printCells_y	countNeighbors
+            & neighborCountBuffer0 matrixIndexP + ?? 		
+        endloop
+        10 charprint
+    endloop
+     
+    printCells_SP SET
+endword
+
+word convayLoop
+    SP print
+    while
+        0 SET
+        0 "cls" system
+    
+        printCells
+        updateCell			
+        SLEEP_TIME sleep
+    endloop
+endword
+
+0 SET 
+
+matrixInit
+
+CELL_CHAR ? mainMatrix925  
+CELL_CHAR ? mainMatrix926  
+CELL_CHAR ? mainMatrix927
+
+CELL_CHAR ? mainMatrix120  
+CELL_CHAR ? mainMatrix170  
+CELL_CHAR ? mainMatrix220
+
+CELL_CHAR ? mainMatrix1025  
+CELL_CHAR ? mainMatrix1026  
+CELL_CHAR ? mainMatrix1075
+CELL_CHAR ? mainMatrix1076
+
+convayLoop
+
+endscript .
+```
+
+---
+
+
+
+## Contributing
+
+Contributions are welcome! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Commit your changes.
+4. Push your branch to your fork.
+5. Submit a pull request.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgments
+
+- Inspired by concatenative and stack-oriented languages like Forth and Factor.
+- Special thanks to the [concatenative.org](https://concatenative.org/) community for their resources and inspiration.
+
+---
