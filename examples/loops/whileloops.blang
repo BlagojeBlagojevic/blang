@@ -1,41 +1,46 @@
+0 "Depricated"  
 0 ? a
+SP ? sp_loop
+drop
 while
-10 10 
-= dup
-if
-	20 print
-	30 40 = dup
-	if 
-		30 print
+	10 10 
+	= dup
+	if
+		20 print 10 charprint
+		30 40 = dup
+		if 
+			30 print 10 charprint
+		end
+		else 
+			50 print 10 charprint
+		end
 	end
-	else 
-		50 print
+	else
+		30 print 10 charprint
 	end
-end
-else
-	30 print
-end
-40 print
-while
-0 10 
-= dup
-if
-	20 print
-	30 40 = dup
-	if 
-		30 print
-	end
-	else 
-		50 print
-	end
-end
-else
-	30 print
-end
-40 print
-endloop
-
-
+	40 print 10 charprint
+	SP ? sp_iner
+	drop
+	while
+		0 10 
+		= dup
+		if
+			20 print 10 charprint
+		30 40 = dup
+		if 
+			30 print 10 charprint
+		end
+		else 
+			50 print 10 charprint
+		end
+		end
+		else
+			30 print 10 charprint
+		end
+	40 print 10 charprint
+	sp_iner SET
+	endloop
+	sp_loop SET
 endloop
 print 
 endscript .
