@@ -1,7 +1,7 @@
-1 10 shr print 
-1 10 shl print 
-1 10 and print 
-1 10 or print
-0 bnot print 
+0
+1 10 shr print 10 charprint
+1 10 shl print 10 charprint
+1 10 and print 10 charprint
+1 10 or print 10 charprint
+0 bnot print  10 charprint
 endscript .
-

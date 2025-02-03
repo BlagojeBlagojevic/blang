@@ -19,6 +19,7 @@ word memcpy
 			breakloop
 		end
 		memcpySize -1 + ? memcpySize
+		memcpySP SET
 	endloop
 	memcpySP SET	
 endword
@@ -38,4 +39,3 @@ drop
 10 sleep 
 1 & toCopyInto0 6 write
 endscript . 
-

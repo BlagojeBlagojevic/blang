@@ -1,3 +1,4 @@
+0
 arr a 10 
 0 ? b
 while
@@ -9,19 +10,19 @@ while
 		breakloop
 	end
 endloop
-a0 print
-a1 print
-a2 print
-a3 print
-a4 print
-a5 print
-a6 print
-a7 print
-a8 print
+a0 print 10 charprint
+a1 print 10 charprint
+a2 print 10 charprint
+a3 print 10 charprint
+a4 print 10 charprint
+a5 print 10 charprint
+a6 print 10 charprint
+a7 print 10 charprint
+a8 print 10 charprint
 0 ? c
 while
-	& a0 c + print
-	@ print
+	& a0 c + print 10 charprint
+	@ print 10 charprint
 	1 c + ? c
 	c 10 = 
 	if

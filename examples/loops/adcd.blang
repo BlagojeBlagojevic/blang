@@ -1,9 +1,13 @@
+0
 65 ? a
+SP ? sp_loop
+drop
 while
 	a charprint 
 	89 < if
 		breakloop
 	end 
 1 a + ? a
+sp_loop SET
 endloop
 endscript .

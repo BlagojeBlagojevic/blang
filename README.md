@@ -56,7 +56,7 @@ endscript .
 ### Compile the project:
 
 ```bash
-gcc main.c
+gcc -O3 lex.c parser.c main.c -o main.out
 ```
 
 OR

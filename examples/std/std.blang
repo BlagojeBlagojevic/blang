@@ -104,4 +104,192 @@ word strcnmp
 	memcmp 
 endword
 
+word matrixAlloc 
+		? temp_matrixAlloc         drop 
+		temp_matrixAlloc ??        drop 
+		temp_matrixAlloc 1 + ??    drop		 
+endword
+
+word matrixInit
+	dup dup 
+	@ swap  	
+	1 + @
+	* 
+	(dup SP - -3 + ? matrixInit_SP drop)
+	((swap 2 +) swap dup SP -4 + - rot rot swap rot rot 1 +)
+ 	memcpy 
+ 	matrixInit_SP SET
+endword
+
+word matrixPrint
+	
+	SP ? SP_matrixPrint
+	drop
+	
+	dup 2 + 
+	? mat_matrixPrint
+	drop
+	dup
+	dup
+	@ ? width_matrixPrint
+	drop 
+	1 + @ ? height_matrixPrint
+	
+	0 ? x_matrixPrint
+	0 ? y_matrixPrint
+	0 10 "x:" 32 printstring  width_matrixPrint print 0 
+	0 10 "y:" 32 printstring height_matrixPrint print
+	
+	0 10 "Matrix"  32 61 123 10 printstring
+	
+	while (y_matrixPrint 1 + ? y_matrixPrint)
+		0 ? x_matrixPrint 
+		while (x_matrixPrint 1 + ? x_matrixPrint)
+			
+			 (mat_matrixPrint 1 + ? mat_matrixPrint @) 
+				print  	
+				44 charprint 32 charprint 
+				
+			(x_matrixPrint width_matrixPrint =) if
+			    breakloop
+			end
+		endloop
+		10 charprint
+		(y_matrixPrint height_matrixPrint =) if
+			    breakloop
+			end
+			
+	endloop
+	
+	
+	0 10 125 10 printstring
+	SP_matrixPrint SET
+	drop
+	
+endword
+
+word matrixAdd
+	
+	SP ? SP_matrixAdd 
+	drop
+	dup 2 + 
+	? matA_matrixAdd
+	drop
+	dup
+	dup
+	@ ? widthA_matrixAdd
+	drop 
+	1 + @ ? heightA_matrixAdd
+ 	drop drop
+ 	
+	dup 2 + 
+	? matB_matrixAdd
+	drop
+	dup
+	dup
+	@ ? widthB_matrixAdd
+	drop 
+	1 + @ ? heightB_matrixAdd
+ 	drop drop
+ 	
+	
+	heightA_matrixAdd heightB_matrixAdd -  
+	widthA_matrixAdd widthB_matrixAdd -
+	
+	+ 0 =! if
+		0 10 "Error:" 32 "Matrix" 32 "dimAdd" 32 printstring 
+		69 exit  	
+	end
+	-1 ? x_matrixAdd
+	0 ? y_matrixAdd
+	while 
+		0 ? x_matrixAdd 
+		while(x_matrixAdd 1 + ? x_matrixAdd)  
+				
+			(matA_matrixAdd x_matrixAdd + widthA_matrixAdd y_matrixAdd * + @)  
+			(matB_matrixAdd x_matrixAdd + widthA_matrixAdd y_matrixAdd * + @)  +
+			(matA_matrixAdd x_matrixAdd + widthA_matrixAdd y_matrixAdd * + ) ??
+			(x_matrixAdd widthA_matrixAdd =) if
+				breakloop
+			end
+		endloop
+		(y_matrixAdd 1 + ? y_matrixAdd)
+		(y_matrixAdd heightA_matrixAdd  =) if
+			breakloop
+		end 
+	endloop	
+	 
+	SP_matrixAdd SET  
+endword
+
+
+
+
+
+
+
+word matrixSub
+	
+	SP ? SP_matrixSub 
+	drop
+	dup 2 + 
+	? matA_matrixSub
+	drop
+	dup
+	dup
+	@ ? widthA_matrixSub
+	drop 
+	1 + @ ? heightA_matrixSub
+ 	drop drop
+ 	
+	dup 2 + 
+	? matB_matrixSub
+	drop
+	dup
+	dup
+	@ ? widthB_matrixSub
+	drop 
+	1 + @ ? heightB_matrixSub
+ 	drop drop
+ 	
+	
+	heightA_matrixSub heightB_matrixSub -  
+	widthA_matrixSub widthB_matrixSub -
+	
+	+ 0 =! if
+		0 10 "Error:" 32 "Matrix" 32 "dimAdd" 32 printstring 
+		69 exit  	
+	end
+	-1 ? x_matrixSub
+	0 ? y_matrixSub
+	while 
+		0 ? x_matrixSub 
+		while(x_matrixSub 1 + ? x_matrixSub)  
+			
+			(matA_matrixSub x_matrixSub + widthA_matrixSub y_matrixSub * + @)  
+			(matB_matrixSub x_matrixSub + widthA_matrixSub y_matrixSub * + @) -1 * +
+			
+			(matA_matrixSub x_matrixSub + widthA_matrixSub y_matrixSub * + ) ??
+			
+			
+			(x_matrixSub widthA_matrixSub =) if
+				breakloop
+			end
+				
+		
+		endloop
+		
+		(y_matrixSub 1 + ? y_matrixSub)
+		(y_matrixSub heightA_matrixSub  =) if
+			breakloop
+		end 
+	endloop	
+	 
+	SP_matrixSub SET  
+endword
+
+
+
+
+
 endscript . 

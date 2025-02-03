@@ -1,11 +1,17 @@
+0 
 0 ? a
+drop
+SP ? sp_loop
+drop
 while
+	sp_loop SET
 a 1 + ? a
 	10 a < dup if
-		100 a - print
+		100 a - print 10 charprint
 	end
 	else
 		breakloop
 	end
+	sp_loop SET
 endloop
 endscript .

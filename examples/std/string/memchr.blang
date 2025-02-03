@@ -12,6 +12,8 @@ word memchr
 	drop
 	? memchrPtr
 	drop
+	SP ? memchr_Sp 
+	drop
 	while
 		memchrPtr memchrNum + @
 		memchrValue = if

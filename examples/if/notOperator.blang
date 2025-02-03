@@ -1,9 +1,8 @@
+0
 10 10 = ! dup if
-	30 print
+	30 print 10 charprint
 	end
 	else
-		50 print
+		50 print 10 charprint
 	end
 endscript .
-
-

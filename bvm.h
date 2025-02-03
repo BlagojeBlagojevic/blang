@@ -294,7 +294,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 		case PUSH: {
-				stackPush(&bvm->stack, bvm->instruction[bvm->IP].operand._asI64);
+				stackPushWord(&bvm->stack, bvm->instruction[bvm->IP].operand);
 				bvm->IP++;
 				break;
 				}
@@ -316,18 +316,28 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		//TBD Make all this separate instructions insted of a this shitshow or send thru operand 
+		//Or add into a encoding
 		case ADD: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
 				c = bvm->instruction[bvm->IP].operand;
-				if(c._asU64 == u)
+				if(c._asU64 == (u)){
 					stackPush(&bvm->stack, (a._asU64 + b._asU64));
+				}
+					
 				else if(c._asU64 == i) {
-					stackPush(&bvm->stack, (a._asI64 + b._asI64));
+					stackPush(&bvm->stack, ((i64)a._asI64 + (i64)b._asI64));
 					}
 				else if(c._asU64 == f) {
-					stackPushF64(&bvm->stack, (f64)(a._asF64 + b._asF64));
+					//TBD types
+					//int tf;
+					//memcpy(&tf, &b, sizeof(int));
+					//printf("tf %d\n", tf);
+					float temp = (a._asF64 + b._asF64);
+					//printf("temp %f", temp);
+					//system("pause");
+					stackPushF64(&bvm->stack, temp);
 					}
 				else {}; //PTR MAYBE
 				bvm->IP++;
@@ -336,12 +346,12 @@ static inline void executeInstruction(Bvm *bvm) {
 		case PRINT: {
 				c = bvm->instruction[bvm->IP].operand;
 				if(c._asU64 == u)
-					LOG("%u\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					LOG("%u", bvm->stack.stack[bvm->stack.SP - 1]._asU64);
 				else if(c._asU64 == i) {
-					LOG("%d\n\n", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
+					LOG("%d", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
 					}
 				else if(c._asU64 == f) {
-					LOG("%f\n\n", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
+					LOG("%lf", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
 					}
 				else if(c._asU64 == ch) {
 					a = stackPop(&bvm->stack);
@@ -660,6 +670,8 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack); //memadress
 				//b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[a._asU64]; //value of memadress
+				//printf("%f", c._asF64);
+				//system("pause");
 				stackPushWord(&bvm->stack, c);
 				bvm->IP++;
 				break;
