@@ -356,18 +356,18 @@ endscript .
 0
 
 50 ? MAX_X_POS 
-40 ? MAX_Y_POS 
+35 ? MAX_Y_POS 
 word BACKGROUND_CHAR 32 endword  
 word CELL_CHAR 35 endword   
-word SLEEP_TIME 0.1 endword
+word SLEEP_TIME 1 endword
 
 arr checkCoords 100
 
-arr mainMatrix 2000
+arr mainMatrix 1800
 
 
 
-arr neighborCountBuffer 2000
+arr neighborCountBuffer 1800
 
 
 
@@ -376,12 +376,6 @@ word increment 1 + endword
 word matrixIndex  MAX_X_POS updateCell_y * updateCell_x +   endword
 word matrixIndexP MAX_X_POS printCells_y * printCells_x +   endword
 word matrixIndexC MAX_X_POS tempY        *        tempX +   endword
-1234 ? seed
-
-word rand	
-	164603309 seed * 14738995463 or ? seed
-endword
-
 
 word matrixInit
 	0 ? printCells_x
@@ -395,14 +389,8 @@ word matrixInit
 		
 		while printCells_x MAX_X_POS  loopBreak
 			printCells_x 1 + ? printCells_x
-			2 rand / 1000000 >  dup if
-				BACKGROUND_CHAR
-				& mainMatrix0 matrixIndexP + ??
-			end 
-			else
-				CELL_CHAR
-				& mainMatrix0 matrixIndexP + ??
-			end 
+			BACKGROUND_CHAR
+			& mainMatrix0 matrixIndexP + ??  
 		endloop
 	endloop
 	0 SET
@@ -562,19 +550,10 @@ word convayLoop
 		
 		0 SET
 		0 "cls" system
-		0 10 10 9 9 "GameOfLife" 10 9 9 9 9 "By:" 32 "B.B." 10 10 printstring
-		0 "________________________________________________________" 10 10 10 printstring
+		0 10 10 9 9 "GameOfLife" 10 9 9 9 9 "By:" 32 "B.B." printstring
 		printCells
 		updateCell			
 		SLEEP_TIME sleep
-		0 10  "________________________________________________________" 10 10 10 10 10 10 10 10 10 10 10 printstring
-		0 ? counter
-		while 
-				counter 1 + ? counter
-				counter 1000000 = if
-					breakloop 
-				end
-		endloop
 		
 	endloop
 
@@ -582,13 +561,13 @@ word convayLoop
 endword
 
 
-word main
+
 0 SET 
 
-10000000 ? seed
+
 matrixInit
 
-0 "color" 32 "2" system
+0 "color" 32 "3" system
 
 CELL_CHAR ? mainMatrix925  
 CELL_CHAR ? mainMatrix926  
@@ -610,13 +589,7 @@ CELL_CHAR ? mainMatrix1076
 
 convayLoop
 
-endword
-
-main
-
 endscript . 
-
-
 ```
 
 ---
