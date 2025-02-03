@@ -1,14 +1,15 @@
+0
 word increment 1 + endword
 word twice increment increment endword
 0 ? counter 
 0 ? value
 while
 	counter increment 
-	? counter
+	? counter drop
 	counter 20 = if
 		breakloop
 	end
-	value twice print ? value 
+	value twice print 10 charprint ? value drop 
 endloop
 
 endscript .
