@@ -1,4 +1,5 @@
+0 
 arr a 10 
-a1 print a2 print a3 print a4 print
-10 ? a1 a1 print a2 print 1024 ? a2 10 a2 print
+a1 print a2 print a3 print a4 print 10 charprint
+10 ? a1 a1 print 10 charprint a2 print 10 charprint 1024 ? a2 10 charprint 10 a2 print 10 charprint
 endscript .
