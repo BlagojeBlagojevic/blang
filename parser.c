@@ -203,10 +203,11 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 			case TYPE_CONST: {
 					if(tokens[counterTokens].valType == F) {
 						printf("%s", tokens[counterTokens].value);
-						float valueNum = strtof(tokens[counterTokens].value,NULL);
+						double valueNum = strtod(tokens[counterTokens].value,NULL);
 						bvm->instruction[counterInstruction].type = PUSHF;
-						bvm->instruction[counterInstruction].operand._asF64 = valueNum;
-						printf("\nconst %f, push\n", valueNum);
+						bvm->instruction[counterInstruction].operand._asF64 = (double)valueNum;
+						printf("\nconst %f, pushf\n", valueNum);
+						//system("pause")
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -507,7 +508,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						}
 
 					else if(WORD_COMPARE(KEYWORD_WHILE)) {
-						bvm->instruction[counterInstruction].type = SETSP;
+						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackSize;
 						stackPush(&whileStack, counterTokens);
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
