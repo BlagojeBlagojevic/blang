@@ -9,8 +9,8 @@
 #define LOG_STACK
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
-#define MAX_VARS 10000
-#define MAX_VARS_NAME 20
+#define MAX_VARS 100000
+#define MAX_VARS_NAME 40
 
 //TBD Dynamic arr
 typedef struct {
