@@ -1,5 +1,5 @@
 0
-arr toCopyInto 50 
+arr toCopyInto 100 
 
 word memcpy
 	
@@ -19,6 +19,7 @@ word memcpy
 			breakloop
 		end
 		memcpySize -1 + ? memcpySize
+		memcpySP SET
 	endloop
 	memcpySP SET	
 endword
@@ -33,8 +34,8 @@ drop
 & toCopyInto0 temp 14 memcpy
 
 1 & toCopyInto0 11 write 
-0 & toCopyInto0 11 read 
-1 & toCopyInto0 11 write halt
+0 & toCopyInto0 11 read
+1 & toCopyInto0 5 write
+ 
 
 endscript . 
-
