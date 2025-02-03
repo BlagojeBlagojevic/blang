@@ -212,7 +212,7 @@ endword
 
 matrixInit
 
-0 "color" 32 "2" system
+0 "color" 32 "3" system
 
 CELL_CHAR ? mainMatrix925  
 CELL_CHAR ? mainMatrix926  
