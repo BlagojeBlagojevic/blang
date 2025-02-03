@@ -34,7 +34,7 @@ static const char* TokenString[] = {
 	};
 
 //static_assert(NUM_OF_TOKENS==TYPE_EOF, "we have more tokens then max");
-enum {I , F, U, CH, STR};
+enum {I, F, U, CH, STR};
 
 
 
