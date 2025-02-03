@@ -1,23 +1,31 @@
+0
 0 ? a
 0 ? b 
+SP ? outer_Sp
+drop
 while
 a 1 + ? a
 	10 a < dup if
-		100 a - print
+		100 a - print 10 charprint
 	end
 	else
 		breakloop
 	end
-while
-b 1 + ? b
-	10 b < dup if
-		b print
-	end
-	else
-		0 ? b
-		1234 print
-		breakloop
-	end
-endloop
+
+	while
+		SP ? iner_Sp
+		drop
+		b 1 + ? b
+		10 b < dup if
+			b print 10 charprint
+		end
+		else
+			0 ? b
+			1234 print 10 charprint
+			breakloop
+		end
+		iner_Sp SET
+	endloop
+	outer_Sp SET
 endloop
 endscript .
