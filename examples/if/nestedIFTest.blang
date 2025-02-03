@@ -1,22 +1,23 @@
-10 print
-30 print 
-> if 
-	1000 print
+0
+10 print 10 charprint drop
+30 print 10 charprint drop
+10 30 > if 
+	1000 print 10 charprint drop
 	100 200 + 330 +
 	100 200 
 	> if 
-       999 print	
+       999 print 10 charprint drop	
 	end
 	20 30 
   > if 
-		998 print
+		998 print 10 charprint drop
 	 20 30 
 	  > if 
-			996 print
+			996 print 10 charprint drop
 		end 
-		100 print
+		100 print 10 charprint drop
 	end 
-1000 print
+1000 print 10 charprint drop
 end
-997 print
+997 print 10 charprint drop
 endscript .
