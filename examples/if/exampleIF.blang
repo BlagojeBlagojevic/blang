@@ -1,19 +1,20 @@
-0 10 + print 
+0
+0 10 + print 10 charprint drop
 30 
 > if  
-	20 print
+	20 print 10 charprint drop
 end
 30 30 
 = if 
-	30 print
-	40 print
-	> if 
-		50 print
+	30 print 10 charprint  drop 
+	40 print 10 charprint  drop
+	40 30 > if  
+		50 print 10 charprint drop
 		20 20 = if	
-					60 print 
+					60 print 10 charprint drop 
 				end
-	70 print
+	70 print 10 charprint drop
 	end
-	80 print
+	80 print 10 charprint drop
 end
 endscript .
