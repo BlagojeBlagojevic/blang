@@ -320,8 +320,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		//TBD Make all this separate instructions insted of a this shitshow or send thru operand
-		//Or add into a encoding
+
 		case ADD: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
