@@ -14,7 +14,7 @@
 
 #define MAX_SIZE 100000000
 #define MAX_NUM_OF_WORDS 100000
-//cd Desktop\ev\image_reconstruction\lengSomting\blang-main> TBD update bvm.h!!!
+//cd Desktop\ev\image_reconstruction\lengSomting\blang-main> 
 // https://www.tutorialspoint.com/c_standard_library/string_h.htm
 
 static Arena mainArena = {0};
