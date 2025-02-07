@@ -463,7 +463,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				i64 firstOperand = FIRST(c._asI64);
 				i64 secondOperand = SECOND(c._asI64);
 				if(firstOperand == f && secondOperand == f) {
-						ERROR_BREAK("ERROR MOD TYPE FLOAT NOT ALLOWED !!!\n");
+					ERROR_BREAK("ERROR MOD TYPE FLOAT NOT ALLOWED !!!\n");
 					}
 
 				if(b._asI64 == 0 || a._asI64 == 0) {
