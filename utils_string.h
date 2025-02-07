@@ -145,5 +145,18 @@ static int isValidString(char *str) {
 
 	}
 
+#define ENCODE_OPERAND(first, second) \
+	(first) |          \
+	(second << 6)      
+
+
+#define FIRST(operand) (operand & 0x3f)
+
+
+#define SECOND(operand) ((operand & 0xfc0) >> 6)
+
+
+
+
 
 #endif

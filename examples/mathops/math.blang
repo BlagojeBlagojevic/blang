@@ -1,0 +1,37 @@
+0 
+0 10 "Add" 32 "Operation" 10 printstring
+10.1 10  + floatprint 10 charprint
+-10 10.1  + floatprint 10 charprint
+10.1 10.2  + floatprint 10 charprint 
+10 10       + print 10 charprint
+
+0 10 "Dec" 32 "Operation" 10 printstring
+10.1 10  - floatprint 10 charprint
+-10 10.1  - floatprint 10 charprint
+10.1 10.2  - floatprint 10 charprint 
+10 10       - print 10 charprint
+
+
+0 10 "Mul" 32 "Operation" 10 printstring
+10.1 10  * floatprint 10 charprint
+-10 10.1  * floatprint 10 charprint
+10.1 10.2  * floatprint 10 charprint 
+10 10       * print 10 charprint
+
+0 10 "Div" 32 "Operation" 10 printstring
+10.1 10  / floatprint 10 charprint
+-10 10.1  / floatprint 10 charprint
+10.1 10.2  / floatprint 10 charprint 
+10 10       / print 10 charprint
+
+0 10 "Mod" 32 "Operation" 10 printstring
+
+100 1012  % print 10 charprint
+
+0.12 10.1 %
+
+0 10 / print 10 charprint
+
+
+
+endscript . 

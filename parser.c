@@ -238,12 +238,14 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 					}
 			//MATH
+			//6 BYTES FOR ENCODING OF OPERANDS
 			case TYPE_OPERATION: {
 					switch(tokens[counterTokens].value[0]) {
 						case '+': {
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = ADD;
-								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
+								bvm->instruction[counterInstruction].operand._asI64 = 
+								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
 								printf("\noperation %s, add\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -251,10 +253,10 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								break;
 								}
 						case '-': {
-
-								//int valueNum = ValueToNum(tokens[counterTokens].value);
+								
 								bvm->instruction[counterInstruction].type = DEC;
-								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
+								bvm->instruction[counterInstruction].operand._asI64 = 
+								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
 								printf("\noperation %s, dec\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -265,7 +267,8 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = MUL;
-								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
+								bvm->instruction[counterInstruction].operand._asI64 = 
+								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
 								printf("\noperation %s, mul\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
@@ -276,12 +279,27 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = DIV;
-								bvm->instruction[counterInstruction].operand._asI64 = (int64_t)tokens[counterTokens-1].valType;
+								bvm->instruction[counterInstruction].operand._asI64 = 
+								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
 								printf("\noperation %s, div\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								break;
 								}
+						
+						case '%': {
+
+								//int valueNum = ValueToNum(tokens[counterTokens].value);
+								bvm->instruction[counterInstruction].type = MOD;
+								bvm->instruction[counterInstruction].operand._asI64 = 
+								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
+								printf("\noperation %s, mod\n", tokens[counterTokens].value);
+								counterTokens++;
+								counterInstruction++;
+								break;
+								}		
+								
+								
 						case '!': {
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = NOT;
