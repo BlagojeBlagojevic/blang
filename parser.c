@@ -238,6 +238,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 					}
 			//MATH
+			//6 BYTES FOR ENCODING OF OPERANDS
 			case TYPE_OPERATION: {
 					switch(tokens[counterTokens].value[0]) {
 						case '+': {
@@ -252,8 +253,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								break;
 								}
 						case '-': {
-								//TBD change like up
-								//int valueNum = ValueToNum(tokens[counterTokens].value);
+								
 								bvm->instruction[counterInstruction].type = DEC;
 								bvm->instruction[counterInstruction].operand._asI64 = 
 								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
