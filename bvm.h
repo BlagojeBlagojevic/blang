@@ -19,6 +19,10 @@
 #define SYSCALLS
 #define SYSTEM
 
+#define FIRST(operand) (operand & 0x3f)
+#define SECOND(operand) ((operand & 0xfc0) >> 6)
+
+
 
 //#define LOG_STACK
 enum {i = 0, f, u, ch};
@@ -316,30 +320,26 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-		//TBD Make all this separate instructions insted of a this shitshow or send thru operand 
+		//TBD Make all this separate instructions insted of a this shitshow or send thru operand
 		//Or add into a encoding
 		case ADD: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
 				c = bvm->instruction[bvm->IP].operand;
-				if(c._asU64 == (u)){
-					stackPush(&bvm->stack, (a._asU64 + b._asU64));
-				}
-					
-				else if(c._asU64 == i) {
-					stackPush(&bvm->stack, ((i64)a._asI64 + (i64)b._asI64));
+				i64 firstOperand = FIRST(c._asI64);
+				i64 secondOperand = SECOND(c._asI64);
+				if(firstOperand == f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (a._asF64 + b._asF64));
 					}
-				else if(c._asU64 == f) {
-					//TBD types
-					//int tf;
-					//memcpy(&tf, &b, sizeof(int));
-					//printf("tf %d\n", tf);
-					float temp = (a._asF64 + b._asF64);
-					//printf("temp %f", temp);
-					//system("pause");
-					stackPushF64(&bvm->stack, temp);
+				else if(firstOperand == f && secondOperand != f) {
+					stackPushF64(&bvm->stack, (a._asF64 + (float)b._asI64));
 					}
-				else {}; //PTR MAYBE
+				else if(firstOperand != f && secondOperand == f) {
+					stackPushF64(&bvm->stack, ((float)a._asI64 + b._asF64));
+					}
+				else {
+					stackPush(&bvm->stack, (a._asI64 + b._asI64));
+					};
 				bvm->IP++;
 				break;
 				}
@@ -393,18 +393,21 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
 				c = bvm->instruction[bvm->IP].operand;
-				if(c._asU64 == u)
-					stackPush(&bvm->stack, (a._asU64 * b._asU64));
-				else if(c._asU64 == i) {
+				i64 firstOperand = FIRST(c._asI64);
+				i64 secondOperand = SECOND(c._asI64);
+				if(firstOperand == f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asF64 * (float)b._asF64));
+					}
+				else if(firstOperand == f && secondOperand != f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asF64 * (float)b._asI64));
+					}
+				else if(firstOperand != f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asI64 * b._asF64));
+					}
+				else {
 					stackPush(&bvm->stack, (a._asI64 * b._asI64));
-					}
-				else if(c._asU64 == f) {
-					stackPushF64(&bvm->stack, (a._asF64 * b._asF64));
-					}
-				else {}; //PTR MAYBE
+					};
 				bvm->IP++;
-
-
 				break;
 				}
 
@@ -412,15 +415,20 @@ static inline void executeInstruction(Bvm *bvm) {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
 				c = bvm->instruction[bvm->IP].operand;
-				if(c._asU64 == u)
-					stackPush(&bvm->stack, (a._asU64 - b._asU64));
-				else if(c._asU64 == i) {
+				i64 firstOperand = FIRST(c._asI64);
+				i64 secondOperand = SECOND(c._asI64);
+				if(firstOperand == f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asF64 - (float)b._asF64));
+					}
+				else if(firstOperand == f && secondOperand != f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asF64 - (float)b._asI64));
+					}
+				else if(firstOperand != f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asI64 - b._asF64));
+					}
+				else {
 					stackPush(&bvm->stack, (a._asI64 - b._asI64));
-					}
-				else if(c._asU64 == f) {
-					stackPushF64(&bvm->stack, (a._asF64 - b._asF64));
-					}
-				else {}; //PTR MAYBE
+					};
 				bvm->IP++;
 				break;
 				}
@@ -430,26 +438,39 @@ static inline void executeInstruction(Bvm *bvm) {
 				if(b._asI64 == 0) {
 					ERROR_BREAK("ERROR DIVISION BY 0 !!!\n");
 					}
-				Word c = bvm->instruction[bvm->IP].operand;
-				if(c._asU64 == u)
-					stackPush(&bvm->stack, (a._asU64 / b._asU64));
-				else if(c._asU64 == i) {
+				c = bvm->instruction[bvm->IP].operand;
+				i64 firstOperand = FIRST(c._asI64);
+				i64 secondOperand = SECOND(c._asI64);
+				if(firstOperand == f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asF64 / (float)b._asF64));
+					}
+				else if(firstOperand == f && secondOperand != f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asF64 / (float)b._asI64));
+					}
+				else if(firstOperand != f && secondOperand == f) {
+					stackPushF64(&bvm->stack, (float)((float)a._asI64 / b._asF64));
+					}
+				else {
 					stackPush(&bvm->stack, (a._asI64 / b._asI64));
-					}
-				else if(c._asU64 == f) {
-					stackPushF64(&bvm->stack, (a._asF64 / b._asF64));
-					}
-				else {}; //PTR MAYBE
+					};
 				bvm->IP++;
 				break;
 				}
 		case MOD: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
-				if(b._asI64 == 0) {
+				c = bvm->instruction[bvm->IP].operand;
+				i64 firstOperand = FIRST(c._asI64);
+				i64 secondOperand = SECOND(c._asI64);
+				if(firstOperand == f && secondOperand == f) {
+						ERROR_BREAK("ERROR MOD TYPE FLOAT NOT ALLOWED !!!\n");
+					}
+
+				if(b._asI64 == 0 || a._asI64 == 0) {
 					ERROR_BREAK("ERROR MOD BY 0 !!!\n");
 					}
 				stackPush(&bvm->stack, (i64)(a._asU64 % b._asU64));
+				bvm->IP++;
 				break;
 				}
 		case NOT: {
