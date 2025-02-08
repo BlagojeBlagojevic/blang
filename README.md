@@ -124,37 +124,27 @@ Example:
 
 ### Intrinsics (Built-in Words)
 
-#### Stack Manipulation
+### Stack Manipulation
 
 | Name    | Signature        | Description                                                                                       |
 | ---     | ---              | ---                                                                                               |
 | `dup`   | `a -- a a`       | Duplicate an element on top of the stack.                                                         |
 | `swap`  | `a b -- b a`     | Swap 2 elements on the top of the stack.                                                          |
-| `drop`  | `a b -- a`       | Drop the top element of the stack.                                                                |
-| `print` | `a b -- a`       | Print the element on top of the stack in a free form to stdout and remove it from the stack.      |
+| `drop`  | `a --`           | Remove the top element from the stack.                                                            |
+| `print` | `a --`           | Print the element on top of the stack and remove it.                                              |
 | `over`  | `a b -- a b a`   | Copy the element below the top of the stack.                                                      |
 | `rot`   | `a b c -- b c a` | Rotate the top three stack elements.                                                              |
 
-#### Comparison
-
-| Name | Signature                              | Description                                                       |
-| ---  | ---                                    | ---                                                               |
-| `= ` | `[a: int] [b: int] -- [a == b : int]` | Check if two elements on top of the stack are equal.              |
-| `=!` | `[a: int] [b: int] -- [a != b : int]` | Check if two elements on top of the stack are not equal.          |
-| `> ` | `[a: int] [b: int] -- [a > b  : int]` | Apply the greater comparison on top two elements.                |
-| `< ` | `[a: int] [b: int] -- [a < b  : int]` | Apply the less comparison on top two elements.                   |
-| `<!` | `[a: int] [b: int] -- [a >= b : int]` | Apply the greater or equal comparison on top two elements.       |
-| `>!` | `[a: int] [b: int] -- [a <= b : int]` | Apply the less or equal comparison on top two elements.          |
-
-#### Arithmetic
+### Arithmetic
 
 | Name     | Signature                                        | Description                                                                                                              |
 | ---      | ---                                              | ---                                                                                                                      |
-| `+`      | `[a: int] [b: int] -- [a + b: int]`              | Sum up two elements on the top of the stack.                                                                            |
+| `+`      | `[a: int] [b: int] -- [a + b: int]`              | Sum up two elements on the top of the stack.                                                                             |
 | `-`      | `[a: int] [b: int] -- [a - b: int]`              | Subtract two elements on the top of the stack.                                                                           |
 | `*`      | `[a: int] [b: int] -- [a * b: int]`              | Multiply two elements on top of the stack.                                                                               |
 | `/`      | `[a: int] [b: int] -- [a / b: int]`              | Divide two elements on top of the stack.                                                                                 |
 | `%`      | `[a: int] [b: int] -- [a % b: int]`              | Modulo two elements on top of the stack.                                                                                 |
+                   
 
 #### Bitwise
 
@@ -178,7 +168,22 @@ Example:
 
 #### System
 
-- `syscall<n>` - TBD
+- `syscall`:
+
+| Name       | Signature                        | Description                                                                 |
+|------------|----------------------------------|-----------------------------------------------------------------------------|
+| `write`    | `fd ptr len -- result`           | Write `len` bytes from `ptr` to file descriptor `fd`.                       |
+| `close`    | `fd -- result`                   | Close file descriptor `fd`.                                                 |
+| `exit`     | `status --`                      | Terminate the program with exit `status`.                                   |
+| `truncate` | `fd length -- result`            | Truncate file descriptor `fd` to `length` bytes.                            |
+| `isatty`   | `fd -- result`                   | Check if `fd` refers to a terminal. Returns 1 if true, 0 otherwise.         |
+| `read`     | `fd ptr len -- bytes_read`       | Read up to `len` bytes from `fd` into `ptr`. Returns number of bytes read.  |
+| `sleep`    | `seconds --`                     | Sleep for `seconds` seconds.                                                |
+| `system`   | `command_ptr -- exit_code`       | Execute shell command specified by `command_ptr`.                           |
+| `dupF`     | `fd -- new_fd`                   | Duplicate file descriptor `fd`.                                             |
+| `dup2`     | `old_fd new_fd -- new_fd`        | Duplicate `old_fd` to `new_fd`, closing `new_fd` first if open.             |
+| `halt`     | `--`                             | Immediately halt the program execution.                                     |
+
 - `c functions` - TBD
 
 ---
