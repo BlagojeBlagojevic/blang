@@ -12,6 +12,8 @@
 #define ARENA_IMPLEMENTATION
 #include "arena.h"
 
+//#include<windows.h>
+
 #define MAX_SIZE 100000000
 #define MAX_NUM_OF_WORDS 100000
 //cd Desktop\ev\image_reconstruction\lengSomting\blang-main> 
@@ -58,7 +60,5 @@ int main(int argc, char **argv) {
 		printf("\n---------------------------------\n");
 		//system("pause");
 		return 0;
-
-		}
-		
+		}		
 	}
