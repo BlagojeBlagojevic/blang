@@ -613,6 +613,16 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						counterInstruction++;
 						stackSize-=2;
 						}
+					else if(WORD_COMPARE(KEYWORD_OPEN)) {
+						bvm->instruction[counterInstruction].type = OPEN;
+						bvm->instruction[counterInstruction].operand._asI64 = 123;
+						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
+						printf("\nopen = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						counterTokens++;
+						counterInstruction++;
+						stackSize-=2;
+						}	
+						
 					else if(WORD_COMPARE(KEYWORD_CLOSE)) {
 						bvm->instruction[counterInstruction].type = CLOSE;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
