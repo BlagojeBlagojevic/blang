@@ -54,7 +54,7 @@ typedef struct {
 	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD]; //TBD AS A DYNAMIC ARRAY
 	int numOfTokens;
 	char *name;
-}Words;
+	} Words;
 
 static int numOfUserDefiendWords = 0;
 

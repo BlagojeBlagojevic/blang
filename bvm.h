@@ -90,6 +90,7 @@ typedef enum {
 	INC,
 #ifdef SYSCALLS
 	WRITE,
+	OPEN,
 	CLOSE,
 	DUPF,
 	DUP2,
@@ -153,6 +154,7 @@ static const char* instructionNames[] = {
 	"INC",
 #ifdef SYSCALLS
 	"WRITE",
+	"OPEN",
 	"CLOSE",
 	"DUPF",
 	"DUP2",
@@ -758,7 +760,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				int counter = 0;
 
 				//TBD Order of a strings when pushed on stack
-				for(int i = 1; i < a._asI64 ; i++) {
+				for(int i = 0; i < a._asI64 ; i++) {
 					bytes[i] = (u8)((bvm->stack.stack[b._asI64+i])._asU64);
 					}
 				//printf("str: %s\n", bytes);
@@ -767,9 +769,49 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		//WINDOWS PROBLEM SO I KINDA MAKE THIS TYPE OF A HACK
+		//USE fopen and then i get a fd of a file it writes to
+		// 
+		case OPEN:{
+				a = stackPop(&bvm->stack);//mode
+				//LOG("\nflags : %d  \n", a._asI64);
+				char bytes[100];
+				memset(bytes, '\0', sizeof(u8)*100);
+				//LOG("path : ");
+				int counter = 0, counterB = 0;
+					for(counter = bvm->stack.SP;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--) {
+					//printf("counter %d\n", counter);
+					}
+				for(int i = counter; i < bvm->stack.SP; i++) {
+					bytes[counterB++] = (char)bvm->stack.stack[i]._asU64;
+					if(counterB == 99){
+						ERROR_BREAK("We have excide a size of a path in open syscall!!!\n");
+					}
+					}
+				//for(int i = 1; i < counterB; i++) {
+				//		LOG("%c", bytes[i]);
+				//	}
+				//LOG("\n");
+				//char mode[3];
+				//memset(mode, '\0', sizeof(char)*3);
+				bvm->stack.SP-=counterB;
+				
+				if(a._asU64 == 0){
+					FILE	*f = fopen(&bytes[1], "r");
+					stackPush(&bvm->stack, fileno(f));
+				}
+				else if(a._asU64 == 1){
+					FILE *f = fopen(&bytes[1],  "w");
+					stackPush(&bvm->stack, fileno(f));
+				}
+				
+				 
+				bvm->IP++;
+				break;
+		
+		}
 		case CLOSE: {
-				a = stackPop(&bvm->stack);//size
+				a = stackPop(&bvm->stack);//fd
 				const int temp = close(a._asI64);
 				stackPush(&bvm->stack, (i64)temp);
 				bvm->IP++;

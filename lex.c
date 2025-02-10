@@ -51,7 +51,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 						tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
 						tokens[*counterTokens].value[0] = input[*right];
 						tokens[*counterTokens].value[1] = '\0';
-
+						tokens[*counterTokens].valType = tokens[*counterTokens - 1].valType;		
 
 #ifdef LOG_VAL
 						printf("Token: LogicOperator, Value: %s\n", tokens[*counterTokens].value);
@@ -68,7 +68,9 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
 				tokens[*counterTokens].value[0] = input[*right];
 				tokens[*counterTokens].value[1] = '\0';
+				tokens[*counterTokens].valType = tokens[*counterTokens - 1].valType;
 				*counterTokens = *counterTokens + 1;
+				
 				}
 
 			}
@@ -91,6 +93,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			tokens[*counterTokens].value = subStr;
 			tokens[*counterTokens].type = TYPE_KEYWORD;
 			//printf("substr %s", tokens[counterTokens].value);
+			tokens[*counterTokens].valType = tokens[*counterTokens - 1].valType;
 			*counterTokens = *counterTokens + 1;
 
 			//IF KEYWORD IS ELSE ADD 1 IF = TOKENS
@@ -131,7 +134,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 		else if (isInteger(subStr)) {
 			tokens[*counterTokens].value = subStr;
 			tokens[*counterTokens].type = TYPE_CONST;
-			tokens[*counterTokens].valType = U;
+			tokens[*counterTokens].valType = I;
 #ifdef LOG_VAL
 			printf("Token: Integer, Value: %s\n", subStr);
 #endif
