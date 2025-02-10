@@ -1,0 +1,38 @@
+0 
+
+word O_RDONLY 0   endword
+word O_WRONLY 1   endword
+
+
+word dot 46 endword
+
+
+0 "BLAGOJE" dot "txt" O_WRONLY open
+ 
+"HelloWorld" 10   
+
+printstack
+
+3 2 11 write
+3 2 11 write
+3 2 11 write
+3 2 11 write
+3 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+1 2 11 write
+
+
+3 close
+
+3 2 10 write
+10 charprint
+print
+
+endscript . 
