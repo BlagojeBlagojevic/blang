@@ -1,0 +1,379 @@
+0 
+
+
+word O_RDONLY 0   endword
+word O_WRONLY 1   endword
+
+word width  100 endword
+word height 100 endword
+
+
+word dot 46 endword
+
+arr weights 31000
+drop
+
+0
+
+arr input 51000
+drop
+
+
+
+1234 ? seed drop
+
+word rand	
+	14738995463 164603309 seed * % ? seed 
+endword
+
+
+word lr 30 endword
+
+
+word numToChar4
+	 dup 1000 swap /   
+	 dup -1000 * swap rot + 
+	 dup 100 swap /   
+	 dup -100 * swap rot + 
+	 dup 10 swap /   
+	 dup -10 * swap rot + 
+	 SP -4 + @ "0" +  SP -5 + ?? drop 
+	 SP -3 + @ "0" +  SP -4 + ?? drop 
+	 SP -2 + @ "0" +  SP -3 + ?? drop 
+	 SP -1 + @ "0" +  SP -2 + ?? drop    
+endword
+
+word numToChar3 
+	 dup 100 swap /   
+	 dup -100 * swap rot + 
+	 dup 10 swap /   
+	 dup -10 * swap rot +   
+	 SP -3 + @ "0" +  SP -4 + ?? drop 
+	 SP -2 + @ "0" +  SP -3 + ?? drop 
+	 SP -1 + @ "0" +  SP -2 + ?? drop    
+endword
+
+
+
+
+0 ? openPPMcounter
+word openPPM
+	0 "weights" openPPMcounter numToChar4 dot "ppm" O_WRONLY open 
+	openPPMcounter 1 + ? openPPMcounter drop
+endword
+
+word errorWrite
+	-1 = if
+			0 10 "Error" 32 "Write" printstring
+			69 exit 
+		end
+endword
+
+word break
+dup 0 = if
+			breakloop
+		end
+endword
+
+
+
+
+
+word spacePPM
+		32  
+		fdPPM ppmStack 1 write errorWrite
+		drop
+endword
+
+word newlinePPM
+		10 
+		fdPPM ppmStack 1 write errorWrite
+		drop
+endword
+
+
+word writeloopPPM
+		 dup @ numToChar3 
+				 fdPPM ppmStack  3 write errorWrite
+				 drop drop drop
+				 1 +
+		spacePPM
+endword
+
+word writePPM
+				
+		? fdPPM drop
+		? heightPPM drop
+		? widthPPM drop
+		? dataPPM drop
+		printstack
+		SP ? ppmStack drop
+		
+		"P3" 10
+		fdPPM ppmStack 3 write errorWrite
+		ppmStack SET
+		
+		widthPPM numToChar4
+		fdPPM ppmStack 4 write errorWrite
+		ppmStack SET
+		
+		spacePPM
+		
+		heightPPM numToChar4
+		fdPPM ppmStack 4 write errorWrite
+		ppmStack SET
+		newlinePPM
+		"255" 10
+		fdPPM ppmStack 3 write errorWrite
+		ppmStack SET
+		newlinePPM
+		ppmStack 2 + ? ppmStack drop
+		heightPPM widthPPM * dataPPM 
+		while
+				 writeloopPPM
+				 writeloopPPM
+				 writeloopPPM
+				 newlinePPM
+				 swap -1 + 
+				 dup 0 =  if
+				 	breakloop
+				 end
+				 swap
+		endloop
+endword
+
+word indexG
+	& input0 x y width 3 * * + +  
+endword
+
+word indexW
+	& weights0 x y width 3 * * + +  
+endword
+
+
+
+word generateK
+	printstack 
+	100 3 *  rand 1 + % ? generateX1 print drop
+	10 charprint
+	100   rand 1 + % ? generateY1 print drop
+	10 charprint
+	width  rand % 10 + ? generateWidth print drop
+	
+	10 charprint  
+	
+	generateX1 ? x drop
+	generateY1 ? y drop
+	while(1 y + ? y drop)
+	     
+		while(1 x + ? x drop)
+				
+				x generateX1  generateWidth + = if
+					generateX1 ? x drop
+					breakloop
+				end 
+				lr indexG ?? drop			
+		endloop
+		
+		y generateY1  generateWidth  + = if
+					0 ? y drop
+					breakloop
+				end
+		
+		
+	endloop
+	printstack 
+	
+endword
+
+word generateC
+ 
+ 	 
+	100 2 *  rand 1 + % ? generateX1 print drop
+	10 charprint
+	100   rand 1 + % ? generateY1 print drop
+	10 charprint
+	3 width / rand % 30 + ? R print drop
+	
+	10 charprint  
+	
+	0 ? x drop
+	0 ? y drop
+	
+	while 1 y + ? y drop
+		     
+		while 1 x + ? x drop
+				 		
+				x width 3 *  = if
+					0 ? x drop
+					breakloop
+				end 
+				R R * 
+				x generateX1 - dup * 
+				y generateY1 - dup *  + 
+			 	< if
+					lr indexG  ?? drop    
+				end
+		endloop
+	
+				
+		y height = if
+					0 ? y drop
+					breakloop
+				end	
+	endloop
+	
+	
+	
+endword
+
+word updateK
+	
+	0 ? x drop
+	0 ? y drop
+	
+	while 1 y + ? y drop
+		     
+		while 1 x + ? x drop
+				 		
+				x width 3 *  = if
+					0 ? x drop
+					breakloop
+				end 
+				
+					indexG @ indexW @ + dup 255 < if drop 255 end  indexW  ?? drop    
+				
+		endloop
+	
+				
+		y height = if
+					0 ? y drop
+					breakloop
+				end	
+	endloop
+endword
+
+
+word updateC
+	
+	0 ? x drop
+	0 ? y drop
+	
+	while 1 y + ? y drop
+		     
+		while 1 x + ? x drop
+				 		
+				x width 3 *  = if
+					0 ? x drop
+					breakloop
+				end 
+				
+					indexG @ indexW @ - dup 0 > if drop 0 end  indexW  ?? drop    
+				
+		endloop
+	
+				
+		y height = if
+					0 ? y drop
+					breakloop
+				end	
+	endloop
+endword
+
+
+
+word perceptron
+	SP ? perceptronSP drop
+	width height 3 * *
+	& weights0
+	& input0
+	0 ? sum drop
+	
+	while
+		
+		dup
+		rot rot 
+		dup rot @ -125 +  swap @  * sum + ? sum drop  
+		1 + swap 1 + 
+		rot rot -1 + 
+		dup 0 = if
+			breakloop 
+		end 
+		rot
+		  
+	endloop
+	
+	width height 3 * * sum / print
+	dup 0 > if
+		0 "Krug" 10 printstring
+	end
+	1 = if
+		0 "Kvadar" 10 printstring
+	end
+	
+	perceptronSP SET 
+endword
+
+
+
+word zeroInput 
+0 ? counter drop
+while
+	1 & input0 counter + ?? drop
+	 1 counter + ? counter drop 
+	 width height 3 * * counter = if
+		breakloop
+	end
+endloop
+endword
+
+word randWeights
+0 ? counter drop
+while
+	255 rand % & weights0 counter + ?? drop
+	 1 counter + ? counter drop 
+	 width height 3 * * counter = if
+		breakloop
+	end
+endloop
+
+endword
+
+
+0 ? counter 
+drop
+
+
+
+word main
+
+randWeights
+0
+while 
+	zeroInput
+	2 rand % 0 = dup if	
+		generateK
+		updateK
+	end
+	0 = if
+		generateC
+		updateC
+	end
+	
+		
+	(& weights0 width height openPPM) writePPM
+	drop drop
+	
+	perceptron
+	
+	1 +
+	dup 50 = if
+		breakloop
+	end
+endloop
+endword
+
+
+main	
+ 
+endscript .
