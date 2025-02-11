@@ -6,9 +6,9 @@
 #define NUM_OF_TOKENS 5
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
 
-#define MAX_TOKENS 500000
+#define MAX_TOKENS 50000
 #define MAX_LENGHT  20
-#define MAX_NUM_OF_TOKENS_IN_A_WORD 10000
+#define MAX_NUM_OF_TOKENS_IN_A_WORD 1000
 
 typedef enum TokenType_t {
 	TYPE_CONST = 0,
