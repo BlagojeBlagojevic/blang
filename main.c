@@ -15,7 +15,7 @@
 //#include<windows.h>
 
 #define MAX_SIZE 100000000
-#define MAX_NUM_OF_WORDS 100000
+#define MAX_NUM_OF_WORDS 10000
 //cd Desktop\ev\image_reconstruction\lengSomting\blang-main> 
 // https://www.tutorialspoint.com/c_standard_library/string_h.htm
 

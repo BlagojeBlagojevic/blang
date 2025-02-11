@@ -10,7 +10,7 @@
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
 #define MAX_VARS 100000
-#define MAX_VARS_NAME 40
+#define MAX_VARS_NAME 20
 
 //TBD Dynamic arr
 typedef struct {
