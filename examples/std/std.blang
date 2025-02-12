@@ -1,5 +1,11 @@
 0
 
+word O_RDONLY 0   endword
+word O_WRONLY 1   endword
+word dot 46 endword
+
+
+
 word memchr
 	-1 +
 	? memchrNum
@@ -287,6 +293,119 @@ word matrixSub
 	 
 	SP_matrixSub SET  
 endword
+
+
+
+
+
+word errorWrite
+	-1 = if
+			0 10 "Error" 32 "Write" printstring
+			69 exit 
+		end
+endword
+
+word break
+dup 0 = if
+			breakloop
+		end
+endword
+
+word numToChar4
+	 dup 1000 swap /   
+	 dup -1000 * swap rot + 
+	 dup 100 swap /   
+	 dup -100 * swap rot + 
+	 dup 10 swap /   
+	 dup -10 * swap rot + 
+	 SP -4 + @ "0" +  SP -5 + ?? drop 
+	 SP -3 + @ "0" +  SP -4 + ?? drop 
+	 SP -2 + @ "0" +  SP -3 + ?? drop 
+	 SP -1 + @ "0" +  SP -2 + ?? drop    
+endword
+
+word numToChar3 
+	 dup 100 swap /   
+	 dup -100 * swap rot + 
+	 dup 10 swap /   
+	 dup -10 * swap rot +   
+	 SP -3 + @ "0" +  SP -4 + ?? drop 
+	 SP -2 + @ "0" +  SP -3 + ?? drop 
+	 SP -1 + @ "0" +  SP -2 + ?? drop    
+endword
+
+
+
+
+word spacePPM
+		32  
+		fdPPM ppmStack 1 write errorWrite
+		drop
+endword
+
+word newlinePPM
+		10 
+		fdPPM ppmStack 1 write errorWrite
+		drop
+endword
+
+
+word writeloopPPM
+		 dup @ numToChar3 
+				 fdPPM ppmStack  3 write errorWrite
+				 ppmStack  SET 
+				 1 +
+		spacePPM
+endword
+
+word writePPM
+				
+		? fdPPM drop
+		? heightPPM drop
+		? widthPPM drop
+		? dataPPM drop
+		printstack
+		SP ? ppmStack drop
+		
+		"P3" 10
+		fdPPM ppmStack 3 write errorWrite
+		ppmStack SET
+		
+		widthPPM numToChar4
+		fdPPM ppmStack 4 write errorWrite
+		ppmStack SET
+		
+		spacePPM
+		
+		heightPPM numToChar4
+		fdPPM ppmStack 4 write errorWrite
+		ppmStack SET
+		newlinePPM
+		"255" 10
+		fdPPM ppmStack 3 write errorWrite
+		ppmStack SET
+		newlinePPM
+		ppmStack 2 + ? ppmStack drop
+		heightPPM widthPPM * dataPPM 
+		while
+				 writeloopPPM
+				 writeloopPPM
+				 writeloopPPM
+				 newlinePPM
+				 swap -1 + 
+				 dup 0 =  if
+				 	breakloop
+				 end
+				 swap
+				 
+		endloop		
+endword
+
+1234 ? seed drop
+word rand	
+	14738995463 164603309 seed * % ? seed 
+endword
+
 
 
 
