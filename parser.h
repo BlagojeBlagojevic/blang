@@ -14,9 +14,9 @@
 
 //TBD Dynamic arr
 typedef struct {
-	int adress[MAX_VARS];
-	char* name[MAX_VARS];
-	uint8_t type[MAX_VARS];
+	int *adress;
+	char* *name;
+	uint8_t *type;
 	int sp;
 	} VarStack;
 	
