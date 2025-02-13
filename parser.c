@@ -74,6 +74,11 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 	Stack whileStack;
 	Stack endloopStack;
 	VarStack varStack;
+	//     INIT VarStack   //
+	varStack.adress = arena_alloc(mainArena, sizeof(int) * MAX_VARS);
+	varStack.name   = arena_alloc(mainArena, sizeof(char*) * MAX_VARS);
+	varStack.type   = arena_alloc(mainArena, sizeof(uint8_t) * MAX_VARS);
+	//********************//
 	//memset(&varStack, 0, sizeof(VarStack)*MAX_VARS);
 	varStack.sp = 0;
 	initStack(&ifStack);
