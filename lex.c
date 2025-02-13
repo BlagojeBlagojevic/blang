@@ -241,6 +241,7 @@ Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 				}
 			}
 		else if(isWordTokens) {
+			
 			int ret = lexToken(input, &left, &right, len, &counterWordTokens,
 			                   MAX_NUM_OF_TOKENS_IN_A_WORD, words[numOfUserDefiendWords].tokens, mainArena);
 			if(ret == END_SCRIPT_TOKEN) {
