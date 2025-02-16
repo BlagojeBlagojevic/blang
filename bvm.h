@@ -225,7 +225,7 @@ static inline void stackPush(Stack *stack,i64 value) {
 		}
 	stack->stack[stack->SP++]._asI64 =  value;
 #ifdef LOG_STACK
-	LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
+	//LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
 #endif
 	}
 
@@ -237,7 +237,7 @@ static inline void stackPushF64(Stack *stack,f64 value) {
 		}
 	stack->stack[stack->SP++]._asF64 =  value;
 #ifdef LOG_STACK
-	LOG("STACK PUSH %f\n", stack->stack[stack->SP - 1]._asF64);
+	//LOG("STACK PUSH %f\n", stack->stack[stack->SP - 1]._asF64);
 #endif
 	}
 static inline void stackPushWord(Stack *stack, Word value) {
@@ -245,7 +245,7 @@ static inline void stackPushWord(Stack *stack, Word value) {
 		ERROR_BREAK("STACK OVERFLOW!!!\n");
 		}
 #ifdef LOG_STACK
-	LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
+	//LOG("STACK PUSH %d\n", stack->stack[stack->SP - 1]._asI64);
 #endif
 	stack->stack[stack->SP++] = value;
 	}
@@ -258,7 +258,7 @@ static inline Word stackPop(Stack *stack) {
 		}
 	stack->SP--;
 #ifdef LOG_STACK
-	LOG("STACK POP %d\n", stack->stack[stack->SP]._asI64);
+	//LOG("STACK POP %d\n", stack->stack[stack->SP]._asI64);
 #endif
 	return stack->stack[stack->SP];
 	}
@@ -277,9 +277,9 @@ static inline Bvm initBVM(void) {
 	memset(&bvm, 0, sizeof(bvm));
 	bvm.isRuning = TRUE;
 	initStack(&bvm.stack);
-	LOG("Init BVM\n");
-	LOG("\n SP = %lu\n", bvm.stack.SP);
-	LOG("\n IP = %lu\n", bvm.IP);
+	//LOG("Init BVM\n");
+	//LOG("\n SP = %lu\n", bvm.stack.SP);
+	//LOG("\n IP = %lu\n", bvm.IP);
 	bvm.numOfInstructions = 0;
 	return bvm;
 	}
@@ -796,7 +796,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				//memset(mode, '\0', sizeof(char)*3);
 				bvm->stack.SP-=counterB;
 				
-				if(a._asU64 == 0){
+				if(a._asU64 == 2){
 					FILE	*f = fopen(&bytes[1], "r");
 					stackPush(&bvm->stack, fileno(f));
 				}
@@ -918,7 +918,7 @@ static inline void executeInstruction(Bvm *bvm) {
 #endif
 		case END: {
 				bvm->isRuning = FALSE;
-				LOG("\n\nExiting VM\n\n!!!");
+				//LOG("\n\nExiting VM\n\n!!!");
 				bvm->IP++;
 				break;
 				}

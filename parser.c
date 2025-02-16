@@ -10,7 +10,7 @@ static void VarStackPush(VarStack* varstack,  char* name, uint8_t type) {
 	//strcpy(varstack->name[varstack->sp], name);
 	varstack->adress[varstack->sp] = type;
 	varstack->adress[varstack->sp] = adress;
-	//printf("Var %s", name);
+	//printC("Var %s", name);
 	varstack->sp++;
 	}
 
@@ -47,14 +47,14 @@ static int VarStackGet(const char* name, VarStack *varstack) {
 
 static void PrintVarStack(VarStack v) {
 	for(int i = 0; i <= v.sp; i++) {
-		printf("Var %s addres %d\n", v.name[i], v.adress[i]);
+		printC("Var %s addres %d\n", v.name[i], v.adress[i]);
 		}
 	}
 
 
 static void PrintStack(Stack v) {
 	for(int i = 0; i < v.SP; i++) {
-		printf("Stack(%d) = %d\n", i, v.stack[i]);
+		printC("Stack(%d) = %d\n", i, v.stack[i]);
 		}
 	}
 
@@ -63,11 +63,11 @@ static void PrintStack(Stack v) {
 #define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
 
 
-void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
+void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  Arena *mainArena) {
 
 	//system("pause");
 
-	int counterTokens = 0, counterInstruction = 0;
+	int counterTokens = 0;
 	//VarStack label;
 	//label.sp = 0;
 	Stack ifStack;
@@ -87,7 +87,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 	int stackSize = 0;
 	int numOfTokens = 0;
 	while(tokens[numOfTokens].type != TYPE_EOF) {
-		printf("num of token %d defiend words %d\n", numOfTokens, numOfUserDefiendWords);
+		printC("num of token %d defiend words %d\n", numOfTokens, numOfUserDefiendWords);
 		numOfTokens++;
 		}
 	numOfTokens++;//take EOF
@@ -104,12 +104,12 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 					for(int j = numOfTokens; j >= endShift; j--) {
 						memcpy(&tokens[j + shiftOfset], &tokens[j], sizeof(Token));
-						//	printf("shifting\n");
+						//	printC("shifting\n");
 						//tokens[i + shiftOfset] = tokens[i];
 						}
 					numOfTokens+=shiftOfset;
 					//	PrintTokens(tokens);
-					//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+					//	printC("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
 					//																											endShift, shiftOfset);
 					//	system("pause");
 					int counter = 1;
@@ -119,7 +119,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						}
 					counterTokens--;
 					//	PrintTokens(tokens);
-					//	printf("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
+					//	printC("Num of %d Curent %d End %d ShiftOfset %d\n",numOfTokens, counterTokens,
 					//	       endShift, shiftOfset);
 					//system("pause");
 					}
@@ -127,10 +127,10 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 			}
 		}
 	counterTokens = 0;
-	PrintTokens(tokens);
+	//PrintTokens(tokens);
 	while(tokens[counterTokens].type != TYPE_EOF) {
 
-		//printf("Num of token %d\n", counterTokens);
+		//printC("Num of token %d\n", counterTokens);
 		//system("pause");
 		//PrintVarStack(varStack);
 		//memset()
@@ -155,7 +155,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 							}
 						bvm->instruction[counterInstruction].type = MEM;
 						bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
-						printf("\nstore var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+						printC("\nstore var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -165,7 +165,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						if(is == -1) {
 							ERROR_BREAK("We have not declared a var %s", tokens[counterTokens].value);
 							}
-						printf("\nptr var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+						printC("\nptr var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
 						bvm->instruction[counterInstruction].type = PUSH;
 						bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
 						counterTokens++;
@@ -180,7 +180,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						for(int i = numOfVars; i >= 0; i--) {
 							char *name = arena_alloc(mainArena, 100*sizeof(char));
 							sprintf(name, "%s%d", tokens[counterTokens].value, i);
-							//printf("\nname %s\n", name);
+							//printC("\nname %s\n", name);
 							VarStackPush(&varStack, name, tokens[counterTokens].valType);
 							}
 						//PrintVarStack(varStack);
@@ -197,7 +197,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 							}
 						bvm->instruction[counterInstruction].type = COPY;
 						bvm->instruction[counterInstruction].operand._asI64 = varStack.adress[is];
-						printf("\nload var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
+						printC("\nload var %s addres %d, mem\n", tokens[counterTokens].value, varStack.adress[is]);
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -207,11 +207,11 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 
 			case TYPE_CONST: {
 					if(tokens[counterTokens].valType == F) {
-						printf("%s", tokens[counterTokens].value);
+						printC("%s", tokens[counterTokens].value);
 						double valueNum = strtod(tokens[counterTokens].value,NULL);
 						bvm->instruction[counterInstruction].type = PUSHF;
 						bvm->instruction[counterInstruction].operand._asF64 = (double)valueNum;
-						printf("\nconst %f, pushf\n", valueNum);
+						printC("\nconst %f, pushf\n", valueNum);
 						//system("pause")
 						counterTokens++;
 						counterInstruction++;
@@ -222,7 +222,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value);
 						bvm->instruction[counterInstruction].type = PUSH;
 						bvm->instruction[counterInstruction].operand._asI64 = (i64)tokens[counterTokens].value[0];
-						printf("\nconst %d, push\n", tokens[counterTokens].value[0]);
+						printC("\nconst %d, push\n", tokens[counterTokens].value[0]);
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -232,7 +232,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						int valueNum = ValueToNum(tokens[counterTokens].value);
 						bvm->instruction[counterInstruction].type = PUSH;
 						bvm->instruction[counterInstruction].operand._asI64 = valueNum;
-						printf("\nconst %d, push\n", valueNum);
+						printC("\nconst %d, push\n", valueNum);
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -251,7 +251,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								bvm->instruction[counterInstruction].type = ADD;
 								bvm->instruction[counterInstruction].operand._asI64 = 
 								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
-								printf("\noperation %s, add\n", tokens[counterTokens].value);
+								printC("\noperation %s, add\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								stackSize--;
@@ -262,7 +262,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								bvm->instruction[counterInstruction].type = DEC;
 								bvm->instruction[counterInstruction].operand._asI64 = 
 								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
-								printf("\noperation %s, dec\n", tokens[counterTokens].value);
+								printC("\noperation %s, dec\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								stackSize--;
@@ -274,7 +274,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								bvm->instruction[counterInstruction].type = MUL;
 								bvm->instruction[counterInstruction].operand._asI64 = 
 								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
-								printf("\noperation %s, mul\n", tokens[counterTokens].value);
+								printC("\noperation %s, mul\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								stackSize--;
@@ -286,7 +286,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								bvm->instruction[counterInstruction].type = DIV;
 								bvm->instruction[counterInstruction].operand._asI64 = 
 								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
-								printf("\noperation %s, div\n", tokens[counterTokens].value);
+								printC("\noperation %s, div\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								break;
@@ -298,7 +298,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								bvm->instruction[counterInstruction].type = MOD;
 								bvm->instruction[counterInstruction].operand._asI64 = 
 								ENCODE_OPERAND(tokens[counterTokens-1].valType, tokens[counterTokens-2].valType);
-								printf("\noperation %s, mod\n", tokens[counterTokens].value);
+								printC("\noperation %s, mod\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								break;
@@ -309,7 +309,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 								//int valueNum = ValueToNum(tokens[counterTokens].value);
 								bvm->instruction[counterInstruction].type = NOT;
 								bvm->instruction[counterInstruction].operand._asI64 = 0;
-								printf("\noperation %s, notLogic\n", tokens[counterTokens].value);
+								printC("\noperation %s, notLogic\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
 								break;
@@ -330,7 +330,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINT;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
-						printf("\n%s, print\n", tokens[counterTokens].value);
+						printC("\n%s, print\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 
@@ -339,7 +339,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINT;
 						bvm->instruction[counterInstruction].operand._asI64 = 3;
-						printf("\n%s, print\n", tokens[counterTokens].value);
+						printC("\n%s, print\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -349,7 +349,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINT;
 						bvm->instruction[counterInstruction].operand._asI64 = F;
-						printf("\n%s, print\n", tokens[counterTokens].value);
+						printC("\n%s, print\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 
@@ -358,7 +358,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINTSTACK;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
-						printf("\n%s, printstack\n", tokens[counterTokens].value);
+						printC("\n%s, printstack\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -367,7 +367,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
 						bvm->instruction[counterInstruction].type = PRINTSTRING;
 						bvm->instruction[counterInstruction].operand._asI64 = 456654;
-						printf("\n%s, printstring\n", tokens[counterTokens].value);
+						printC("\n%s, printstring\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -377,7 +377,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = DUP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
-						printf("\n%s, dup\n", tokens[counterTokens].value);
+						printC("\n%s, dup\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -387,7 +387,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						//stackSize++;
 						bvm->instruction[counterInstruction].type = PUSHSP;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
-						printf("\n%s, SP push\n", tokens[counterTokens].value);
+						printC("\n%s, SP push\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -418,11 +418,11 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 							}
 						bvm->instruction[counterInstruction].type = JMPF;
 						bvm->instruction[counterInstruction].operand._asI64 = (i64)(endTokenPos);
-						printf("\n%d, JUMPF\n", endTokenPos);
+						printC("\n%d, JUMPF\n", endTokenPos);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
-						printf("StackSize %d\n", stackSize);
+						printC("StackSize %d\n", stackSize);
 						stackPush(&ifStack, stackSize);
 						}
 
@@ -430,7 +430,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = SETSP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&ifStack)._asI64;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -524,7 +524,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = JMP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&whileStack)._asI64;
 						//stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nendwhile token = %d, end\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nendwhile token = %d, end\n", bvm->instruction[counterInstruction].operand._asI64);
 						stackPush(&endloopStack, (i64)counterInstruction);
 						counterTokens++;
 						counterInstruction++;
@@ -535,7 +535,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].operand._asI64 = stackSize;
 						stackPush(&whileStack, counterTokens);
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nwhile sp = %d, while\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nwhile sp = %d, while\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -545,7 +545,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						while(tokens[endTokenPos].type != TYPE_EOF) {
 							if(!strcmp(tokens[endTokenPos].value, keywords[KEYWORD_WHILE])) {
 								numWhile++;
-								printf("Num of while %d\n", numWhile);
+								printC("Num of while %d\n", numWhile);
 								//system("pause");
 								}
 							if(!strcmp(tokens[endTokenPos].value, keywords[KEYWORD_ENDLOOP])) {
@@ -558,7 +558,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 							}
 						bvm->instruction[counterInstruction].type = JMP;
 						bvm->instruction[counterInstruction].operand._asI64 = (i64)(endTokenPos+1);
-						printf("\n%d, JUMP OUT OF LOOP\n", endTokenPos);
+						printC("\n%d, JUMP OUT OF LOOP\n", endTokenPos);
 						counterTokens++;
 						counterInstruction++;
 
@@ -602,7 +602,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = SETSPSTACK;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nreturn sp = %d, else\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -613,7 +613,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = WRITE;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nwrite = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nwrite = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize-=2;
@@ -622,7 +622,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = OPEN;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nopen = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nopen = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize-=2;
@@ -632,7 +632,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = CLOSE;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nclose = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nclose = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -641,7 +641,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = DUPF;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\ndupFd = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\ndupFd = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -650,7 +650,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = DUPF;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\ndupFd2 = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\ndupFd2 = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -659,7 +659,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = EXIT;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nexit = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nexit = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -668,7 +668,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = TRUNCATE;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\ntrunc = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\ntrunc = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -677,7 +677,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = ISATTY;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\ntisatty = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\ntisatty = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -687,7 +687,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = READ;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nread = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nread = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize-=2;
@@ -697,7 +697,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = SLEEP;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nsleep = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nsleep = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -706,7 +706,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 						bvm->instruction[counterInstruction].type = SYSTEMS;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
-						printf("\nsystem = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
+						printC("\nsystem = %d,\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
 						counterInstruction++;
 						stackSize++;
@@ -726,7 +726,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 					if(!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_E])) {
 						bvm->instruction[counterInstruction].type = IF;
 						bvm->instruction[counterInstruction].operand._asI64 = 2;
-						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
+						printC("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -734,7 +734,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 					else if (!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_G])) {
 						bvm->instruction[counterInstruction].type = IF;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
-						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
+						printC("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -742,7 +742,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 					else if(!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_L])) {
 						bvm->instruction[counterInstruction].type = IF;
 						bvm->instruction[counterInstruction].operand._asI64 = 1;
-						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
+						printC("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -750,7 +750,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 					else if(!strcmp(tokens[counterTokens].value, logicOperators[LOGIC_I])) {
 						bvm->instruction[counterInstruction].type = IF;
 						bvm->instruction[counterInstruction].operand._asI64 = 2;
-						printf("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
+						printC("\nlogicoperator %s, IF\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
@@ -760,7 +760,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, Arena *mainArena) {
 					break;
 					}
 			default: {
-					printf("Not implemented : %s \n", TokenString[tokens[counterTokens].type]);
+					printC("Not implemented : %s \n", TokenString[tokens[counterTokens].type]);
 					counterTokens++;
 					break;
 					}
