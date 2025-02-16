@@ -1,6 +1,6 @@
 0
 
-word O_RDONLY 0   endword
+word O_RDONLY 2   endword
 word O_WRONLY 1   endword
 word dot 46 endword
 
