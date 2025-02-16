@@ -796,7 +796,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				//memset(mode, '\0', sizeof(char)*3);
 				bvm->stack.SP-=counterB;
 				
-				if(a._asU64 == 0){
+				if(a._asU64 == 2){
 					FILE	*f = fopen(&bytes[1], "r");
 					stackPush(&bvm->stack, fileno(f));
 				}
