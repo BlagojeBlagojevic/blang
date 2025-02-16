@@ -16,6 +16,10 @@ runtime:
 
 all: build compile run
 
+interpreter:
+	./compiler -i code.vm
+
+
 clean :
 	rm -rf compiler code.vm
 
