@@ -3,6 +3,13 @@
 #include<string.h>
 #include "arena.h"
 
+#ifdef LOG_COMPILE
+	#define printC(...) fprintf(stdout, __VA_ARGS__)
+#endif
+#ifndef LOG_COMPILE
+	#define printC(...) 
+#endif
+
 
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_PRINTSTRING,
       KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_PUSHSPMEM, KEYWORD_SET,
