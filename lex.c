@@ -6,7 +6,7 @@
 
 #define NUM_OF_TOKENS 5
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
-#define LOG_VAL
+//#define LOG_VAL
 #include "lex.h"
 //#include "utils_string.h"
 
@@ -32,7 +32,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				tokens[*counterTokens].type = TYPE_CONST;
 				tokens[*counterTokens].valType = I;
 #ifdef LOG_VAL
-				printf("Token: LogicOperator, Value: %s\n", tokens[*counterTokens].value);
+				printC("Token: LogicOperator, Value: %s\n", tokens[*counterTokens].value);
 				//system("pause");
 #endif
 				*right = next_right;
@@ -54,7 +54,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 						tokens[*counterTokens].valType = tokens[*counterTokens - 1].valType;		
 
 #ifdef LOG_VAL
-						printf("Token: LogicOperator, Value: %s\n", tokens[*counterTokens].value);
+						printC("Token: LogicOperator, Value: %s\n", tokens[*counterTokens].value);
 #endif
 						*counterTokens = *counterTokens + 1;
 						}
@@ -62,7 +62,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				}
 			else {
 #ifdef LOG_VAL
-				printf("Token: Operator, Value: %c\n", input[*right]);
+				printC("Token: Operator, Value: %c\n", input[*right]);
 #endif
 				tokens[*counterTokens].type = TYPE_OPERATION;
 				tokens[*counterTokens].value = arena_alloc(mainArena, 2*sizeof(char));
@@ -88,11 +88,11 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 		if (isKeyword(subStr)) {
 #ifdef LOG_VAL
-			printf("Token: Keyword, Value: %s\n", subStr);
+			printC("Token: Keyword, Value: %s\n", subStr);
 #endif
 			tokens[*counterTokens].value = subStr;
 			tokens[*counterTokens].type = TYPE_KEYWORD;
-			//printf("substr %s", tokens[counterTokens].value);
+			//printC("substr %s", tokens[counterTokens].value);
 			tokens[*counterTokens].valType = tokens[*counterTokens - 1].valType;
 			*counterTokens = *counterTokens + 1;
 
@@ -118,14 +118,14 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				}
 			}
 		else if(isStrEqual("word",subStr)) {
-			printf("StartWord\n");
+			printC("StartWord\n");
 			//free(subStr);
 			*left = *right;
 			return START_WORD_TOKEN;
 			}
 
 		else if(isStrEqual("endword", subStr)) {
-			printf("EndWord\n");
+			printC("EndWord\n");
 			//free(subStr);
 			*left = *right;
 			return END_WORD_TOKEN;
@@ -136,7 +136,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			tokens[*counterTokens].type = TYPE_CONST;
 			tokens[*counterTokens].valType = I;
 #ifdef LOG_VAL
-			printf("Token: Integer, Value: %s\n", subStr);
+			printC("Token: Integer, Value: %s\n", subStr);
 #endif
 			*counterTokens = *counterTokens+1;
 			}
@@ -145,7 +145,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			tokens[*counterTokens].type = TYPE_CONST;
 			tokens[*counterTokens].valType = F;
 #ifdef LOG_VAL
-			printf("Token: Float, Value: %s\n", subStr);
+			printC("Token: Float, Value: %s\n", subStr);
 #endif
 			*counterTokens = *counterTokens+1;
 			//system("pause");
@@ -169,7 +169,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 			//tokens[*counterTokens].valType = CH;
 			//*counterTokens = *counterTokens+1;
 #ifdef LOG_VAL
-			printf("Token: String, Value: %s\n", subStr);
+			printC("Token: String, Value: %s\n", subStr);
 
 #endif
 			}
@@ -177,7 +177,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 		else if (isValidVar(subStr) && !isEndChar(input[*right - 1])) {
 #ifdef LOG_VAL
-			printf("Token: var, Value: %s\n", subStr);
+			printC("Token: var, Value: %s\n", subStr);
 #endif
 			tokens[*counterTokens].value = subStr;
 			tokens[*counterTokens].type = TYPE_VAR;
@@ -188,7 +188,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 		else if (!isValidVar(subStr)&& !isEndChar(input[*right - 1])) {
 #ifdef LOG_VAL
-			printf("\nToken: Unidentified, Value: %s\n", subStr);
+			printC("\nToken: Unidentified, Value: %s\n", subStr);
 #endif
 			tokens[*counterTokens].value = subStr;
 			tokens[*counterTokens].type = TYPE_UNREGISTER;
@@ -210,7 +210,7 @@ Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 	int counterTokens = 0, counterWordTokens = 0;
 	uint8_t isWordTokens = 0;
 	while (right <= len && left <= right) {
-		//printf("CounterTokens %d, left %d right %d\n", counterTokens, left, right);
+		//printC("CounterTokens %d, left %d right %d\n", counterTokens, left, right);
 		//system("pause");
 		if(isWordTokens == 0) {
 			int ret = lexToken(input, &left, &right, len, &counterTokens, MAX_TOKENS, tokens, mainArena);
@@ -224,13 +224,13 @@ Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 				int count = 0;
 				while(!isEndChar(input[right])) {
 					words[numOfUserDefiendWords].name[count++] = input[right];
-					//printf("Name %s\n", words[numOfUserDefiendWords].name);
+					//printC("Name %s\n", words[numOfUserDefiendWords].name);
 					right++;
 					}
 				words[numOfUserDefiendWords].name[count++] = '\0';
 				//left = right;
 				//left = right-1;
-				printf("Word %s\n", words[numOfUserDefiendWords].name);
+				printC("Word %s\n", words[numOfUserDefiendWords].name);
 				//system("pause");
 				isWordTokens = 1;
 
@@ -254,7 +254,7 @@ Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 			else if(ret == END_WORD_TOKEN) {
 				//right--;
 				//left = right;
-				printf("EndWordToken\n");
+				printC("EndWordToken\n");
 				words[numOfUserDefiendWords].numOfTokens = counterWordTokens; //TAKE FIRST OUT
 				counterWordTokens = 0;
 				numOfUserDefiendWords++;
@@ -290,7 +290,7 @@ void DestroyTokens(Token* tokens) {
 	while(tokens[counter].type != TYPE_EOF) {
 		if(tokens[counter].value!=NULL)
 			free(tokens[counter].value);
-		printf("counter %d", counter);
+		printC("counter %d", counter);
 		counter++;
 
 		}
