@@ -914,7 +914,7 @@ static inline void executeInstruction(Bvm *bvm) {
 #ifdef DEVICE
 		case DRIVER:{
 				b = bvm->instruction[bvm->IP].operand;
-				devices[0].func_pointer(&bvm->stack);
+				devices[b._asI64].func_pointer(&bvm->stack);
 				bvm->IP++;
 				break;
 		}
