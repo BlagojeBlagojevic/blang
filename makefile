@@ -5,6 +5,7 @@ CFLAGS = -O3 -Wall -Wextra  -Wno-format -Wno-unused-variable -Wno-unused-functio
 build: 
 	$(CC) -o compiler main.c lex.c parser.c $(CFLAGS)
 
+
 compile:
 	./compiler -c code.blang code.vm
 
@@ -16,12 +17,17 @@ runtime:
 
 all: build compile run
 
+
 interpreter:
 	./compiler -i code.vm
+
+buildsdl: 
+	$(CC) -o compiler main.c lex.c parser.c  $(CFLAGS) -lSDL2
+
+allsdl: buildsdl compile run
 
 
 clean :
 	rm -rf compiler code.vm
 
  
-
