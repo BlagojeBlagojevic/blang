@@ -5,6 +5,9 @@
 
 #define LOG_VAL
 #define BVM_IMPLEMENTATION
+#define DEVICE
+
+#include "utils_string.h"
 #include "bvm.h"
 #include "lex.h"
 #include "parser.h"
@@ -40,14 +43,19 @@ int main(int argc, char **argv) {
 		fclose(f);
 		Bvm vm = initBVM();
 		Words *words = arena_alloc(&mainArena, MAX_NUM_OF_WORDS * sizeof(Words));
+		for (size_t i = 0; i < MAX_NUM_OF_WORDS; i++){
+			words[i].tokens = arena_alloc(&mainArena, sizeof(Token)*MAX_NUM_OF_TOKENS_IN_A_WORD);
+			//words[i].name = NULL;
+		}
 		Token *t = Tokeniser(code, words, &mainArena);
-	//	PrintTokens(t);
+		PrintTokens(t);
 		Parser(t, words, &vm, 0, &mainArena);
 		//system("pause");
 		//TBD rewrite to a dynamic arrays 
 		//DestroyTokens(t);
 		programToBin(argv[3], vm.instruction, vm.numOfInstructions);
 		//system("pause");
+		freeBvm(&vm);
 		arena_free(&mainArena);
 		//system("pause");
 		return 0;
@@ -59,17 +67,22 @@ int main(int argc, char **argv) {
 		loop(&vm);
 		printf("\n---------------------------------\n");
 		//system("pause");
+		freeBvm(&vm);
 		return 0;
 		}
       else if(!strcmp(argv[1], "-i")){
 		Bvm vm = initBVM();
 		char *code = malloc(MAX_SIZE * sizeof(char));
-		char *stored = malloc(MAX_SIZE * sizeof(char));
-		memset(stored, '\0', MAX_SIZE*sizeof(char));
+		//char *stored = malloc(MAX_SIZE * sizeof(char));
+		//memset(stored, '\0', MAX_SIZE*sizeof(char));
 		memset(code, '\0', sizeof(char) * MAX_SIZE);
 		//int counter = 0;
 		//FILE *f = fopen("inter.blang", "w+");
 		Words *words = arena_alloc(&mainArena, MAX_NUM_OF_WORDS * sizeof(Words));
+		for (size_t i = 0; i < MAX_NUM_OF_WORDS; i++){
+			words[i].tokens = arena_alloc(&mainArena, sizeof(Token)*MAX_NUM_OF_TOKENS_IN_A_WORD*1000);
+		}
+		
 		Token *t = NULL;
 		printf("\n\n\nHeap Vars are not allowed Tokenizer resets VarStack\nUse a word to def a var\n");
 		printf("Example:\nword ptrA 1234 endword\nword valA ptrA @ endword \n");
@@ -108,7 +121,7 @@ int main(int argc, char **argv) {
 		
 			//arena_free(&mainArena);
 		}
-
+		arena_free(&mainArena);
 	  }
 		
 	}
