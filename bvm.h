@@ -7,6 +7,13 @@
 #include<unistd.h>
 #include<signal.h>
 #include<stddef.h>
+#define DEVICES
+#ifdef DEVICES
+	#include "device.h"
+#endif
+#ifndef DEVICES
+	#include "bvm_type.h"
+#endif
 #define LOG(...)         fprintf(stdout, __VA_ARGS__)
 #define LOGSTACK()        LOG("Value %d\n", (i16)vm.stack[SP].asI64);
 #define ERROR_BREAK(...) {fprintf(stdout, __VA_ARGS__); exit(-1);}
@@ -30,24 +37,7 @@ enum {i = 0, f, u, ch};
 //
 
 
-typedef  uint8_t  u8;
-typedef  uint16_t u16;
-typedef  uint32_t u32;
-typedef  uint64_t u64;
-typedef  int16_t  i16;
-typedef  int32_t  i32;
-typedef  int64_t  i64;
-typedef  float    f32;
-typedef  double   f64;
 
-typedef union {
-
-	u64 _asU64;
-	i64 _asI64;
-	f64 _asF64;
-	void *_asP;
-
-	} Word;
 
 typedef enum {
 	POP,
@@ -104,6 +94,9 @@ typedef enum {
 	SYSTEMS,
 #endif
 #endif
+#ifdef DEVICE
+	DRIVER, 
+#endif
 	NEWLINE,
 	LABEL,
 	FFI,
@@ -113,7 +106,7 @@ typedef enum {
 	} InstructionType;
 
 static const char* instructionNames[] = {
-
+	
 	"POP",
 	"PUSH",
 	"PUSHF",
@@ -168,6 +161,9 @@ static const char* instructionNames[] = {
 	"SYSTEM",
 #endif
 #endif
+#ifdef DEVICE
+	"DRIVER",
+#endif
 	"\n",
 	"LABEL",
 	"FFI",
@@ -180,20 +176,12 @@ typedef struct {
 	Word operand;
 	} Instruction;
 
-
-#define STACK_CAPACITIY     200024
 #define MAX_SIZE_OF_PROGRAM 20024
-#define MAX_LINE 100
-typedef struct {
-	Word *stack;
-	i64  SP;
-	} Stack;
+#define MAX_LINE 100	
 
-static inline void stackPush(Stack *stack,i64 value);
-static inline void stackPushF64(Stack *stack,f64 value);
-static inline void stackPushWord(Stack *stack, Word value);
-static inline Word stackPop(Stack *stack);
-static inline void initStack(Stack *stack);
+
+
+
 typedef struct {
 	u8 isRuning;
 	Stack stack;
@@ -203,7 +191,8 @@ typedef struct {
 	i64 jumpReg;
 	} Bvm;
 
-static inline Bvm  initBVM(void);
+static inline Bvm  initBVM(void); //Dali da ide kao argument mozda
+static inline void freeBvm(Bvm *bvm);
 static inline void executeInstruction(Bvm *bvm);
 static inline void loop(Bvm *bvm);
 
@@ -268,6 +257,9 @@ static inline void initStack(Stack *stack) {
 	stack->stack = malloc(sizeof(Word) * STACK_CAPACITIY);
 	}
 
+static inline void freeBvm(Bvm *bvm){
+	free(bvm->stack.stack);	
+}
 
 
 static inline Bvm initBVM(void) {
@@ -281,6 +273,9 @@ static inline Bvm initBVM(void) {
 	//LOG("\n SP = %lu\n", bvm.stack.SP);
 	//LOG("\n IP = %lu\n", bvm.IP);
 	bvm.numOfInstructions = 0;
+#ifdef DEVICES
+	initDevices(&bvm.stack);
+#endif
 	return bvm;
 	}
 
@@ -915,6 +910,14 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 				}
 #endif
+#endif
+#ifdef DEVICE
+		case DRIVER:{
+				b = bvm->instruction[bvm->IP].operand;
+				devices[0].func_pointer(&bvm->stack);
+				bvm->IP++;
+				break;
+		}
 #endif
 		case END: {
 				bvm->isRuning = FALSE;
