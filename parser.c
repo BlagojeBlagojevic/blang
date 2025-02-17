@@ -58,9 +58,17 @@ static void PrintStack(Stack v) {
 		}
 	}
 
+static inline void initStackArena(Stack *stack, Arena *mainArena) {
+		stack->SP = 0;
+		stack->stack = arena_alloc(mainArena, sizeof(Word) * STACK_CAPACITIY);
+		}
+	
 
+//MAYBE ALL OF THIS NEAD TO BE A HASHD
 #define WORD_COMPARE(KEYWORD) (!strcmp(keywords[KEYWORD], tokens[counterTokens].value))
 #define WORD_COMPARE_TOKEN(KEYWORD, NUM) (!strcmp(keywords[KEYWORD], tokens[NUM].value))
+
+#define DEVICE_COMPARE(DEV) (!strcmp(device_name[DEV], tokens[counterTokens].value))
 
 
 void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  Arena *mainArena) {
@@ -81,16 +89,16 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 	//********************//
 	//memset(&varStack, 0, sizeof(VarStack)*MAX_VARS);
 	varStack.sp = 0;
-	initStack(&ifStack);
-	initStack(&whileStack);
-	initStack(&endloopStack);
+	initStackArena(&ifStack, mainArena);
+	initStackArena(&whileStack, mainArena);
+	initStackArena(&endloopStack, mainArena);
 	int stackSize = 0;
 	int numOfTokens = 0;
 	while(tokens[numOfTokens].type != TYPE_EOF) {
 		printC("num of token %d defiend words %d\n", numOfTokens, numOfUserDefiendWords);
 		numOfTokens++;
 		}
-	numOfTokens++;//take EOF
+	//numOfTokens++;//take EOF
 	//INITAL PASS TO CHANGE A TOKENS BASED OF A NAME IN A WORDS TABLE
 	//WE DO A SHIFT RIGHT FOR A NUM OF A TOKENS IN A WORD
 	//THEN WE COPY CONTENT IN A WORD STARTING FROM TOKEN+1 OR TIL word[i].token[j].value == NULL
@@ -99,6 +107,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 		if(tokens[counterTokens].type == TYPE_VAR) {
 			for(int i = 0; words[i].name != NULL; i++) {
 				if(!strcmp(tokens[counterTokens].value, words[i].name)) {
+
 					const int endShift = counterTokens+1;
 					const int shiftOfset = words[i].numOfTokens - 2;  //CUZZ OF FIRST IS A NAME
 
@@ -323,6 +332,32 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 						}
 					break;
 					}
+			//TYPE_DEVICE loop thrue all
+			//TBD Stack size drop add
+			#ifdef DEVICE 
+			case TYPE_DEVICE: {
+				for(int i = 0; i < NUM_OF_DEVICES; i++){
+					if(DEVICE_COMPARE(i)){
+						bvm->instruction[counterInstruction].type = DRIVER;
+						bvm->instruction[counterInstruction].operand._asI64 = i;
+						printC("\n%s, device\n", tokens[counterTokens].value);
+						counterTokens++;
+						counterInstruction++;
+						printf("PARSER device %s\n", tokens[counterTokens].value);
+						//exit(-1);
+						break;
+					}
+				}
+				break;
+			}
+			#endif
+			#ifndef DEVICE
+				case TYPE_DEVICE: {
+					ERROR_BREAK("Not define device function!!!");
+					counterTokens++;
+					break;
+				}
+			#endif
 			case TYPE_KEYWORD: {
 					//search thru all keywords somw fensi prob maybe hash
 					//PRINT FOR NOW ONLY INTEGERS
