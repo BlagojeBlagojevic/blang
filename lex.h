@@ -7,8 +7,10 @@
 #define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
 
 #define MAX_TOKENS 50000
-#define MAX_LENGHT  20
+#define MAX_LENGHT  30
 #define MAX_NUM_OF_TOKENS_IN_A_WORD 1000
+
+
 
 typedef enum TokenType_t {
 	TYPE_CONST = 0,
@@ -18,6 +20,7 @@ typedef enum TokenType_t {
 	TYPE_UNREGISTER,
 	TYPE_OPERATION,
 	TYPE_LOGICOPERATOR,
+	TYPE_DEVICE,
 	TYPE_EOF,
 
 	} TokenType;
@@ -30,6 +33,7 @@ static const char* TokenString[] = {
 	"UNREGISTER",
 	"OPERATION",
 	"LOGICOPERATOR",
+	"DEVICE",
 	"EOF",
 	};
 
@@ -42,7 +46,7 @@ typedef struct {
 	TokenType type;
 	char* value;     //IT EXIST TRUE ALL LIFTIME OF A PROGRAM
 	uint8_t valType;
-	} Token;
+	}Token;
 
 //DYNAMIC ARRAY FOR A TOKENS name dArr_Token
 
@@ -51,7 +55,7 @@ typedef struct {
 
 typedef struct {
 	//TBD arena_alloc alocation
-	Token tokens[MAX_NUM_OF_TOKENS_IN_A_WORD]; //TBD AS A DYNAMIC ARRAY
+	Token *tokens; //TBD AS A DYNAMIC ARRAY
 	int numOfTokens;
 	char *name;
 	} Words;
