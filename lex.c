@@ -117,6 +117,16 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 				}
 			}
+#ifdef DEVICE
+			else if (isDevice(subStr)) {
+				tokens[*counterTokens].value = subStr;
+				tokens[*counterTokens].type = TYPE_DEVICE;
+				printf("lexer device %s\n", tokens[*counterTokens].value);
+				//exit(-1);
+				tokens[*counterTokens].valType = CH;
+				*counterTokens = *counterTokens + 1;		
+			}	
+#endif
 		else if(isStrEqual("word",subStr)) {
 			printC("StartWord\n");
 			//free(subStr);
@@ -203,8 +213,9 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 
-	Token* tokens = arena_alloc(mainArena, MAX_TOKENS*sizeof(char));
-
+	Token* tokens = arena_alloc(mainArena, MAX_TOKENS*sizeof(Token));
+	//memset(&tokens->type, TYPE_EOF, sizeof(tokens->type));
+	//memset(tokens, 0, sizeof(tokens));
 	int left = 0, right = 0;
 	int len = strlen(input);
 	int counterTokens = 0, counterWordTokens = 0;
@@ -213,14 +224,15 @@ Token* Tokeniser(char* input, Words *words, Arena *mainArena) {
 		//printC("CounterTokens %d, left %d right %d\n", counterTokens, left, right);
 		//system("pause");
 		if(isWordTokens == 0) {
-			int ret = lexToken(input, &left, &right, len, &counterTokens, MAX_TOKENS, tokens, mainArena);
+			int ret = lexToken(input, &left, &right, len, &counterTokens, MAX_TOKENS-1, tokens, mainArena);
 			if(ret == END_SCRIPT_TOKEN) {
 				tokens[counterTokens].type = TYPE_EOF;
 				break;
 				}
 			else if(ret == START_WORD_TOKEN) {
 				right++;
-				words[numOfUserDefiendWords].name = arena_alloc(mainArena, 20);
+				words[numOfUserDefiendWords].name = arena_alloc(mainArena, MAX_LENGHT);
+				memset(words[numOfUserDefiendWords].name, '\0', sizeof(char)*MAX_LENGHT);
 				int count = 0;
 				while(!isEndChar(input[right])) {
 					words[numOfUserDefiendWords].name[count++] = input[right];
