@@ -298,6 +298,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 								printC("\noperation %s, div\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
+								stackSize--;
 								break;
 								}
 						
@@ -310,6 +311,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 								printC("\noperation %s, mod\n", tokens[counterTokens].value);
 								counterTokens++;
 								counterInstruction++;
+								stackSize--;
 								break;
 								}		
 								
@@ -343,6 +345,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 						printC("\n%s, device\n", tokens[counterTokens].value);
 						counterTokens++;
 						counterInstruction++;
+						stackSize += devices[i].stackSize;
 						printf("PARSER device %s\n", tokens[counterTokens].value);
 						//exit(-1);
 						break;

@@ -1,0 +1,29 @@
+0
+word SDL_ERROR
+    0 swap < if
+    0 "SdlError" 10 exit
+    end
+endword
+
+
+word sdlQuitEvent 256 endword
+10 
+600 800 initSdl
+while
+    
+    pushEvent dup 256 = if
+        0 10 "Quiting" printstring 10 exit
+    end
+    drop
+    
+    255 0 0 0     drawColor 
+    100 100 30 30 renderRect 
+    0 0 0 0     drawColor
+    renderPresent 10 sleep
+    renderClear SDL_ERROR
+    
+    
+
+endloop
+10 printstack
+endscript .
