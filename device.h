@@ -5,50 +5,157 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 //#define BVM_IMPLEMENTATION
+//#define SDL_DEVICE
 #include "bvm_type.h"
 #ifdef SDL_DEVICE
 #include<SDL2/SDL.h>
 
 typedef enum {
     INIT_SDL,
-    None,
+    CHECK_EVENT,
+    PUSH_EVENT_FROM_QUEUE,
+    RENDERER_CLEAR,
+    SET_RENDER_DRAW_COLOR,
+    SDL_RENDER_FILL_RECT,
+    SDL_RENDER_PRESENT,
     NUM_OF_DEVICES
 }DeviceType;
 
 static const char* device_name[] = {
     "initSdl",
+    "checkEvent",
+    "pushEvent",
+    "renderClear",
+    "drawColor",
+    "renderRect",
+    "renderPresent",
     "NUM_OF_DEVICES",
 };
 
 typedef struct device{
-    void (*func_pointer)(Stack*); 
+    void (*func_pointer)(Stack*);
+    int stackSize; 
 }Devices;
 
 //ALL STUF ARE PASED AS GLOBAL VARS FOR EXAMPLE WINDOW, RENDERER itd...
 
 //NEKA SA SAD BUDE GLOBALNO 
-static Devices devices[NUM_OF_DEVICES];
+static volatile Devices devices[NUM_OF_DEVICES];
 
 //MAKE THIS STUF BE PASED SOMEHOW
 //PROBLY PASS A STACK
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
+
 #define WIDTH  800
 #define HEIGHT 600
+
+//(WIDTH HEIGHT --)
 static inline void initSdl(Stack *stack){
     //Stack *s;
     printf("Inited sdl!!!\n");
-    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, NULL, &window, &renderer);
-    while(1){
+    Word width = stackPop(stack);
+    Word height = stackPop(stack);
+    printf("Width: %d Height %d\n", width._asI64, height._asI64);
+    SDL_CreateWindowAndRenderer(width._asI64, height._asI64, NULL, &window, &renderer);
+    //while(1){
 
-    }
+    //}
     return;
 }
 
+//(-- event.type)
+static inline void pushEventFromQueue(Stack *stack){
+    //Word typeOfEvent = stackPop(stack);
+    
+    SDL_Event event;
+    if(SDL_PollEvent(&event)){
+        stackPush(stack, (i64)event.type);
+    }
+    else{
+        stackPush(stack, -1); //NO EVENT IN A QUEUE
+    }
+}
+
+//(err +)
+static inline void renderClear(Stack *stack){
+    int err = SDL_RenderClear(renderer);//MAYBE PUSHES ERROR CODE 
+    stackPush(stack, (i64)err);
+}
+
+
+//(Event +)
+static inline void checkEventInLoop(Stack *stack){
+    Word typeOfEvent = stackPop(stack);
+    
+    SDL_Event event;
+    //printf("Event loop\n");
+    if(SDL_PollEvent(&event)){
+        if(event.type == typeOfEvent._asI64){
+            //MAYBE SEND DATA TO A STACK
+            exit(-1);
+
+        }
+    }
+}
+//(a, g, b, r ----)
+static inline void drawColor(Stack *stack){
+    Word a = stackPop(stack);
+    Word g = stackPop(stack);
+    Word b = stackPop(stack);
+    Word r = stackPop(stack);
+    SDL_SetRenderDrawColor(renderer, (u8)r._asI64, (u8)g._asI64, (u8)b._asI64, (u8)a._asI64);
+}
+//(h,w,y,x ----)
+static inline void rednerRect(Stack *stack){
+    Word h = stackPop(stack);
+    Word w = stackPop(stack);
+    Word y = stackPop(stack);
+    Word x = stackPop(stack);
+    SDL_Rect r;
+    r.h =  (int)h._asI64; 
+    r.w =  (int)w._asI64;
+    r.y =  (int)y._asI64; 
+    r.x =  (int)x._asI64;
+    if(SDL_RenderFillRect(renderer, &r) != 0){
+        printf("Error in drawing of a rectangle\n");
+    }
+    //SDL_Delay(1);
+}
+//()
+static inline void renderPresent(Stack *stack){
+    //printf("Drawing\n");
+    SDL_RenderPresent(renderer);
+    //printf("Drawing\n"); 
+}
+
+
+
 static inline void initDevices(Stack *stack){
     printf("Devices init\n");
+   //INIT SDL
     devices[INIT_SDL].func_pointer = &initSdl;
+    devices[INIT_SDL].stackSize = -2;
+   //CHECK EVENT
+    devices[CHECK_EVENT].func_pointer = &checkEventInLoop;
+    devices[CHECK_EVENT].stackSize = -1;
+   //PUSH EVENT FROM QUUES
+    devices[PUSH_EVENT_FROM_QUEUE].func_pointer = &pushEventFromQueue;
+    devices[PUSH_EVENT_FROM_QUEUE].stackSize = +1;
+   //CLEAR RENDERER
+    devices[RENDERER_CLEAR].func_pointer = &renderClear;
+    devices[RENDERER_CLEAR].stackSize = +1;
+   //SET DRAW COLOR
+    devices[SET_RENDER_DRAW_COLOR].func_pointer = &drawColor;
+    devices[SET_RENDER_DRAW_COLOR].stackSize = -4;
+  //DRAW RECR
+    devices[SDL_RENDER_FILL_RECT].func_pointer = &rednerRect;
+    devices[SDL_RENDER_FILL_RECT].stackSize = -4;
+  //RENDER *renderer
+    devices[SDL_RENDER_PRESENT].func_pointer = &renderPresent;
+    devices[SDL_RENDER_PRESENT].stackSize = 0;
+    
 }
 #endif
 #ifndef SDL_DEVICE
@@ -62,7 +169,8 @@ static const char* device_name[] = {
 };
 
 typedef struct device{
-    void (*func_pointer)(int); 
+    void (*func_pointer)(int);
+    int stackSize; 
 }Devices;
 
 //ALL STUF ARE PASED AS GLOBAL VARS FOR EXAMPLE WINDOW, RENDERER itd...
