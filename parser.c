@@ -336,7 +336,6 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 					}
 			//TYPE_DEVICE loop thrue all
 			//TBD Stack size drop add
-			#ifdef DEVICE 
 			case TYPE_DEVICE: {
 				for(int i = 0; i < NUM_OF_DEVICES; i++){
 					if(DEVICE_COMPARE(i)){
@@ -353,14 +352,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 				}
 				break;
 			}
-			#endif
-			#ifndef DEVICE
-				case TYPE_DEVICE: {
-					ERROR_BREAK("Not define device function!!!");
-					counterTokens++;
-					break;
-				}
-			#endif
+
 			case TYPE_KEYWORD: {
 					//search thru all keywords somw fensi prob maybe hash
 					//PRINT FOR NOW ONLY INTEGERS

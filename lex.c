@@ -117,8 +117,8 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 
 				}
 			}
-#ifdef DEVICE
-			else if (isDevice(subStr)) {
+
+		else if (isDevice(subStr)) {
 				tokens[*counterTokens].value = subStr;
 				tokens[*counterTokens].type = TYPE_DEVICE;
 				printf("lexer device %s\n", tokens[*counterTokens].value);
@@ -126,7 +126,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 				tokens[*counterTokens].valType = CH;
 				*counterTokens = *counterTokens + 1;		
 			}	
-#endif
+
 		else if(isStrEqual("word",subStr)) {
 			printC("StartWord\n");
 			//free(subStr);

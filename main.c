@@ -5,7 +5,7 @@
 
 #define LOG_VAL
 #define BVM_IMPLEMENTATION
-#define DEVICE
+
 
 #include "utils_string.h"
 #include "bvm.h"

@@ -7,14 +7,10 @@
 #include<unistd.h>
 #include<signal.h>
 #include<stddef.h>
-#define DEVICES
-#ifdef DEVICES
-	#include "device.h"
-#endif
-#ifndef DEVICES
-	#include "bvm_type.h"
-#endif
-#define LOG(...)         fprintf(stdout, __VA_ARGS__)
+#include "device.h"
+
+#define LOG(...)    fprintf(stdout, __VA_ARGS__)
+//#define LOG(...) printf
 #define LOGSTACK()        LOG("Value %d\n", (i16)vm.stack[SP].asI64);
 #define ERROR_BREAK(...) {fprintf(stdout, __VA_ARGS__); exit(-1);}
 #define PAUSE()        	 {char ch; scanf("%c", &ch);}
@@ -35,10 +31,6 @@
 enum {i = 0, f, u, ch};
 
 //
-
-
-
-
 typedef enum {
 	POP,
 	PUSH,
@@ -94,9 +86,7 @@ typedef enum {
 	SYSTEMS,
 #endif
 #endif
-#ifdef DEVICE
 	DRIVER, 
-#endif
 	NEWLINE,
 	LABEL,
 	FFI,
@@ -161,9 +151,8 @@ static const char* instructionNames[] = {
 	"SYSTEM",
 #endif
 #endif
-#ifdef DEVICE
 	"DRIVER",
-#endif
+
 	"\n",
 	"LABEL",
 	"FFI",
@@ -273,9 +262,8 @@ static inline Bvm initBVM(void) {
 	//LOG("\n SP = %lu\n", bvm.stack.SP);
 	//LOG("\n IP = %lu\n", bvm.IP);
 	bvm.numOfInstructions = 0;
-#ifdef DEVICES
-	initDevices(&bvm.stack);
-#endif
+    initDevices(&bvm.stack);
+
 	return bvm;
 	}
 
@@ -911,14 +899,14 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 #endif
 #endif
-#ifdef DEVICE
+
 		case DRIVER:{
 				b = bvm->instruction[bvm->IP].operand;
 				devices[b._asI64].func_pointer(&bvm->stack);
 				bvm->IP++;
 				break;
 		}
-#endif
+
 		case END: {
 				bvm->isRuning = FALSE;
 				//LOG("\n\nExiting VM\n\n!!!");

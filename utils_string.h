@@ -3,7 +3,7 @@
 #include<string.h>
 #include "arena.h"
 
-//#define DEVICE
+
 #ifdef LOG_COMPILE
 	#define printC(...) fprintf(stdout, __VA_ARGS__)
 #endif
@@ -11,13 +11,8 @@
 	#define printC(...) 
 #endif
 
-#define DEVICE
-#ifdef DEVICE
-	#include "device.h"
-#endif
-#ifndef DEVICE
-	#include "bvm_type.h"
-#endif
+#include "device.h"
+
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_PRINTSTRING,
       KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_PUSHSPMEM, KEYWORD_SET,
       KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
@@ -94,7 +89,7 @@ static inline char isKeyword(char* str) {
 		}
 	return 0;
 	}
-#ifdef DEVICE
+
 	static inline char isDevice(char* str){
 		for (size_t i = 0; i < sizeof(device_name) / sizeof(device_name[0]); i++) {
 			if (strcmp(str, device_name[i]) == 0) {
@@ -103,13 +98,7 @@ static inline char isKeyword(char* str) {
 			}
 		return 0;
 	}
-#endif
-#ifndef DEVICE
-	static inline char isDevice(char* str){
-		(void*)str;
-		return 0;
-	}
-#endif
+
 //TD: ADD CHECKING FOR FLOAT AND MAYBE BRACES
 static inline char isInteger(char* str) {
 	if (str == NULL || *str == '\0') {
