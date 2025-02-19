@@ -1,7 +1,3 @@
-//STA BI DEVICE TREBAO DA RADI 
-//PRVO DA DODAMO TOKEN TYPE DEVICE !
-//DODATI U VM DA MOZE DA INTERFESUJE SA
-//MOZDA KAO C FAJL PA DA BUDE EMBEDABLE
 #ifndef DEVICE_H
 #define DEVICE_H
 //#define BVM_IMPLEMENTATION
@@ -65,15 +61,17 @@ static inline void initSdl(Stack *stack){
     return;
 }
 
-//(-- event.type)
+//(-- key event.type)
 static inline void pushEventFromQueue(Stack *stack){
     //Word typeOfEvent = stackPop(stack);
-    
     SDL_Event event;
     if(SDL_PollEvent(&event)){
+        stackPush(stack, (i64)event.key.keysym.sym);
         stackPush(stack, (i64)event.type);
+ 
     }
     else{
+        stackPush(stack, -1);
         stackPush(stack, -1); //NO EVENT IN A QUEUE
     }
 }
@@ -102,8 +100,8 @@ static inline void checkEventInLoop(Stack *stack){
 //(a, g, b, r ----)
 static inline void drawColor(Stack *stack){
     Word a = stackPop(stack);
-    Word g = stackPop(stack);
     Word b = stackPop(stack);
+    Word g = stackPop(stack);
     Word r = stackPop(stack);
     SDL_SetRenderDrawColor(renderer, (u8)r._asI64, (u8)g._asI64, (u8)b._asI64, (u8)a._asI64);
 }
@@ -142,7 +140,7 @@ static inline void initDevices(Stack *stack){
     devices[CHECK_EVENT].stackSize = -1;
    //PUSH EVENT FROM QUUES
     devices[PUSH_EVENT_FROM_QUEUE].func_pointer = &pushEventFromQueue;
-    devices[PUSH_EVENT_FROM_QUEUE].stackSize = +1;
+    devices[PUSH_EVENT_FROM_QUEUE].stackSize = +2;
    //CLEAR RENDERER
     devices[RENDERER_CLEAR].func_pointer = &renderClear;
     devices[RENDERER_CLEAR].stackSize = +1;
@@ -188,4 +186,3 @@ static inline void initDevices(Stack *stack){
 
 
 #endif
-
