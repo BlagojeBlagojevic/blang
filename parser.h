@@ -7,7 +7,7 @@
 #include<stdint.h>
 #include "lex.h"
 #define LOG_STACK
-//#define DEVICE
+
 #define BVM_IMPLEMENTATION
 #include "bvm.h"
 #define MAX_VARS 100000
