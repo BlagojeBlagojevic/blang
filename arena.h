@@ -329,4 +329,76 @@ void arena_trim(Arena *a) {
 	a->end->next = NULL;
 	}
 
+
+
+
 #endif // ARENA_IMPLEMENTATION
+
+
+#ifdef ARENA_DYNAMIC_ARRAY
+
+#define ERROR(...)  {fprintf(stderr, __VA_ARGS__); exit(-1);}
+#define DEAFULT_ALLOC_SIZE 1024
+
+#define DA_ALLOC arena_alloc
+#define DA_REALLOC arena_realloc
+
+
+#define DA_STRUCT(type)\
+	typedef struct{\
+		size_t size;\
+		size_t count;\
+		type* elements;\
+		}dArr_##type;
+
+#define DA_CREATE(type)\
+	static dArr_##type dArrCreate_##type(size_t size, Arena *arena){\
+		dArr_##type temp;\
+		temp.size = size; temp.count = 0;\
+		temp.elements = DA_ALLOC(arena, sizeof(type) * size);\
+		if(temp.elements == NULL) {ERROR("Allocating dArr failed !!!");}\
+		return temp;\
+		}
+
+#define DA_INSERT(type)\
+	static void dArrInsert_##type(type elem, dArr_##type *dArr, Arena *arena){\
+		if(dArr->size == dArr->count){\
+			type *ptr = DA_REALLOC(arena, dArr->elements, dArr->size*sizeof(type), (dArr->size * 2)*sizeof(type));\
+            dArr->size*=2;dArr->size+=2;\
+			if(ptr == NULL){ERROR("We have not able to realoc a arr !!!\n");}\
+			else{dArr->elements = ptr;}\
+			}\
+			dArr->elements[dArr->count++] = elem;\
+		}
+
+//PROVIDE YOUR OWN IMPLEMENTATION format is a for exmple  "%d", "%d\n", dArr->elements[count]
+#define DA_PRINT(type, ...)\
+	static void dArrPrint_##type(dArr_##type *dArr){\
+		for(size_t count = 0; count < dArr->count; count++){\
+			printf(__VA_ARGS__);\
+			}\
+		}
+
+#define DA_LOAD_FROM_FILE(type)\
+	static dArr_##type dArrLoadFromFile_##type(const char *nameFile){\
+	dArr_##type temp = dArrCreate_##type(1000000+1);\
+		FILE *f = fopen(nameFile, "r");\
+		if(f == NULL)\
+			ERROR("Error in a file\n");\
+		fread(temp.elements, sizeof(type), 1000000, f);\
+		temp.count = 1000000;\
+		fclose(f);\
+		return temp;\
+	}
+
+
+
+#define DA_INIT(type)\
+DA_STRUCT(type);\
+DA_CREATE(type);\
+DA_INSERT(type);\
+
+#define DA_LAST(dArr) dArr->elements[dArr->count-1] 
+#define DA_LAST_LOCAL(dArr) dArr.elements[dArr.count-1]
+
+#endif
