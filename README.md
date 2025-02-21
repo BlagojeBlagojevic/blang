@@ -184,7 +184,6 @@ Example:
 | `dup2`     | `old_fd new_fd -- new_fd`        | Duplicate `old_fd` to `new_fd`, closing `new_fd` first if open.             |
 | `halt`     | `--`                             | Immediately halt the program execution.                                     |
 
-I'll help you create a section about FFI (Foreign Function Interface) for your Blang README. Here's a suggested addition that fits with your existing structure:
 
 ---
 
