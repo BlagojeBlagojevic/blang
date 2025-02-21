@@ -1,3 +1,4 @@
+//TBD interface for device system generates code
 #ifndef DEVICE_H
 #define DEVICE_H
 //#define BVM_IMPLEMENTATION
@@ -14,6 +15,8 @@ typedef enum {
     SET_RENDER_DRAW_COLOR,
     SDL_RENDER_FILL_RECT,
     SDL_RENDER_PRESENT,
+    SDL_DELAY,
+    SDL_MOUSE,
     NUM_OF_DEVICES
 }DeviceType;
 
@@ -25,6 +28,8 @@ static const char* device_name[] = {
     "drawColor",
     "renderRect",
     "renderPresent",
+    "sdlDelay",
+    "sdlMouse",
     "NUM_OF_DEVICES",
 };
 
@@ -121,11 +126,25 @@ static inline void rednerRect(Stack *stack){
     }
     //SDL_Delay(1);
 }
-//()
+//(--)
 static inline void renderPresent(Stack *stack){
     //printf("Drawing\n");
     SDL_RenderPresent(renderer);
     //printf("Drawing\n"); 
+}
+//DELAY(dealy --) 
+static inline void sdlDelay(Stack *stack){
+    Word a = stackPop(stack);
+    SDL_Delay((u32)a._asI64);
+}
+//MOUSE(-- x, y)
+static inline void sdlMouse(Stack *stack){
+    int X, Y;
+    
+    SDL_GetMouseState(&X, &Y);
+    stackPush(stack, (i64)X);
+    stackPush(stack, (i64)Y);
+    
 }
 
 
@@ -153,6 +172,14 @@ static inline void initDevices(Stack *stack){
   //RENDER *renderer
     devices[SDL_RENDER_PRESENT].func_pointer = &renderPresent;
     devices[SDL_RENDER_PRESENT].stackSize = 0;
+  //DELAY Sdl_Delay
+    devices[SDL_DELAY].func_pointer = &sdlDelay;
+    devices[SDL_DELAY].stackSize = -1;
+
+  //MOUSE Sdl_Delay
+    devices[SDL_MOUSE].func_pointer = &sdlMouse;
+    devices[SDL_MOUSE].stackSize = +2;
+    
     
 }
 #endif

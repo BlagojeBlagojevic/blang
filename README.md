@@ -184,7 +184,269 @@ Example:
 | `dup2`     | `old_fd new_fd -- new_fd`        | Duplicate `old_fd` to `new_fd`, closing `new_fd` first if open.             |
 | `halt`     | `--`                             | Immediately halt the program execution.                                     |
 
-- `c functions` - TBD
+I'll help you create a section about FFI (Foreign Function Interface) for your Blang README. Here's a suggested addition that fits with your existing structure:
+
+---
+
+## Foreign Function Interface (FFI)
+
+Blang provides FFI capabilities through its VM implementation, allowing interaction with C libraries and system calls. This enables low-level operations and integration with existing libraries.
+
+### Basic Usage
+FFI operations are handled through the `DRIVER` instruction and system call intrinsics. Here's how it works:
+
+### Device Interface Example
+The VM supports device registration for hardware/software interactions. Here's a C-side device implementation template:
+
+```c
+#ifndef DEVICE_H
+#define DEVICE_H
+//#define BVM_IMPLEMENTATION
+//#define SDL_DEVICE
+#include "bvm_type.h"
+#ifdef SDL_DEVICE
+#include<SDL2/SDL.h>
+
+typedef enum {
+    INIT_SDL,
+    CHECK_EVENT,
+    PUSH_EVENT_FROM_QUEUE,
+    RENDERER_CLEAR,
+    SET_RENDER_DRAW_COLOR,
+    SDL_RENDER_FILL_RECT,
+    SDL_RENDER_PRESENT,
+    SDL_DELAY,
+    SDL_MOUSE,
+    NUM_OF_DEVICES
+}DeviceType;
+
+static const char* device_name[] = {
+    "initSdl",
+    "checkEvent",
+    "pushEvent",
+    "renderClear",
+    "drawColor",
+    "renderRect",
+    "renderPresent",
+    "sdlDelay",
+    "sdlMouse",
+    "NUM_OF_DEVICES",
+};
+
+typedef struct device{
+    void (*func_pointer)(Stack*);
+    int stackSize; 
+}Devices;
+ 
+static volatile Devices devices[NUM_OF_DEVICES];
+
+static SDL_Window *window;
+static SDL_Renderer *renderer;
+
+#define WIDTH  800
+#define HEIGHT 600
+
+//(WIDTH HEIGHT --)
+static inline void initSdl(Stack *stack){
+    //Stack *s;
+    printf("Inited sdl!!!\n");
+    Word width = stackPop(stack);
+    Word height = stackPop(stack);
+    printf("Width: %d Height %d\n", width._asI64, height._asI64);
+    SDL_CreateWindowAndRenderer(width._asI64, height._asI64, NULL, &window, &renderer);
+    //while(1){
+
+    //}
+    return;
+}
+
+//(-- key event.type)
+static inline void pushEventFromQueue(Stack *stack){
+    //Word typeOfEvent = stackPop(stack);
+    SDL_Event event;
+    if(SDL_PollEvent(&event)){
+        stackPush(stack, (i64)event.key.keysym.sym);
+        stackPush(stack, (i64)event.type);
+ 
+    }
+    else{
+        stackPush(stack, -1);
+        stackPush(stack, -1); //NO EVENT IN A QUEUE
+    }
+}
+
+//(err +)
+static inline void renderClear(Stack *stack){
+    int err = SDL_RenderClear(renderer);//MAYBE PUSHES ERROR CODE 
+    stackPush(stack, (i64)err);
+}
+
+
+//(Event +)
+static inline void checkEventInLoop(Stack *stack){
+    Word typeOfEvent = stackPop(stack);
+    
+    SDL_Event event;
+    //printf("Event loop\n");
+    if(SDL_PollEvent(&event)){
+        if(event.type == typeOfEvent._asI64){
+            //MAYBE SEND DATA TO A STACK
+            exit(-1);
+
+        }
+    }
+}
+//(a, g, b, r ----)
+static inline void drawColor(Stack *stack){
+    Word a = stackPop(stack);
+    Word b = stackPop(stack);
+    Word g = stackPop(stack);
+    Word r = stackPop(stack);
+    SDL_SetRenderDrawColor(renderer, (u8)r._asI64, (u8)g._asI64, (u8)b._asI64, (u8)a._asI64);
+}
+//(h,w,y,x ----)
+static inline void rednerRect(Stack *stack){
+    Word h = stackPop(stack);
+    Word w = stackPop(stack);
+    Word y = stackPop(stack);
+    Word x = stackPop(stack);
+    SDL_Rect r;
+    r.h =  (int)h._asI64; 
+    r.w =  (int)w._asI64;
+    r.y =  (int)y._asI64; 
+    r.x =  (int)x._asI64;
+    if(SDL_RenderFillRect(renderer, &r) != 0){
+        printf("Error in drawing of a rectangle\n");
+    }
+    //SDL_Delay(1);
+}
+//(--)
+static inline void renderPresent(Stack *stack){
+    //printf("Drawing\n");
+    SDL_RenderPresent(renderer);
+    //printf("Drawing\n"); 
+}
+//DELAY(dealy --) 
+static inline void sdlDelay(Stack *stack){
+    Word a = stackPop(stack);
+    SDL_Delay((u32)a._asI64);
+}
+//MOUSE(-- x, y)
+static inline void sdlMouse(Stack *stack){
+    int X, Y;
+    
+    SDL_GetMouseState(&X, &Y);
+    stackPush(stack, (i64)X);
+    stackPush(stack, (i64)Y);
+    
+}
+
+
+
+static inline void initDevices(Stack *stack){
+    printf("Devices init\n");
+   //INIT SDL
+    devices[INIT_SDL].func_pointer = &initSdl;
+    devices[INIT_SDL].stackSize = -2;
+   //CHECK EVENT
+    devices[CHECK_EVENT].func_pointer = &checkEventInLoop;
+    devices[CHECK_EVENT].stackSize = -1;
+   //PUSH EVENT FROM QUUES
+    devices[PUSH_EVENT_FROM_QUEUE].func_pointer = &pushEventFromQueue;
+    devices[PUSH_EVENT_FROM_QUEUE].stackSize = +2;
+   //CLEAR RENDERER
+    devices[RENDERER_CLEAR].func_pointer = &renderClear;
+    devices[RENDERER_CLEAR].stackSize = +1;
+   //SET DRAW COLOR
+    devices[SET_RENDER_DRAW_COLOR].func_pointer = &drawColor;
+    devices[SET_RENDER_DRAW_COLOR].stackSize = -4;
+  //DRAW RECR
+    devices[SDL_RENDER_FILL_RECT].func_pointer = &rednerRect;
+    devices[SDL_RENDER_FILL_RECT].stackSize = -4;
+  //RENDER *renderer
+    devices[SDL_RENDER_PRESENT].func_pointer = &renderPresent;
+    devices[SDL_RENDER_PRESENT].stackSize = 0;
+  //DELAY Sdl_Delay
+    devices[SDL_DELAY].func_pointer = &sdlDelay;
+    devices[SDL_DELAY].stackSize = -1;
+
+  //MOUSE Sdl_Delay
+    devices[SDL_MOUSE].func_pointer = &sdlMouse;
+    devices[SDL_MOUSE].stackSize = +2;
+    
+    
+}
+#endif
+```
+
+
+### Example: SDL Integration
+```forth
+0
+word SDL_ERROR
+    0 swap < if
+    0 "SdlError" 10 exit
+    end
+endword
+
+word w 119 endword
+word a 97  endword
+word s 115 endword 
+word d 100 endword
+
+
+word SDL_QUIT            256 endword
+word SDL_KEYDOWN         768  endword
+word SDL_MOUSEMOVED      1024 endword
+word SDL_MOUSEBUTTONDOWN 1025 endword       
+word SDL_MOUSEBUTTONUP   1026 endword       
+word SDL_MOUSEWHEEL      1027 endword
+
+
+100 ? x drop
+100 ? y drop
+
+10 
+600 800 initSdl
+while
+    pushEvent dup SDL_QUIT = if
+        0 10 "Quiting" printstring 10 exit
+    end
+    dup SDL_KEYDOWN = if
+        swap 
+        dup  w = if y -5 + ? y drop end
+        dup  s = if y  5 + ? y drop end
+        dup  a = if x -5 + ? x drop end
+        dup  d = if x  5 + ? x drop end
+    end
+	dup SDL_MOUSEBUTTONDOWN = if
+		sdlMouse
+		? y drop
+		? x drop
+	end
+    drop
+    drop 
+    255 0 0 0   drawColor 
+    x y 30 30   renderRect 
+    0 0 0 0     drawColor
+    renderPresent
+    renderClear SDL_ERROR
+    
+    
+
+endloop
+10 printstack
+endscript .
+```
+
+### Important Notes
+1. The FFI system is **experimental** and subject to change
+2. Memory management between Blang and C is manual
+3. Type conversions must be handled explicitly
+4. Device IDs correspond to their registration order in `devices[]`
+
+See the [device.h](device.h) implementation for more examples of FFI integration with SDL.
+
 
 ---
 

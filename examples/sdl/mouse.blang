@@ -1,0 +1,55 @@
+0
+word SDL_ERROR
+    0 swap < if
+    0 "SdlError" 10 exit
+    end
+endword
+
+word w 119 endword
+word a 97  endword
+word s 115 endword 
+word d 100 endword
+
+
+word SDL_QUIT            256 endword
+word SDL_KEYDOWN         768  endword
+word SDL_MOUSEMOVED      1024 endword
+word SDL_MOUSEBUTTONDOWN 1025 endword       
+word SDL_MOUSEBUTTONUP   1026 endword       
+word SDL_MOUSEWHEEL      1027 endword
+
+
+100 ? x drop
+100 ? y drop
+
+10 
+600 800 initSdl
+while
+    pushEvent dup SDL_QUIT = if
+        0 10 "Quiting" printstring 10 exit
+    end
+    dup SDL_KEYDOWN = if
+        swap 
+        dup  w = if y -5 + ? y drop end
+        dup  s = if y  5 + ? y drop end
+        dup  a = if x -5 + ? x drop end
+        dup  d = if x  5 + ? x drop end
+    end
+	dup SDL_MOUSEBUTTONDOWN = if
+		sdlMouse
+		? y drop
+		? x drop
+	end
+    drop
+    drop 
+    255 0 0 0   drawColor 
+    x y 30 30   renderRect 
+    0 0 0 0     drawColor
+    renderPresent
+    renderClear SDL_ERROR
+    
+    
+
+endloop
+10 printstack
+endscript .
