@@ -938,9 +938,10 @@ static inline void loop(Bvm *bvm) {
 
 
 //PARSER WORD BY WORD
-
+//DEPRICATED See blang repo for how to program this vm
 static inline u64 textToProgram(const char* name, Instruction *instrucion) {
-
+	LOG("Depricated : SEE https://github.com/BlagojeBlagojevic/blang/\n");
+	PAUSE();
 	LOG("%s\n\n", name);
 	FILE *f = fopen(name, "rb");
 	u64 counterInstruction = 0;
@@ -1046,6 +1047,38 @@ static inline void binToProgram(const char* name, Instruction *instruction) {
 	fread(instruction, sizeof(Instruction), MAX_SIZE_OF_PROGRAM, f);
 	fclose(f);
 	}
+
+static inline void bitToDisasemly(const char* name, Instruction *instruction){
+	FILE *f = fopen(name, "rb");
+	fread(instruction, sizeof(Instruction), MAX_SIZE_OF_PROGRAM, f);
+
+	fclose(f);
+	f = fopen("dissasembled.txt", "w");
+	fseek(f, 0, SEEK_SET);
+	i64 counter = 0;
+	while(instruction[counter].type != END){
+		if(instruction[counter].type == DRIVER){
+			//device_name[]
+			const i64 driverNum = instruction[counter].operand._asI64;
+			fwrite("EXTERN  ", sizeof(char), strlen("EXTERN  "), f);
+			fwrite(device_name[driverNum], sizeof(char), strlen(device_name[driverNum]), f);
+			fwrite("\n", sizeof(char), 1, f);
+		}
+		//TBD FLOATS
+		else{
+		const i64 instNum = instruction[counter].type;
+		fwrite(instructionNames[instNum], sizeof(char), strlen(instructionNames[instNum]), f);
+		char num[20];
+		//meset(num, '\0', sizeof(char) * 20);
+		snprintf(num, 20, "  %d\n",instruction[counter].operand._asI64);
+		fwrite(num, sizeof(char), strlen(num), f);
+		
+	}
+	counter++;
+	}
+	fclose(f);
+}
+
 
 #endif
 
