@@ -1,4 +1,4 @@
-=#ifndef UTILS_STRINGS
+#ifndef UTILS_STRINGS
 #define UTILS_STRINGS
 #include<string.h>
 #include "arena.h"
