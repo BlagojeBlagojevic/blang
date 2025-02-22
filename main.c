@@ -70,6 +70,14 @@ int main(int argc, char **argv) {
 		freeBvm(&vm);
 		return 0;
 		}
+	else if(!strcmp(argv[1], "-d") && (argc > 2)) {
+		Bvm vm = initBVM();
+		//binToProgram(argv[2], vm.instruction);
+		bitToDisasemly(argv[2], vm.instruction);
+		freeBvm(&vm);
+		return 0;
+		}
+	
       else if(!strcmp(argv[1], "-i")){
 		Bvm vm = initBVM();
 		char *code = malloc(MAX_SIZE * sizeof(char));
