@@ -1,0 +1,455 @@
+0 
+word memcpy
+	-1 +
+	? memcpySize
+	drop
+	? memcpySrc
+	drop
+	? memcpyDest
+	drop
+	SP ? memcpySP
+	drop
+	while
+	
+		memcpySrc @ memcpyDest ??
+		memcpySrc 1 + ? memcpySrc 
+		memcpyDest 1 + ? memcpyDest
+		memcpySize 0 = if
+			breakloop
+		end
+		memcpySize -1 + ? memcpySize
+		
+	endloop
+	memcpySP SET
+endword
+
+
+word memset 
+	? memsetSize
+	drop
+	? memsetSrc
+	drop
+	? memsetDest
+	drop
+	SP ? memsetSP
+	drop
+	while
+		
+		memsetSrc memsetDest ??		
+		memsetDest 1 + ? memsetDest
+		memsetSize 0 = if
+			breakloop
+		end
+		memsetSize -1 + ? memsetSize
+	endloop
+	memsetSP SET
+endword
+
+
+
+arr ram 5000 
+
+arr grid 3000
+
+
+
+arr romName 40
+
+arr N 4 
+
+arr DRAW 7
+
+arr STACK 10
+
+arr regV 20 
+drop
+
+
+
+512 ? pc drop
+0 ? sp drop
+0 ? T1 drop 
+0 ? T2 drop 
+0 ? iUP drop
+0 ? iDOWN drop
+0 ? regI drop
+1234 ? seed drop
+0 ? char drop
+word font 
+
+240 144 144 144 240
+
+32 96 32 32 112
+
+240 16 240 128 240
+
+240 16 240 16 240
+
+144 144 240 16 16
+
+240 128 240 16 240
+
+240 128 240 144 240
+
+240 16 32 64 64
+
+240 144 240 144 240
+
+240 144 240 16 240
+
+240 144 240 144 144 
+
+224 144 224 144 224
+
+240 128 128 128 240
+
+224 144 144 144 224
+
+240 128 240 128 240
+
+240 128 240 128 128
+
+endword
+
+word sdl 320 640 initSdl printstack endword
+
+word initMem
+	
+	& ram0 0 5000 memset
+	& romName0 0 20 memset
+	SP ? tempSP drop
+	font 
+	& ram80 tempSP 76  memcpy
+	0 "InputFile"  10 printstring
+	1 & romName0 20 read ? size
+	0 & romName0 size write 
+	0 1 & romName0 size memcpy  size  SET
+	0 0 ?? drop
+	
+	2 open 3 dup =  ! if
+		0 "Error" 32 "File" 10  10 exit
+	end
+	& ram512 4000 read
+	& grid0 2100 memset 
+	0 "initedMem" 10 printstring
+	0 SET
+	
+endword
+word SDL_ERROR
+    0 swap < if
+    0 "SdlError" 10 exit
+    end
+endword
+
+
+
+word testNibels 
+	N3 N2 N1 N0 printstack halt
+	0 SET 
+endword
+word renderGrid
+	-1 ? x drop
+	-1 ? y drop
+	(0 255 0 0) drawColor
+	while(y 1 + ? y drop)
+		-1 ? x drop
+		while(x 1 + ? x drop)
+			& grid0 x y 64 * + + @  0 = ! if 
+				(x 10 *, y 10 *, 10, 10)renderRect
+			end
+			x 64 = if
+				breakloop
+			end
+		endloop
+		y 32 = if
+			breakloop
+		end
+	endloop
+endword
+word ptrregN2 & regV0 N2 + endword
+word valregN2 ptrregN2 @ endword
+
+word loop 
+	while
+		0 T1 > if
+			T1 -1 + ? T1 drop
+		end
+		 0  T2 > if
+			T2 -1 + ? T2 drop
+		end
+	 
+	& ram0 pc + @ ? iDOWN drop
+	pc 1 + ? pc drop 
+	& ram0 pc + @ ? iUP drop
+	pc 1 + ? pc drop 
+	
+	4 240 iDOWN  and shr ? N3 drop
+	15 iDOWN and ? N2 drop
+	
+	4 240 iUP  and shr ? N1 drop
+	15 iUP and ? N0 drop
+	
+	iUP 224 =  iDOWN 0 = and if
+		0 "Clear" 32 "Screan" 10 printstring 
+		& grid0 0 2100 memset
+		0 SET
+	end
+	
+	N3 1 = if
+		N0 4 N1 shl 8 N2 shl + + ? pc drop 
+		0 "SetPc" 10 printstring 
+		0 SET
+	end
+	N3 6 = if
+		N0 4 N1 shl + & regV0 N2  +  ?? print
+		0 32 "SetV" N2 "0"  + 10 printstring
+		0 SET
+	end
+	(N3 7) = if
+		N0 (4 N1 shl) +  (& regV0  N2  + @) + dup 255 < if -255 + end
+		( & regV0  N2   +)  ?? print 
+		0 32 "IncV" N2 "0"  + 10 printstring 
+		0 SET
+	end
+	N3 10 = if
+		8 N2 shl 4 N1 shl N0 + + ? regI
+		print 0 32 "Set" 32 "regI" 10 printstring  
+		0 SET
+	end
+	N3 13 = if
+		0 "DRAW" 10 printstring  0 SET 
+		0 ? i drop
+	    -1 ? j drop
+		while (i 1 + ? i drop)
+			i -1 + iUP 15 and = if
+				breakloop
+			end
+			& ram0 regI i -1 + + + @ ? temp drop
+			-1 ? j drop
+			while (j 1 + ? j drop)
+				j 8  = if
+					breakloop
+				end 
+				2 temp %  & DRAW0 j + ??  drop 
+				2 temp / ? temp drop
+			endloop	
+			-1 ? j drop
+			while (j 1 + ? j drop)
+				j 8  = if
+					breakloop
+				end 
+				0 ? regV15 drop
+				& DRAW7 -1 j * + @ 0 = ! if
+					& grid0 ( & regV0 N2 + @ j  + )  (( & regV0 N1 + @ i  + 64 *) ) + + @
+					dup 0 = ! if 
+						1 ? regV15 drop
+					end 
+					0 = if
+						0 ? regV15 drop
+					end 
+					& grid0 ( & regV0 N2 + @ j  +)  (( & regV0 N1 + @ i  +) 64 *) + + @
+					16777215 xor 
+					& grid0 ( & regV0 N2 + @ j  +)  (( & regV0 N1 + @ i  +) 64 *) + + ??
+					
+				end
+			endloop
+
+		endloop
+	end
+	
+	iDOWN 0 = iUP 238 = and if
+		& STACK0 sp + @ ? pc print 0 32 "returnedFromSub" printstring
+		sp -1 + ? sp 
+		0 SET 
+	end
+	N3 2 = if
+		sp 1 + ? sp drop
+		pc & STACK0 sp + ?? drop 
+		(8 N2 shl) (4 N1 shl) N0 + + ? pc print 0 32 "goingToFromSub" printstring
+		0 SET
+	end
+	
+	(N3 3 =) (valregN2) (4 N1 shl N0 + = ) and  if
+		pc 2 + ? pc print 0 32 "pcSetEqual" 10 printstring 
+		0 SET 
+	end
+
+	(N3 4 =) (& regV0 N2 + @) (4 N1 shl N0 + = !) and  if
+		pc 2 + ? pc print 0 32 "pcSetNonEqual" 10 printstring 
+		0 SET 
+	end
+    
+	(N3 5 =) (N0 0 =) ((& regV0 N2 + @) (& regV0 N1 + @) = ) and and if
+		pc 2 + ? pc print 0 32 "pcSetAnd" 10 printstring 0 SET
+	end
+	
+	(N3 8) = (N0 0) = and if
+		(& regV0 N1 + @) (& regV0 N2 + ) ?? print 0 32 "N2_N1" 10 printstring 0 SET
+	end
+	
+
+	(N3 8 =) (N0 1 =) and if
+		(& regV0 N1 + @) (& regV0 N2 + @) or (& regV0 N2 + ) ?? print 0 32 "N2or_N1" 10 printstring 0 SET
+	end
+	
+
+	(N3 8 =) (N0 2 =) and if
+		(& regV0 N1 + @) (& regV0 N2 + @) and (& regV0 N2 + ) ?? print 0 32 "N2and_N1" 10 printstring 0 SET
+	end
+
+	(N3 8 =) (N0 3 =) and if
+		(& regV0 N1 + @) (& regV0 N2 + @) xor (& regV0 N2 + ) ?? print 0 32 "N2xor_N1" 10 printstring 0 SET
+	end
+
+
+	(N3 8 =) (N0 4 =) and if
+		0 ? regV15 drop
+		(& regV0 N2 + @) (& regV0 N1 + @) + ? rez print 
+		256 rez
+		> if 
+			1 ? regV15 drop
+		 end
+		 255 rez and 
+		 & regV0 N2 + ?? 10 "add" "cary" regV15 "0" + 10 printstring 0 SET
+	end
+
+	(N3 8 =) (N0 5 =) and if
+		0 ? regV15 drop
+		(& regV0 N1 + @) (& regV0 N2 + @) - ? rez print 
+		0 rez
+		> if 
+			1 ? regV15 drop
+		 end
+		 255 rez and 
+		 & regV0 N2 + ?? 0 10 "SUB_N2_N1" "cary" regV15 "0" + 10 printstring 0 SET
+	end
+
+	(N3 8 =) (N0 6 =) and if
+		(1 (& regV0 N2 + @) shr)  (& regV0 N2 + ) ?? drop
+		(& regV0 N1 + @)  1 and  ? regV15 0 10 "SHR" "cary" regV15 "0" + 10 printstring 0 SET
+	end
+	
+	(N3 8 =) (N0 7 =) and if
+		0 ? regV15 drop
+		(& regV0 N2 + @) (& regV0 N1 + @) - ? rez print 
+		0 rez
+		> if 
+			1 ? regV15 drop
+		 end
+		 255 rez and 
+		 & regV0 N2 + ?? 0 10 "SUB_N1_N2" "cary" regV15 "0" + printstring 0 SET
+	end
+
+	(N3 8 =) (N0 14 =) and if
+		7 (& regV0 N2 + @) shr   ? regV15 
+		(1 (& regV0 N2 + @) shl)  (& regV0 N2 + ) ?? drop
+		0 10 "SHL_N1_N2" "cary" regV15 "0" + 10 printstring 0 SET 
+	end
+
+	(N3 9 =) (N0 0 = )  and  if
+		((& regV0 N2 + @) (& regV0 N1 + @) and !) if
+			pc 2 + ? pc 0 "SUB_N1_N2" "pcNoEqu" 10 printstring 0 SET
+		end
+	end
+	
+	(N3 11 =) if
+		regV0 N0 (4 N1 shl) (8 N2 shl) + + + ? pc print 0 32 "pcOpe"  printstring 0 SET
+	end
+   
+   
+	(N3 12 =) if
+		(N0 4 N1 shl +)  255 seed % and  & regV0 N2 + ?? seed + ? seed print 0 32 "rand" 10  printstring 0 SET
+	end
+
+	(N3 14 = ) (iUP 158 =) and if
+		char -48 + & regV0 N2 + @ = if
+			pc 2 + ? pc print 0 10 "pcOpeChar" 10  printstring 0 SET
+		end
+	end	
+	
+	(N3 14 = ) (iUP 161 =) and if
+		char -48 + & regV0 N2 + @ = ! if
+			pc 2 + ? pc print 0 32 "pcOpeChar" 10 printstring 0 SET
+		end
+	end
+	
+	(N3 15 = ) (iUP 7 =) and if
+		T1 & regV0 N2 + ??  print 0 32 "regToTimer"  printstring 0 SET
+	end 
+
+	(N3 15 = ) (iUP 10 =) and if
+		char "0" -1 * +  & regV0 N2 + ?? print 0 32 "regOpeChar"  printstring 0 SET
+	end 
+
+	(N3 15 = ) (iUP 15 =) and if
+		 & regV0 N2 + @ ? T1  print 0 32 "timer1ToReg" 10 printstring 0 SET 
+	end 
+
+	(N3 15 = ) (iUP 24 =) and if
+		 & regV0 N2 + @ ? T2  print 0 32 "timer2" 10  printstring 0 SET
+	end 
+	
+	(N3 15 = ) (iUP 30 =) and if
+		 regI & regV0 N2 + @  + ? regI  print 0  "regIToV" 10 printstring 0 SET
+	end 
+
+	(N3 15 = ) (iUP 41 =) and if	 
+		 & regV0 N2 + @  5 * 80 + ? regI   print 0  "regIToVScaled" 10 printstring 0 SET
+	end 
+
+	(N3 15 = ) (iUP 51 =) and if
+		(100 (& regV0 N2 + @) /)    (& ram0 regI +)    ?? drop 
+		(10 10 (& regV0 N2 + @) / %) & ram0 regI + 1 + ?? drop
+		(10 (& regV0 N2 + @) %)      & ram0 regI + 2 + ?? drop
+		 0  "Number" 10 printstring 0 SET
+
+	end
+	
+	(N3 15 = ) (iUP 85 =) and if
+		-1 ? i drop
+		while (i 1 + ? i drop)
+			& regV0 i + @ & ram0 regI i + + ?? drop
+			i N2  = if
+				breakloop
+			end
+		endloop
+		0  "LoopRam" 10 printstring 0 SET
+	end
+
+	(N3 15 = ) (iUP 101 =) and if
+		-1 ? i drop
+		while (i 1 + ? i drop)
+			 & ram0 regI i + + @ & regV0 i +  ?? drop
+			i N2 = if
+				breakloop
+			end
+		endloop
+		0  "LoopReg" 10 printstring 0 SET
+	end
+
+    pushEvent dup 256 = if
+        0 10 "Quiting" printstring 10 exit
+    end
+	dup 768 = if
+        swap ? char
+	end 
+    drop
+    drop
+	renderGrid
+	(0 0 0 0) drawColor
+	renderPresent
+    renderClear SDL_ERROR
+	1 sdlDelay
+	0 SET
+	endloop
+
+endword
+
+320 640 initSdl 
+initMem
+loop
+printstack halt
+
+0 "Hello" 32 "World" printstring 0 SET
+
+endscript .

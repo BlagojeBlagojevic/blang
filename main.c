@@ -17,7 +17,7 @@
 
 //#include<windows.h>
 
-#define MAX_SIZE 100000000
+#define MAX_SIZE 1000000
 #define MAX_NUM_OF_WORDS 10000
 //> 
 // https://www.tutorialspoint.com/c_standard_library/string_h.htm
@@ -102,19 +102,21 @@ int main(int argc, char **argv) {
 		//printf("end\nvalA\nprint\nendloop"); 
 
 		printf("\n-------------Runtime-------------\n");
+		
 		while(1){
 			printf("\n> ");
 			//code[0] = '0';
 			memset(code, '\0', sizeof(char)*MAX_SIZE);
 			code[0] = '\n';
 			//strcpy(&code[2], stored);
-			gets(&code[1]);
+			scanf("%s", &code[1]);
 			//
 			strcat(code, " endscript .");
 			//printf("\ncode: %s\n", code);
 			fflush(stdin);
 			t = Tokeniser(code, words, &mainArena);
 			Parser(t, words, &vm, vm.numOfInstructions, &mainArena);
+			
 			//printf("\nnum of instructions %lld ip = %d\n", 
 			//vm.numOfInstructions, vm.IP);
 			//printf("\n-------------Runtime-------------\n");

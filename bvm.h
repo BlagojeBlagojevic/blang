@@ -40,6 +40,7 @@ typedef enum {
 	PRINT,
 	PRINTSTACK,
 	PRINTSTRING,
+	REVERSSTRING,
 	ADD,
 	MUL,
 	DEC,
@@ -48,6 +49,7 @@ typedef enum {
 	NOT,
 	SHR,
 	SHL,
+	XOR, 
 	OR,
 	AND,
 	BNOT,
@@ -105,6 +107,7 @@ static const char* instructionNames[] = {
 	"PRINT",
 	"PRINTSTACK",
 	"PRINTSTRING",
+	"REVERSSTRING",
 	"ADD",
 	"MUL",
 	"DEC",
@@ -113,6 +116,7 @@ static const char* instructionNames[] = {
 	"NOT",
 	"SHR",
 	"SHL",
+	"XOR", 
 	"OR",
 	"AND",
 	"BNOT",
@@ -372,7 +376,24 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		case REVERSSTRING:{
+			u64 bytes[100];
+				memset(bytes, '\0', sizeof(u64)*100);
+				//LOG("path : ");
+				int counter = 0, counterB = 1;
+					for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--) {
+						bytes[counterB++] = bvm->stack.stack[counter]._asU64;
+					}
+				printf("str %s\n", bytes);
+				if(counter < 0){
+					ERROR_BREAK("Counter in reverse string shoude not be zero!!!\n");
+				}
+				memcpy(&bvm->stack.stack[counter], bytes, counterB * sizeof(u64));
+				
+			
+			bvm->IP++;
+			break;
+		}
 		case MUL: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
@@ -450,7 +471,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					ERROR_BREAK("ERROR MOD TYPE FLOAT NOT ALLOWED !!!\n");
 					}
 
-				if(b._asI64 == 0 || a._asI64 == 0) {
+				if(b._asI64 == 0) {
 					ERROR_BREAK("ERROR MOD BY 0 !!!\n");
 					}
 				stackPush(&bvm->stack, (i64)(a._asU64 % b._asU64));
@@ -480,6 +501,14 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
+		case XOR: {
+					a = stackPop(&bvm->stack);
+					b = stackPop(&bvm->stack);
+					a._asU64 = a._asU64 ^ b._asU64;
+					stackPushWord(&bvm->stack, a);
+					bvm->IP++;
+					break;
+					}
 		case OR: {
 				a = stackPop(&bvm->stack);
 				b = stackPop(&bvm->stack);
@@ -830,7 +859,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-
+		
 		case ISATTY: {
 				a = stackPop(&bvm->stack);//ofset
 				const i64 temp = isatty(a._asI64);
@@ -845,7 +874,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
 				u8 bytes[a._asI64];
 				//memset(bytes, 0, sizeof(u8)*a._asI64);
-				const i64 temp = read((int)c._asI64, bytes, (u32)a._asU64);
+				const i64 temp = read((int)c._asI64, bytes, (u64)a._asU64);
 				int counter = 0;
 
 				//TBD Order of a strings when pushed on stack

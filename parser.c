@@ -62,7 +62,14 @@ static inline void initStackArena(Stack *stack, Arena *mainArena) {
 		stack->SP = 0;
 		stack->stack = arena_alloc(mainArena, sizeof(Word) * STACK_CAPACITIY);
 		}
-	
+
+static inline void stackPushBranching(Stack *stack, i64 value){
+		if(stack->SP > STACK_SIZE_BRANCHING){
+			ERROR_BREAK("STACK OVERFLOW IN BRANCHING CONDITIONALS!!!\n");
+		}
+		stack->stack[stack->SP++]._asI64 = value;
+}	
+
 
 //MAYBE ALL OF THIS NEAD TO BE A HASHD
 #define WORD_COMPARE(KEYWORD) (!strcmp(keywords[KEYWORD], tokens[counterTokens].value))
@@ -71,7 +78,8 @@ static inline void initStackArena(Stack *stack, Arena *mainArena) {
 #define DEVICE_COMPARE(DEV) (!strcmp(device_name[DEV], tokens[counterTokens].value))
 
 
-void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  Arena *mainArena) {
+void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  
+			Arena *mainArena) {
 
 	//system("pause");
 
@@ -83,9 +91,11 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 	Stack endloopStack;
 	VarStack varStack;
 	//     INIT VarStack   //
+	
 	varStack.adress = arena_alloc(mainArena, sizeof(int) * MAX_VARS);
 	varStack.name   = arena_alloc(mainArena, sizeof(char*) * MAX_VARS);
 	varStack.type   = arena_alloc(mainArena, sizeof(uint8_t) * MAX_VARS);
+	
 	//********************//
 	//memset(&varStack, 0, sizeof(VarStack)*MAX_VARS);
 	varStack.sp = 0;
@@ -401,7 +411,14 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 						counterTokens++;
 						counterInstruction++;
 						}
-
+					else if(WORD_COMPARE(KEYWORD_REVERSESTRING)) {
+							//int valueNum = ValueToNum(tokens[counterTokens].value); HANDLING DEPEND ON TYPE OF A FILE
+							bvm->instruction[counterInstruction].type = REVERSSTRING;
+							bvm->instruction[counterInstruction].operand._asI64 = 456654;
+							printC("\n%s, reverstring\n", tokens[counterTokens].value);
+							counterTokens++;
+							counterInstruction++;
+							}
 
 					else if (WORD_COMPARE(KEYWORD_DUP)) {
 						//stackSize++;
@@ -453,7 +470,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 						counterInstruction++;
 						stackSize--;
 						printC("StackSize %d\n", stackSize);
-						stackPush(&ifStack, stackSize);
+						stackPushBranching(&ifStack, stackSize);
 						}
 
 					else if(WORD_COMPARE(KEYWORD_ELSE)) {
@@ -555,7 +572,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 						bvm->instruction[counterInstruction].operand._asI64 = stackPop(&whileStack)._asI64;
 						//stackSize =  bvm->instruction[counterInstruction].operand._asI64;
 						printC("\nendwhile token = %d, end\n", bvm->instruction[counterInstruction].operand._asI64);
-						stackPush(&endloopStack, (i64)counterInstruction);
+						stackPushBranching(&endloopStack, (i64)counterInstruction);
 						counterTokens++;
 						counterInstruction++;
 						}
@@ -563,7 +580,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 					else if(WORD_COMPARE(KEYWORD_WHILE)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = stackSize;
-						stackPush(&whileStack, counterTokens);
+						stackPushBranching(&whileStack, counterTokens);
 						stackSize =  bvm->instruction[counterInstruction].operand._asI64;
 						printC("\nwhile sp = %d, while\n", bvm->instruction[counterInstruction].operand._asI64);
 						counterTokens++;
@@ -600,13 +617,20 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,  A
 						counterInstruction++;
 						stackSize--;
 						}
-					else if(WORD_COMPARE(KEYWORD_SHR)) {
+				else if(WORD_COMPARE(KEYWORD_SHR)) {
 						bvm->instruction[counterInstruction].type = SHR;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
 						counterTokens++;
 						counterInstruction++;
 						stackSize--;
 						}
+					else if(WORD_COMPARE(KEYWORD_XOR)) {
+							bvm->instruction[counterInstruction].type = XOR;
+							bvm->instruction[counterInstruction].operand._asI64 = 56;
+							counterTokens++;
+							counterInstruction++;
+							stackSize--;
+							}	
 					else if(WORD_COMPARE(KEYWORD_AND)) {
 						bvm->instruction[counterInstruction].type = AND;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
