@@ -13,6 +13,8 @@
 #define MAX_VARS 100000
 #define MAX_VARS_NAME 20
 
+#define STACK_SIZE_BRANCHING 100
+
 //TBD Dynamic arr
 typedef struct {
 	int *adress;
@@ -21,5 +23,6 @@ typedef struct {
 	int sp;
 	} VarStack;
 	
-void Parser(Token *tokens, Words *words , Bvm *bvm, size_t counterInstruction, Arena *mainArena);
+void Parser(Token *tokens, Words *words , Bvm *bvm, 
+			size_t counterInstruction, Arena *mainArena);
 #endif
