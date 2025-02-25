@@ -18,7 +18,7 @@
 //#include<windows.h>
 
 #define MAX_SIZE 1000000
-#define MAX_NUM_OF_WORDS 10000
+#define MAX_NUM_OF_WORDS 1000
 //> 
 // https://www.tutorialspoint.com/c_standard_library/string_h.htm
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 			//words[i].name = NULL;
 		}
 		Token *t = Tokeniser(code, words, &mainArena);
-		PrintTokens(t);
+		//PrintTokens(t);
 		Parser(t, words, &vm, 0, &mainArena);
 		//system("pause");
 		//TBD rewrite to a dynamic arrays 
@@ -109,11 +109,11 @@ int main(int argc, char **argv) {
 			memset(code, '\0', sizeof(char)*MAX_SIZE);
 			code[0] = '\n';
 			//strcpy(&code[2], stored);
-			scanf("%s", &code[1]);
+			gets(&code[1]);
 			//
 			strcat(code, " endscript .");
 			//printf("\ncode: %s\n", code);
-			fflush(stdin);
+			//fflush(stdin);
 			t = Tokeniser(code, words, &mainArena);
 			Parser(t, words, &vm, vm.numOfInstructions, &mainArena);
 			
