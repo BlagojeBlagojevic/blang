@@ -206,7 +206,7 @@ word loop
 		0 SET
 	end
 	(N3 7) = if
-		N0 (4 N1 shl) +  (& regV0  N2  + @) + dup 255 < if -255 + end
+		( & regV0  N2  + @ ) N0 (4 N1 shl) +  + 
 		( & regV0  N2   +)  ?? print 
 		0 32 "IncV" N2 "0"  + 10 printstring 
 		0 SET
@@ -362,13 +362,14 @@ word loop
 	end
 
 	(N3 14 = ) (iUP 158 =) and if
-		char -48 + & regV0 N2 + @ = if
-			pc 2 + ? pc print 0 10 "pcOpeChar" 10  printstring 0 SET
+		char  & regV0 N2 + @ = if
+			pc 2 + ? pc print 0 10 "pcOpeChar" 10  printstring  0 SET
 		end
+		
 	end	
 	
 	(N3 14 = ) (iUP 161 =) and if
-		char -48 + & regV0 N2 + @ = ! if
+		char  & regV0 N2 + @ = ! if
 			pc 2 + ? pc print 0 32 "pcOpeChar" 10 printstring 0 SET
 		end
 	end
@@ -378,7 +379,7 @@ word loop
 	end 
 
 	(N3 15 = ) (iUP 10 =) and if
-		char "0" -1 * +  & regV0 N2 + ?? print 0 32 "regOpeChar"  printstring 0 SET
+		char   & regV0 N2 + ?? print 0 32 "regOpeChar"  printstring 0 SET
 	end 
 
 	(N3 15 = ) (iUP 15 =) and if
@@ -430,8 +431,76 @@ word loop
     pushEvent dup 256 = if
         0 10 "Quiting" printstring 10 exit
     end
+	
 	dup 768 = if
-        swap ? char
+        swap 
+	while
+		dup "1" = if
+		  1	? char
+		  breakloop
+		end
+		dup "2" = if
+		  2	? char
+		  breakloop
+		end
+		dup "3" = if
+		  3	? char
+		  breakloop
+		end
+		dup "4" = if
+		  4	? char
+		  breakloop
+		end
+		dup "q" = if
+		  5	? char
+		  breakloop
+		end
+		dup "w" = if
+		  6	? char
+		  breakloop
+		end 
+		dup "e" = if
+		  7	? char
+		  breakloop
+		end 
+		dup "r" = if
+		  8	? char
+		  breakloop
+		end
+		dup "a" = if
+		  9	? char
+		  breakloop
+		end
+		dup "s" = if
+		 10 ? char
+		  breakloop
+		end
+		dup "d" = if
+		 11 ? char
+		  breakloop
+		end
+		dup "f" = if
+		  12 ? char
+		  breakloop
+		end 
+		dup "z" = if
+		  13 ? char
+		  breakloop
+		end
+		dup "x" = if
+		  14 ? char
+		  breakloop
+		end 
+		dup "c" = if
+		  15 ? char
+		  breakloop
+		end
+		dup "v" = if
+		  16 ? char
+		  breakloop
+		end
+		breakloop 
+	endloop 
 	end 
     drop
     drop
@@ -445,7 +514,7 @@ word loop
 
 endword
 
-320 640 initSdl 
+640 800 initSdl 
 initMem
 loop
 printstack halt
