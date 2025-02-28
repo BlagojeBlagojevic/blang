@@ -12,7 +12,7 @@ word SDL_KEYDOWN 768 endword
 50 ? MAX_X_POS 
 50 ? MAX_Y_POS 
 word width 20  endword
-word height 16 endword
+word height 12 endword
 word sdlQuitEvent 256 endword
 
 word BACKGROUND 32 endword  
@@ -244,7 +244,7 @@ endword
 
 
 word main
-600 1000 initSdl
+800 1200 initSdl
 0 SET 
 
 1 ? seed
