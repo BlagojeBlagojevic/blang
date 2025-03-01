@@ -19,8 +19,8 @@
 #define TRUE  1
 #define FALSE 0
 
-#define SYSCALLS
-#define SYSTEM
+#define BVM_SYSCALLS
+#define BVM_SYSTEM
 
 #define FIRST(operand) (operand & 0x3f)
 #define SECOND(operand) ((operand & 0xfc0) >> 6)
@@ -72,7 +72,7 @@ typedef enum {
 	NOP,
 	HALT,
 	INC,
-#ifdef SYSCALLS
+#ifdef BVM_SYSCALLS
 	WRITE,
 	OPEN,
 	CLOSE,
@@ -84,7 +84,7 @@ typedef enum {
 	READ,
 	SWAB,
 	SLEEP,
-#ifdef SYSTEM
+#ifdef BVM_SYSTEM
 	SYSTEMS,
 #endif
 #endif
@@ -139,7 +139,7 @@ static const char* instructionNames[] = {
 	"NOP",
 	"HALT",
 	"INC",
-#ifdef SYSCALLS
+#ifdef BVM_SYSCALLS
 	"WRITE",
 	"OPEN",
 	"CLOSE",
@@ -151,7 +151,7 @@ static const char* instructionNames[] = {
 	"READ",
 	"SWAB",
 	"SLEEP",
-#ifdef SYSTEM
+#ifdef BVM_SYSTEM
 	"SYSTEM",
 #endif
 #endif
@@ -761,7 +761,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				}
 
 			//SYSCALL
-#ifdef SYSCALLS
+#ifdef BVM_SYSCALLS
 		case WRITE: {
 				a = stackPop(&bvm->stack);//size
 				b = stackPop(&bvm->stack);//data
@@ -810,11 +810,23 @@ static inline void executeInstruction(Bvm *bvm) {
 				
 				if(a._asU64 == 2){
 					FILE	*f = fopen(&bytes[1], "r");
-					stackPush(&bvm->stack, fileno(f));
+					if(f == NULL){
+						stackPush(&bvm->stack, -1);
+					}
+					else{
+						stackPush(&bvm->stack, fileno(f));
+					}
+					
 				}
 				else if(a._asU64 == 1){
 					FILE *f = fopen(&bytes[1],  "w");
-					stackPush(&bvm->stack, fileno(f));
+					if(f == NULL){
+						stackPush(&bvm->stack, -1);
+					}
+					else{
+						stackPush(&bvm->stack, fileno(f));
+					}
+					
 				}
 				
 				 
@@ -905,7 +917,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				bvm->IP++;
 				break;
 				}
-#ifdef SYSTEM
+#ifdef BVM_SYSTEM
 		case SYSTEMS: {
 
 				int counter = 0, counter1 = 0;

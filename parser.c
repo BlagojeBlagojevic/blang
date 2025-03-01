@@ -355,7 +355,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,
 						counterTokens++;
 						counterInstruction++;
 						stackSize += devices[i].stackSize;
-						printf("PARSER device %s\n", tokens[counterTokens].value);
+						//printf("PARSER device %s\n", tokens[counterTokens].value);
 						//exit(-1);
 						break;
 					}
@@ -662,7 +662,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,
 						stackSize--;
 						}
 					//SYSCALLS posix
-#ifdef SYSCALLS
+#ifdef BVM_SYSCALLS
 					else if(WORD_COMPARE(KEYWORD_WRITE)) {
 						bvm->instruction[counterInstruction].type = WRITE;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
@@ -755,7 +755,7 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,
 						counterTokens++;
 						counterInstruction++;
 						}
-#ifdef SYSTEM
+#ifdef BVM_SYSTEM
 					else if(WORD_COMPARE(KEYWORD_SYSTEM)) {
 						bvm->instruction[counterInstruction].type = SYSTEMS;
 						bvm->instruction[counterInstruction].operand._asI64 = 123;
