@@ -18,7 +18,9 @@
 //#include<windows.h>
 
 #define MAX_SIZE 1000000
+
 #define SIZE_INTERPRETER 1000
+
 #define MAX_NUM_OF_WORDS 1000
 //> 
 // https://www.tutorialspoint.com/c_standard_library/string_h.htm
@@ -110,7 +112,9 @@ int main(int argc, char **argv) {
 			memset(code, '\0', sizeof(char)*SIZE_INTERPRETER);
 			code[0] = '\n';
 			//strcpy(&code[2], stored);
+
 			fgets(&code[1], SIZE_INTERPRETER*sizeof(char), stdin);
+
 			//
 			strcat(code, " endscript .");
 			//printf("\ncode: %s\n", code);
