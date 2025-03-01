@@ -127,7 +127,7 @@ word initMem
 	0 1 & romName0 size memcpy  size  SET
 	0 0 ?? drop
 	
-	2 open 3 dup =  ! if
+	2 open  dup -1 = if
 		0 "Error" 32 "File" 10  10 exit
 	end
 	& ram512 4000 read
