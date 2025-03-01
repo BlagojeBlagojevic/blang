@@ -24,9 +24,12 @@ Blang is a **[Concatenative](https://en.wikipedia.org/wiki/Concatenative_program
 - [ ] Optimized
 - [ ] Implement a VM as a custom CPU for FPGA
 
+
+
 ---
 
 ## Examples
+
 
 ### Hello, World:
 
@@ -190,6 +193,8 @@ Example:
 ## Foreign Function Interface (FFI)
 
 Blang provides FFI capabilities through its VM implementation, allowing interaction with C libraries and system calls. This enables low-level operations and integration with existing libraries.
+![Screencastfrom2025-03-0116-14-28-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/bbf1c106-7b46-489c-bf83-51db5bb9c1f1)
+
 
 ### Basic Usage
 FFI operations are handled through the `DRIVER` instruction and system call intrinsics. Here's how it works:
@@ -437,6 +442,8 @@ endloop
 10 printstack
 endscript .
 ```
+
+
 
 ### Important Notes
 1. The FFI system is **experimental** and subject to change
