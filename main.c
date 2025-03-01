@@ -18,6 +18,7 @@
 //#include<windows.h>
 
 #define MAX_SIZE 1000000
+#define SIZE_INTERPRETER 1000
 #define MAX_NUM_OF_WORDS 1000
 //> 
 // https://www.tutorialspoint.com/c_standard_library/string_h.htm
@@ -80,10 +81,10 @@ int main(int argc, char **argv) {
 	
       else if(!strcmp(argv[1], "-i")){
 		Bvm vm = initBVM();
-		char *code = malloc(MAX_SIZE * sizeof(char));
+		char *code = malloc((SIZE_INTERPRETER+1) * sizeof(char));
 		//char *stored = malloc(MAX_SIZE * sizeof(char));
 		//memset(stored, '\0', MAX_SIZE*sizeof(char));
-		memset(code, '\0', sizeof(char) * MAX_SIZE);
+		memset(code, '\0', sizeof(char) * SIZE_INTERPRETER);
 		//int counter = 0;
 		//FILE *f = fopen("inter.blang", "w+");
 		Words *words = arena_alloc(&mainArena, MAX_NUM_OF_WORDS * sizeof(Words));
@@ -106,10 +107,10 @@ int main(int argc, char **argv) {
 		while(1){
 			printf("\n> ");
 			//code[0] = '0';
-			memset(code, '\0', sizeof(char)*MAX_SIZE);
+			memset(code, '\0', sizeof(char)*SIZE_INTERPRETER);
 			code[0] = '\n';
 			//strcpy(&code[2], stored);
-			gets(&code[1]);
+			fgets(&code[1], SIZE_INTERPRETER*sizeof(char), stdin);
 			//
 			strcat(code, " endscript .");
 			//printf("\ncode: %s\n", code);
