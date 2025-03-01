@@ -121,7 +121,7 @@ static inline int lexToken(char* input, int *left, int *right, int len,
 		else if (isDevice(subStr)) {
 				tokens[*counterTokens].value = subStr;
 				tokens[*counterTokens].type = TYPE_DEVICE;
-				printf("lexer device %s\n", tokens[*counterTokens].value);
+				printC("lexer device %s\n", tokens[*counterTokens].value);
 				//exit(-1);
 				tokens[*counterTokens].valType = CH;
 				*counterTokens = *counterTokens + 1;		
