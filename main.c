@@ -17,19 +17,16 @@
 
 //#include<windows.h>
 
-#define MAX_SIZE 1000000
-
+#define MAX_SIZE 10000000
 #define SIZE_INTERPRETER 1000
-
 #define MAX_NUM_OF_WORDS 1000
 //> 
-// https://www.tutorialspoint.com/c_standard_library/string_h.htm
+
 
 static Arena mainArena = {0};
 
 int main(int argc, char **argv) {
-	//printf("STDOUT %d", (int)stdout);
-	//write(1, "Nesto", 4);
+
 	if(argc <= 1) {
 		printf("Usage:  Compile -c <path to program> <path to save>\n\tRun -r <path to saved>\n");
 		return 0 ;
@@ -41,26 +38,19 @@ int main(int argc, char **argv) {
 		FILE *f = fopen(argv[2], "r");
 		if(f == NULL)
 			return 60;
-		fread(code, sizeof(char), MAX_SIZE, f);
-	//	printf("\n%s\n\n", code);
+		size_t s = fread(code, sizeof(char), MAX_SIZE, f);
+		(void)s;
 		fclose(f);
 		Bvm vm = initBVM();
 		Words *words = arena_alloc(&mainArena, MAX_NUM_OF_WORDS * sizeof(Words));
 		for (size_t i = 0; i < MAX_NUM_OF_WORDS; i++){
 			words[i].tokens = arena_alloc(&mainArena, sizeof(Token)*MAX_NUM_OF_TOKENS_IN_A_WORD);
-			//words[i].name = NULL;
 		}
 		Token *t = Tokeniser(code, words, &mainArena);
-		//PrintTokens(t);
 		Parser(t, words, &vm, 0, &mainArena);
-		//system("pause");
-		//TBD rewrite to a dynamic arrays 
-		//DestroyTokens(t);
 		programToBin(argv[3], vm.instruction, vm.numOfInstructions);
-		//system("pause");
 		freeBvm(&vm);
 		arena_free(&mainArena);
-		//system("pause");
 		return 0;
 		}
 	else if(!strcmp(argv[1], "-r") && (argc > 2)) {
@@ -80,8 +70,40 @@ int main(int argc, char **argv) {
 		freeBvm(&vm);
 		return 0;
 		}
-	
-      else if(!strcmp(argv[1], "-i")){
+	else if(!strcmp(argv[1], "-b") && (argc > 2)){
+		FILE *input = fopen(argv[2], "r+");
+		FILE *output  = fopen("generatedInst.h", "w");
+		//char *code = arena_alloc(&mainArena, sizeof(char)*MAX_SIZE); 
+		if(input == NULL || output == NULL){
+			ERROR_BREAK("Error in file\n");
+		}
+		char buffer[2048];
+		memset(buffer, '\0', 2048);
+		snprintf(buffer, 2048, "Instruction inst[] = {\n");
+		Bvm vm = initBVM();
+		
+		fprintf(output, "%s", buffer);
+		//binToProgram(argv[2], vm.instruction);
+		bitToDisasemly("code.vm", vm.instruction);
+		for(u64 i = 0; vm.instruction[i].type != END; i++){
+			fprintf(output, "{.type = %u, .operand = %lld},\n", 
+			vm.instruction[i].type, vm.instruction[i].operand );
+				
+		}
+
+		//fwrite(vm.instruction, sizeof(vm.instruction), 1, output);
+		uint64_t counter = 0;
+		freeBvm(&vm);
+		//fprintf(output, "", code, MAX_SIZE);
+		//fwrite(code, sizeof(char),, output);
+		fprintf(output, "{.type = %u, .operand = %lld}\n", 
+			END, 123 );
+		fprintf(output, "};");
+		fclose(output);
+		fclose(input);
+		//system("")
+	}
+    else if(!strcmp(argv[1], "-i")){
 		Bvm vm = initBVM();
 		char *code = malloc((SIZE_INTERPRETER+1) * sizeof(char));
 		//char *stored = malloc(MAX_SIZE * sizeof(char));
@@ -112,9 +134,8 @@ int main(int argc, char **argv) {
 			memset(code, '\0', sizeof(char)*SIZE_INTERPRETER);
 			code[0] = '\n';
 			//strcpy(&code[2], stored);
-
-			fgets(&code[1], SIZE_INTERPRETER*sizeof(char), stdin);
-
+			char *c =  fgets(&code[1], SIZE_INTERPRETER*sizeof(char), stdin);
+			(void)c;
 			//
 			strcat(code, " endscript .");
 			//printf("\ncode: %s\n", code);
