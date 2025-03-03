@@ -28,7 +28,8 @@ static Arena mainArena = {0};
 int main(int argc, char **argv) {
 
 	if(argc <= 1) {
-		printf("Usage:  Compile -c <path to program> <path to save>\n\tRun -r <path to saved>\n");
+		printf("Usage:  Compile -c <path to program> <path to save>\n\tRun -r <path to saved>\n\t");
+		printf("Disassemble -d <path to saved>\n\tWrite header -b <path to save>\n\tInterpreter -i\n\t");
 		return 0 ;
 		exit(EXIT_SUCCESS);
 		}
