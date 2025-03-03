@@ -58,8 +58,8 @@ static inline void initSdl(Stack *stack){
     printf("Inited sdl!!!\n");
     Word width = stackPop(stack);
     Word height = stackPop(stack);
-    printf("Width: %d Height %d\n", width._asI64, height._asI64);
-    SDL_CreateWindowAndRenderer(width._asI64, height._asI64, NULL, &window, &renderer);
+    printf("Width: %ld Height %ld\n", width._asI64, height._asI64);
+    SDL_CreateWindowAndRenderer(width._asI64, height._asI64, 0, &window, &renderer);
     //while(1){
 
     //}
@@ -128,6 +128,7 @@ static inline void rednerRect(Stack *stack){
 }
 //(--)
 static inline void renderPresent(Stack *stack){
+    (void)stack;
     //printf("Drawing\n");
     SDL_RenderPresent(renderer);
     //printf("Drawing\n"); 
@@ -150,6 +151,7 @@ static inline void sdlMouse(Stack *stack){
 
 
 static inline void initDevices(Stack *stack){
+    (void)stack;
     printf("Devices init\n");
    //INIT SDL
     devices[INIT_SDL].func_pointer = &initSdl;
@@ -194,7 +196,7 @@ static const char* device_name[] = {
 };
 
 typedef struct device{
-    void (*func_pointer)(int);
+    void (*func_pointer)(Stack*);
     int stackSize; 
 }Devices;
 
@@ -203,6 +205,7 @@ typedef struct device{
 //NEKA SA SAD BUDE GLOBALNO 
 static Devices devices[NUM_OF_DEVICES];
 static inline void initDevices(Stack *stack){
+    (void)stack;
     printf("Devices init non\n");
     
 }

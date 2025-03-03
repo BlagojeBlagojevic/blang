@@ -1,9 +1,10 @@
 SHELL := /bin/bash
 CC = gcc  
-CFLAGS = -Ofast -Wall -Wextra  -Wno-format -Wno-unused-variable -Wno-unused-function -std=c11 -ggdb
+CFLAGS = -D_XOPEN_SOURCE=600 -O3 -Wall -Wextra -Werror -Wno-format -Wno-unused-variable -Wno-unused-function -std=c11 -ggdb
+
 
 build: 
-	$(CC) -o compiler main.c lex.c parser.c $(CFLAGS)
+	$(CC) -static -o compiler main.c lex.c parser.c $(CFLAGS)
 
 
 compile:
@@ -18,6 +19,15 @@ runtime:
 dissasembly: 
 	./compiler -d code.vm
 
+writeHeader:
+	./compiler -b code.vm
+
+buildExeSdl: 
+	$(CC) -o app buildexe.c -O3 -D_XOPEN_SOURCE=600  -lSDL2 
+
+buildExe:
+	$(CC) -o app buildexe.c -D_XOPEN_SOURCE=600 -O3 
+
 
 all: build compile run
 
@@ -26,10 +36,11 @@ all: build compile run
 interpreter:
 	./compiler -i code.vm
 
-buildsdl: 
-	$(CC) -o compiler main.c lex.c parser.c -s  $(CFLAGS) -lSDL2
+buildsdl:   
+	$(CC) -o compiler main.c lex.c parser.c $(CFLAGS) -lSDL2 
 
 allsdl: buildsdl compile run
+
 
 
 clean :
