@@ -1,19 +1,24 @@
 #ifndef BVM_H
 #define BVM_H
+#ifndef _XOPEN_SOURCE
+	#define _XOPEN_SOURCE
+#endif
 #include<stdint.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+
 #include<unistd.h>
 #include<signal.h>
 #include<stddef.h>
 #include "device.h"
 
+
 #define LOG(...)    fprintf(stdout, __VA_ARGS__)
 //#define LOG(...) printf
 #define LOGSTACK()        LOG("Value %d\n", (i16)vm.stack[SP].asI64);
 #define ERROR_BREAK(...) {fprintf(stdout, __VA_ARGS__); exit(-1);}
-#define PAUSE()        	 {char ch; scanf("%c", &ch);}
+#define PAUSE()        	 {char ch; int c = getchar();(void)c;}
 
 #define DEBUG 1
 #define TRUE  1
@@ -334,9 +339,9 @@ static inline void executeInstruction(Bvm *bvm) {
 		case PRINT: {
 				c = bvm->instruction[bvm->IP].operand;
 				if(c._asU64 == u)
-					LOG("%u", bvm->stack.stack[bvm->stack.SP - 1]._asU64);
+					LOG("%lu", bvm->stack.stack[bvm->stack.SP - 1]._asU64);
 				else if(c._asU64 == i) {
-					LOG("%d", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
+					LOG("%ld", bvm->stack.stack[bvm->stack.SP - 1]._asI64);
 					}
 				else if(c._asU64 == f) {
 					LOG("%lf", (float)bvm->stack.stack[bvm->stack.SP - 1]._asF64);
@@ -357,7 +362,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				LOG("\n-----------------------------------\n");
 				LOG("Stack : \n");
 				for(int i = bvm->stack.SP-1; i >= 0 ; i--) {
-					LOG("%u\n", bvm->stack.stack[i]);
+					LOG("%lu\n", bvm->stack.stack[i]._asU64);
 					}
 				LOG("\n-----------------------------------\n");
 				bvm->IP++;
@@ -371,7 +376,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					}
 				//
 				for(int i = counter; i < bvm->stack.SP; i++) {
-					LOG("%c", bvm->stack.stack[i]);
+					LOG("%c", (char)bvm->stack.stack[i]._asU64);
 					}
 				bvm->IP++;
 				break;
@@ -384,7 +389,7 @@ static inline void executeInstruction(Bvm *bvm) {
 					for(counter = bvm->stack.SP - 1;  bvm->stack.stack[counter]._asU64 != 0 && counter > 0; counter--) {
 						bytes[counterB++] = bvm->stack.stack[counter]._asU64;
 					}
-				printf("str %s\n", bytes);
+				//printf("str %s\n", bytes);
 				if(counter < 0){
 					ERROR_BREAK("Counter in reverse string shoude not be zero!!!\n");
 				}
@@ -1047,7 +1052,7 @@ static inline u64 textToProgram(const char* name, Instruction *instrucion) {
 
 				else {
 					instrucion[counterInstruction].operand._asI64 = (i64)atoi(textOperand);
-					LOG("operand %d\n", instrucion[counterInstruction].operand._asI64);
+					LOG("operand %ld\n", instrucion[counterInstruction].operand._asI64);
 					}
 
 				counterInstruction++;
@@ -1085,14 +1090,15 @@ static inline void binToProgram(const char* name, Instruction *instruction) {
 	if(f == NULL) {
 		ERROR_BREAK("FILE ERROR !!!\n");
 		}
-	fread(instruction, sizeof(Instruction), MAX_SIZE_OF_PROGRAM, f);
+	size_t s = fread(instruction, sizeof(Instruction), MAX_SIZE_OF_PROGRAM, f);
+	(void)s;
 	fclose(f);
 	}
 
 static inline void bitToDisasemly(const char* name, Instruction *instruction){
 	FILE *f = fopen(name, "rb");
-	fread(instruction, sizeof(Instruction), MAX_SIZE_OF_PROGRAM, f);
-
+	size_t s = fread(instruction, sizeof(Instruction), MAX_SIZE_OF_PROGRAM, f);
+	(void)s;
 	fclose(f);
 	f = fopen("dissasembled.txt", "w");
 	fseek(f, 0, SEEK_SET);
@@ -1111,7 +1117,7 @@ static inline void bitToDisasemly(const char* name, Instruction *instruction){
 		fwrite(instructionNames[instNum], sizeof(char), strlen(instructionNames[instNum]), f);
 		char num[20];
 		//meset(num, '\0', sizeof(char) * 20);
-		snprintf(num, 20, "  %d\n",instruction[counter].operand._asI64);
+		snprintf(num, 20, "  %ld\n",instruction[counter].operand._asI64);
 		fwrite(num, sizeof(char), strlen(num), f);
 		
 	}
