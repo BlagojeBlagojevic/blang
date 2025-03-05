@@ -66,6 +66,7 @@ typedef enum {
 	JMP,
 	JMPT,
 	JMPF,
+	JMPSTACK,
 	SETSP,
 	SETSPSTACK,
 	RESTORE,
@@ -133,6 +134,7 @@ static const char* instructionNames[] = {
 	"JMP",
 	"JMPT",
 	"JMPF",
+	"JMPSTACK",
 	"SETSP",
 	"SETSPSTACK",
 	"RESTORE",
@@ -176,7 +178,7 @@ typedef struct {
 
 #define MAX_SIZE_OF_PROGRAM 20024
 #define MAX_LINE 100	
-
+//#define MAX_SIZE_CORUTINE 100
 
 
 
@@ -271,6 +273,7 @@ static inline Bvm initBVM(void) {
 	//LOG("\n SP = %lu\n", bvm.stack.SP);
 	//LOG("\n IP = %lu\n", bvm.IP);
 	bvm.numOfInstructions = 0;
+	//memset(bvm.corutines, -1, MAX_SIZE_CORUTINE*sizeof(u64));
     initDevices(&bvm.stack);
 
 	return bvm;
@@ -658,8 +661,16 @@ static inline void executeInstruction(Bvm *bvm) {
 					}
 				break;
 				}
-
-
+		case JMPSTACK: {
+					a = stackPop(&bvm->stack);
+					if(a._asU64 >=  MAX_SIZE_OF_PROGRAM){
+						ERROR_BREAK("\nOverflow or underflow for IP\n");
+					}
+					//b = bvm->instruction[bvm->IP].operand;
+					bvm->IP = a._asU64;
+					break;
+					}
+		
 		case SETSP: {
 				a = bvm->instruction[bvm->IP].operand;
 				if(a._asU64 > STACK_CAPACITIY) {
@@ -707,10 +718,7 @@ static inline void executeInstruction(Bvm *bvm) {
 
 		case COPYSTACK: {
 				a = stackPop(&bvm->stack); //memadress
-				//b = bvm->instruction[bvm->IP].operand;
 				c = bvm->stack.stack[a._asU64]; //value of memadress
-				//printf("%f", c._asF64);
-				//system("pause");
 				stackPushWord(&bvm->stack, c);
 				bvm->IP++;
 				break;

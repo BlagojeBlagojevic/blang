@@ -16,8 +16,8 @@
 #include "bvm.h"
 
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_PRINTSTRING, 
-	  KEYWORD_REVERSESTRING,KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_PUSHSPMEM, KEYWORD_SET,
-      KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
+	  KEYWORD_REVERSESTRING,KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_PUSHSPMEM,KEYWORD_PUSHIP, 
+	  KEYWORD_SET, KEYWORD_JMP, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
       KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_XOR, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
       KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE, KEYWORD_OPEN, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
@@ -26,8 +26,8 @@ enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEY
      };
 static const char* keywords[] = { 
 								  "var", "print","charprint", "floatprint", "printstring","reversestring",
-								  "printstack","if", "end", "else", "SP", "SET",
-                                  "dup", "?", "drop", "setsp", "over","rot","swap",
+								  "printstack","if", "end", "else", "SP", "IP", 
+								  "SET", "JMP", "dup", "?", "drop", "setsp", "over","rot","swap",
                                   "while","endloop","breakloop",
                                   "&", "arr", "??", "@","shr","shl","xor","or","and","bnot",
                                   "inc", "halt", "write", "open", "close", "dupF", "dup2",

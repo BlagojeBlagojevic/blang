@@ -439,6 +439,15 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,
 						counterInstruction++;
 						stackSize++;
 						}
+					else if (WORD_COMPARE(KEYWORD_PUSHIP)) {
+							//stackSize++;
+							bvm->instruction[counterInstruction].type = PUSHIP;
+							bvm->instruction[counterInstruction].operand._asI64 = 123;
+							printC("\n%s, IP push\n", tokens[counterTokens].value);
+							counterTokens++;
+							counterInstruction++;
+							stackSize++;
+							}	
 
 
 					else if(WORD_COMPARE(KEYWORD_IF)) {
@@ -489,6 +498,13 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,
 						counterInstruction++;
 						stackSize--;
 						}
+					else if(WORD_COMPARE(KEYWORD_JMP)) {
+							bvm->instruction[counterInstruction].type = JMPSTACK;
+							bvm->instruction[counterInstruction].operand._asI64 = 123;
+							counterTokens++;
+							counterInstruction++;
+							stackSize--;
+							}	
 
 					else if(WORD_COMPARE(KEYWORD_END)) {
 						bvm->instruction[counterInstruction].type = NOP;
