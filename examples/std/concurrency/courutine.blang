@@ -1,0 +1,88 @@
+
+word memset 
+	? memsetSize
+	drop
+	? memsetSrc
+	drop
+	? memsetDest
+	drop
+	SP ? memsetSP
+	drop
+	while
+		
+		memsetSrc memsetDest ??		
+		memsetDest 1 + ? memsetDest
+		memsetSize 0 = if
+			breakloop
+		end
+		memsetSize -1 + ? memsetSize
+	endloop
+	memsetSP SET
+endword
+
+word DEBUG 
+	printstack halt
+endword
+
+
+word MAX_COURUTINE       1024 endword
+word NONINITED_COURUTINE -1 endword
+word INACTIVE_COURUTINE   1 endword
+
+
+
+word INIT_COURUTINE
+	arr _courutines MAX_COURUTINE drop
+	0 ? _courutinesCounter drop
+	(& _courutines0 -1 MAX_COURUTINE) memset	
+endword
+
+word COURUTINE 7 IP +  & _courutines0 _courutinesCounter   + ??   while endword
+
+word ENDCOURUTINE endloop endword 
+
+
+
+word BREAKCOURUTINE breakloop endword
+
+word MAIN_COURUTINE
+	COURUTINE
+		0 ? _courutinesCounter drop 
+		& _courutines0 @ dup
+		0 = if
+			while 
+				_courutinesCounter 1 + ? _courutinesCounter
+				& _courutines0 + @ dup dup dup
+				-1 = if
+					0 10  "NothingInCourutines" 10 printstring
+					0 exit
+				end
+				0 = ! if breakloop end
+			endloop
+		end
+		JMP
+	ENDCOURUTINE 
+endword
+
+word YIELD_COURUTINE
+	 & _courutines0 _courutinesCounter 1 + + @ dup dup  
+	 _courutinesCounter 1 + ? _courutinesCounter drop 
+	1 >  if
+		0 = if  
+			while
+				_courutinesCounter 1 + ? _courutinesCounter drop
+				& _courutines0 _courutinesCounter  + @ dup dup
+				-1 = if
+					0 ? _courutinesCounter drop
+				end
+				1 < if dup  JMP end
+			endloop
+		end
+	 	BREAKCOURUTINE
+	 end
+	 JMP
+endword
+
+word FREE_COURUTINE
+	0 & _courutines0 _courutinesCounter + ?? drop 
+endword
