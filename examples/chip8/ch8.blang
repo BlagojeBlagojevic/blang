@@ -295,7 +295,7 @@ word loop
 	
 
 	(N3 8 =) (N0 1 =) and if
-		(& regV0 N1 + @) (& regV0 N2 + @) or 255 and  (& regV0 N1 + ) ??  print 0 32 "N2or_N1" 10 printstring 0 SET
+		(& regV0 N1 + @) (& regV0 N2 + @) or   (& regV0 N2 + ) ??  print 0 32 "N2or_N1" 10 printstring 0 SET
 	end
 	
 
