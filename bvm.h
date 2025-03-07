@@ -75,6 +75,7 @@ typedef enum {
 	SWAP,
 	MEM,
 	MEMSTACK,
+	INSTRUCTIONSTACK,
 	NOP,
 	HALT,
 	INC,
@@ -143,6 +144,7 @@ static const char* instructionNames[] = {
 	"SWAP",
 	"MEM",
 	"MEMSTACK",
+	"INSTRUCTIONSTACK",
 	"NOP",
 	"HALT",
 	"INC",
@@ -753,6 +755,20 @@ static inline void executeInstruction(Bvm *bvm) {
 				break;
 
 				}
+		
+		case INSTRUCTIONSTACK:{
+			
+			a = stackPop(&bvm->stack); //INSTURCTION LOCATION
+			b = stackPop(&bvm->stack); //OPERAND
+			c = stackPop(&bvm->stack); //TYPE OF INSTRUCTION
+			if(a._asI64 > MAX_SIZE_OF_PROGRAM ){
+				ERROR_BREAK("We have try to write outside of bound in INSTRUCTIONSTACK!!!\n");			
+			}
+			bvm->instruction[(u16)a._asU64].operand._asU64 = b._asU64;//OPERAND
+			bvm->instruction[(u16)a._asU64].type = (InstructionType)c._asU64;//TYPE
+			bvm->IP++;
+			break;
+		}		
 
 		case NOP: {
 				bvm->IP++;
@@ -898,7 +914,7 @@ static inline void executeInstruction(Bvm *bvm) {
 				c = stackPop(&bvm->stack);//fd
 				//printf("str: %d\n", &bvm->stack.stack[b._asI64]);
 				u8 bytes[a._asI64];
-				//memset(bytes, 0, sizeof(u8)*a._asI64);
+				memset(bytes, 0, sizeof(u8)*a._asI64);
 				const i64 temp = read((int)c._asI64, bytes, (u64)a._asU64);
 				int counter = 0;
 
