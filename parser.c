@@ -540,6 +540,14 @@ void Parser(Token *tokens, Words *words, Bvm *bvm, size_t counterInstruction,
 						counterTokens++;
 						counterInstruction++;
 						}
+					else if(WORD_COMPARE(KEYWORD_LETINSTRUCTION)) {
+							bvm->instruction[counterInstruction].type = INSTRUCTIONSTACK;
+							bvm->instruction[counterInstruction].operand._asI64 = 0XFFFFF;
+							stackSize-=3;
+							counterTokens++;
+							counterInstruction++;
+							}
+						
 					else if(WORD_COMPARE(KEYWORD_PTR)) {
 						bvm->instruction[counterInstruction].type = NOP;
 						bvm->instruction[counterInstruction].operand._asI64 = 0;
