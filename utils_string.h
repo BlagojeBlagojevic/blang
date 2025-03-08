@@ -18,7 +18,7 @@
 enum {KEYWORD_VAR = 0, KEYWORD_PRINT, KEYWORD_PRINTCHAR, KEYWORD_PRINTFLOAT, KEYWORD_PRINTSTRING, 
 	  KEYWORD_REVERSESTRING,KEYWORD_PRINTSTACK, KEYWORD_IF, KEYWORD_END, KEYWORD_ELSE, KEYWORD_PUSHSPMEM,KEYWORD_PUSHIP, 
 	  KEYWORD_SET, KEYWORD_JMP, KEYWORD_DUP, KEYWORD_LET, KEYWORD_DROP, KEYWORD_SETSP, KEYWORD_OVER, KEYWORD_ROT, KEYWORD_SWAP,
-      KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR,
+      KEYWORD_WHILE, KEYWORD_ENDLOOP, KEYWORD_BREAKLOOP, KEYWORD_PTR, KEYWORD_ARR, KEYWORD_LETARR, KEYWORD_LETINSTRUCTION,
       KEYWORD_PTRVAL,KEYWORD_SHR,KEYWORD_SHL, KEYWORD_XOR, KEYWORD_OR, KEYWORD_AND,KEYWORD_BNOT,
       KEYWORD_INC, KEYWORD_HALT,	KEYWORD_WRITE, KEYWORD_OPEN, KEYWORD_CLOSE, KEYWORD_DUPF, KEYWORD_DUP2,
       KEYWORD_EXIT, KEYWORD_TRUNC, KEYWORD_ISATTY, KEYWORD_READ, KEYWORD_SLEEP,
@@ -29,7 +29,7 @@ static const char* keywords[] = {
 								  "printstack","if", "end", "else", "SP", "IP", 
 								  "SET", "JMP", "dup", "?", "drop", "setsp", "over","rot","swap",
                                   "while","endloop","breakloop",
-                                  "&", "arr", "??", "@","shr","shl","xor","or","and","bnot",
+                                  "&", "arr", "??", "I???","@","shr","shl","xor","or","and","bnot",
                                   "inc", "halt", "write", "open", "close", "dupF", "dup2",
                                   "exit", "truncate", "isatty", "read", "sleep",
                                   "system", "pop",
@@ -58,10 +58,7 @@ static inline char isOperator(char c) {
 
 //FOR NOW ONLY >, <, =
 static inline char isLogicOperator(char c) {
-
 	return (c == '>' || c == '<' || c == '=');
-
-
 	}
 
 
