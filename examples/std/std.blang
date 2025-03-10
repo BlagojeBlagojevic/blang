@@ -109,6 +109,13 @@ endword
 word strcnmp 
 	memcmp 
 endword
+word strlen 
+	SP ? strlenSp drop 0 ? strlenCount drop while strlenCount + dup @ 0 = 
+	if strlenSp SET strlenCount breakloop end endloop 
+endword
+
+
+
 
 word matrixAlloc 
 		? temp_matrixAlloc         drop 
