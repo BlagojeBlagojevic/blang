@@ -476,6 +476,14 @@ word FREE_COURUTINE
 endword
 
 
+word AF_INET 2 endword
+
+word SOCK_STREAM 1  endword
+
+word INADDR_ANY 0   endword
+word SOMAXCONN 4096 endword
+word O_NONBLOCK 4000 endword
+word F_SETFL 4 endword
 
 
 
