@@ -2,6 +2,9 @@
 #define BVM_TYPE
 
 #include <stdint.h>
+//#define DEVICE
+//#define WEB_DEVICE
+
 //#define SDL_DEVICE
 typedef  uint8_t  u8;
 typedef  uint16_t u16;
