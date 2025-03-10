@@ -4,10 +4,23 @@
 //#define BVM_IMPLEMENTATION
 //#define SDL_DEVICE
 #include "bvm_type.h"
+
+#ifdef DEVICE
 #ifdef SDL_DEVICE
-#include<SDL2/SDL.h>
+    #include<SDL2/SDL.h>
+#endif
+#ifdef WEB_DEVICE
+    #include<sys/socket.h>
+    #include<netinet/in.h>
+    #include<netinet/tcp.h>
+    #include<arpa/inet.h>
+    #include<unistd.h>
+    #include <fcntl.h>
+
+#endif
 
 typedef enum {
+#ifdef SDL_DEVICE
     INIT_SDL,
     CHECK_EVENT,
     PUSH_EVENT_FROM_QUEUE,
@@ -17,10 +30,19 @@ typedef enum {
     SDL_RENDER_PRESENT,
     SDL_DELAY,
     SDL_MOUSE,
+#endif
+#ifdef WEB_DEVICE
+    WEB_SOCKET,
+    WEB_BIND,
+    WEB_LISTEN,  
+    WEB_ACCEPT,
+    WEB_FCNTL,
+#endif
     NUM_OF_DEVICES
 }DeviceType;
 
 static const char* device_name[] = {
+#ifdef SDL_DEVICE
     "initSdl",
     "checkEvent",
     "pushEvent",
@@ -30,6 +52,14 @@ static const char* device_name[] = {
     "renderPresent",
     "sdlDelay",
     "sdlMouse",
+#endif
+#ifdef WEB_DEVICE
+    "socket",
+    "bind",
+    "listen",
+    "accept",
+    "fcntl",               
+ #endif   
     "NUM_OF_DEVICES",
 };
 
@@ -45,7 +75,7 @@ static volatile Devices devices[NUM_OF_DEVICES];
 
 //MAKE THIS STUF BE PASED SOMEHOW
 //PROBLY PASS A STACK
-
+#ifdef SDL_DEVICE
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 
@@ -147,6 +177,68 @@ static inline void sdlMouse(Stack *stack){
     stackPush(stack, (i64)Y);
     
 }
+#endif
+#ifdef WEB_DEVICE
+
+//SOCKET(protocol, type, domain -- socketFd)
+static inline void socketInit(Stack *stack){
+    Word protocol = stackPop(stack);
+    Word type = stackPop(stack);
+    Word domain = stackPop(stack);
+    stackPush(stack, (i64)socket((i32)domain._asI64, (i32)type._asI64, (i32)protocol._asI64));   
+}
+//BIND(socketFd, protocol port pernitenAddr -- host error)
+static void __attribute__((noinline)) bindInit(Stack *stack){
+    
+    Word permitAddr = stackPop(stack);
+    Word port = stackPop(stack);
+    Word protocol = stackPop(stack);
+    Word socketFd = stackPop(stack); 
+    
+    struct sockaddr_in host = {
+        .sin_family = (i32)protocol._asI64,
+        .sin_port = htons((u16)port._asU64),
+        .sin_addr.s_addr = htonl((u32)permitAddr._asU64),
+    };
+    Word err;
+    err._asI64 = (i64)bind((i32)socketFd._asI64, (struct sockaddr *)&host, (socklen_t)sizeof(host));
+    stackPush(stack, (i64)&host); 
+    stackPush(stack, err._asI64);
+}
+//LISTEN(socketFd, &host, -- error)
+static void  listenInit(Stack *stack){
+    Word maxConections = stackPop(stack);
+    Word socketFd = stackPop(stack);
+    stackPush(stack, (i64)listen((i32)socketFd._asI64, (i32)maxConections._asI64));
+}
+
+//ACCEPT(socketFd, &HOST, -- newSocketFd)
+static void  acceptInit(Stack *stack){
+    Word host = stackPop(stack);
+    Word socketFd = stackPop(stack);
+    Word sizeHost;
+    stackPush(stack, (i64)accept((i32)socketFd._asI64, (struct sockaddr *)host._asI64, (socklen_t*)&sizeHost._asI64));
+    (void)sizeHost;
+    //stackPush(stack, sizeHost);
+}
+
+//FCNTL(socketFd, F_SETFL  O_NONBLOCK, -- newSocketFd)
+static void  fcntlInit(Stack *stack){
+    
+    Word isBlocking = stackPop(stack);
+    Word flag = stackPop(stack);
+    Word socketFd = stackPop(stack);
+
+    stackPush(stack, (i64)fcntl((i32)socketFd._asI64, flag._asI64, isBlocking._asI64));    
+    //stackPush(stack, sizeHost);
+}
+
+
+
+
+
+
+#endif
 
 
 
@@ -154,6 +246,7 @@ static inline void initDevices(Stack *stack){
     (void)stack;
     printf("Devices init\n");
    //INIT SDL
+#ifdef SDL_DEVICE
     devices[INIT_SDL].func_pointer = &initSdl;
     devices[INIT_SDL].stackSize = -2;
    //CHECK EVENT
@@ -181,11 +274,26 @@ static inline void initDevices(Stack *stack){
   //MOUSE Sdl_Delay
     devices[SDL_MOUSE].func_pointer = &sdlMouse;
     devices[SDL_MOUSE].stackSize = +2;
-    
+#endif
+#ifdef WEB_DEVICE
+    //SOCKET socket
+    devices[WEB_SOCKET].func_pointer = &socketInit;
+    devices[WEB_SOCKET].stackSize = -2; 
+    //BIND bind
+    devices[WEB_BIND].func_pointer = &bindInit;
+    devices[WEB_BIND].stackSize = -2; 
+    //LISTEN listen
+    devices[WEB_LISTEN].func_pointer = &listenInit;
+    devices[WEB_LISTEN].stackSize = -1;
+    //ACCEPT accept
+    devices[WEB_ACCEPT].func_pointer = &acceptInit;
+    devices[WEB_ACCEPT].stackSize = -2;
+
+#endif    
     
 }
 #endif
-#ifndef SDL_DEVICE
+#ifndef DEVICE
 typedef enum {
     NUM_OF_DEVICES
 }DeviceType;
