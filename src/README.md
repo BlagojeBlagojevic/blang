@@ -1,6 +1,6 @@
 ## Prerequisites
 
-- **GCC**: The GNU Compiler Collection.
+- **GCC**: The GNU Compiler Collection (Or any other c compiler(CLANG, TCC) just change a CC var in makefile.
 - **SDL2** (optional): Required if you want to build the project with SDL2 support.
 
 ## Building the Project
