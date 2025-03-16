@@ -5,109 +5,122 @@
 #include "bvm.h"
 
 #define NOT_IMPLEMENTED()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;NOT IMPLEMENTED %s\n.LABEL%zu:\n", instructionNames[vm.instruction[i].type], numOfInstruction);\
     fputs(buffer, f);}    
 
 #define PUSH_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;push %ld\n.LABEL%zu:\n\tpush %ld\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
     fputs(buffer, f);}
 
 #define POP_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;pop %ld\n.LABEL%zu:\n\tpop rax\n", vm.instruction[i].operand._asI64, numOfInstruction);\
     fputs(buffer, f);}
 
 #define DUP_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;dup\n.LABEL%zu:\n\tpop rax\n\tpush rax\n\tpush rax\n", numOfInstruction);\
     fputs(buffer, f);}
 
 
+//#define MEM_ASM()\
+//    {char buffer[256];\
+//    memset(buffer, 0, sizeof(char)*256);\
+//    sprintf(buffer, "\n\t;;mem %ld\n.LABEL%zu:\n\tpop rax\n\tmov rbx, rsp\n\tmov rsp, new_stack+%ld\n\tpush rax\n\tmov rsp, rbx\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction,vm.instruction[i].operand._asI64+1);\
+//    fputs(buffer, f);}
+
 #define MEM_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
-    sprintf(buffer, "\n\t;;mem %ld\n.LABEL%zu:\n\tpop rax\n\tmov QWORD [-%ld], rax\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
-    fputs(buffer, f);}
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;mem %ld\n.LABEL%zu:\n\tpop rax\n\tmov qword [new_stack + (%ld * 8)], rax  ; Store at explicit address\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
+    fputs(buffer, f);}    
 
 #define MEM_STACK_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
-    sprintf(buffer, "\n\t;;memstack\n.LABEL%zu:\n\tpop rax\n\timul rax, -1\n\tpop rbx\n\tpush rbx\n\tmov QWORD [rax], rbx\n", numOfInstruction);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;memstack %ld\n.LABEL%zu:pop rax\n\tshl rax, 3\n\tpop rbx\n\tmov [new_stack + rax], rbx\n\tpush rbx\n", vm.instruction[i].operand._asI64, numOfInstruction);\
     fputs(buffer, f);}
 
+
+//#define COPY_ASM()\
+//    {char buffer[256];\
+//    memset(buffer, 0, sizeof(char)*256);\
+//    sprintf(buffer, "\n\t;;copy %ld\n.LABEL%zu:\n\tmov rbx, rsp\n\tmov rsp, new_stack+%ld\n\tpop rax\n\tpush rax\n\tmov rsp, rbx\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
+//    fputs(buffer, f);}
 
 #define COPY_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
-    sprintf(buffer, "\n\t;;copy %ld\n.LABEL%zu:\n\tmov rax,  QWORD [-%ld]\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;copy %ld\n.LABEL%zu:\n\tmov rax, qword [new_stack + (%ld * 8)]   ; Load from explicit address\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
     fputs(buffer, f);}
 
+
 #define COPY_STACK_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
-    sprintf(buffer, "\n\t;;copystack\n.LABEL%zu:\n\tpop rax\n\timul rax, -1\n\tmov rbx, QWORD [rax]\n\tpush rbx\n",numOfInstruction);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;copystack %ld\n.LABEL%zu:pop rax\n\tshl rax, 3\n\tmov rbx, [new_stack + rax]\n\tpush rbx\n", vm.instruction[i].operand._asI64, numOfInstruction);\
     fputs(buffer, f);}
 
 
 #define ADD_INT_ASM()\
-{char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
+{char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;add\n.LABEL%zu:\n\tpop rax\n\tpop rbx\n\tadd rax, rbx\n\tpush rax\n", numOfInstruction);\
     fputs(buffer, f);}
 
 #define SUB_INT_ASM()\
-    {char buffer[128];\
-        memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
         sprintf(buffer, "\n\t;;sub\n.LABEL%zu:\n\tpop rax\n\tpop rbx\n\tsub rax, rbx\n\tpush rax\n", numOfInstruction);\
         fputs(buffer, f);}
 
 #define MUL_INT_ASM()\
-    {char buffer[128];\
-        memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
         sprintf(buffer, "\n\t;;mul\n.LABEL%zu:\n\tpop rax\n\tpop rdi\n\timul rax, rdi\n\tpush rax\n", numOfInstruction);\
         fputs(buffer, f);}
 
 #define DIV_INT_ASM()\
-    {char buffer[128];\
-        memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
         sprintf(buffer, "\n\t;;div\n.LABEL%zu:\n\tpop rax\n\tpop rdi\n\tcqo\n\tidiv rdi\n\tpush rax\n", numOfInstruction);\
         fputs(buffer, f);}   
 
 #define IF_ASM()\
-        {char buffer[128];\
-            memset(buffer, 0, sizeof(char)*128);\
-            sprintf(buffer, "\n\t;;if\n.LABEL%zu:\n\tpop rax\n\tpop rbx\n\tcmp rax, rbx\n", numOfInstruction);\
+        {char buffer[256];\
+            memset(buffer, 0, sizeof(char)*256);\
+            sprintf(buffer, "\n\t;;if %ld\n.LABEL%zu:\n\tpop rdi\n\tpop rsi\n\tmov rdx, %ld\n\t call COMPARE\n\tpush rax\n",vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
             fputs(buffer, f);}             
     
 
 #define JMP_ASM()\
-    {char buffer[128];\
-        memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
         sprintf(buffer, "\n\t;;jmp\n.LABEL%zu:\n\tpop rdi\n\tjmp .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64 - 1);\
         fputs(buffer, f);}             
 
 #define JMPF_ASM()\
-    {char buffer[128];\
-        memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
         sprintf(buffer, "\n\t;;jmpf\n.LABEL%zu:\n\tpop rdi\n\tjnz .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64 - 1);\
         fputs(buffer, f);}           
 
 #define PRINT_INT_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;printInt\n.LABEL%zu:\n\tpop rdi\n\tcall PRINT_INT\n\tpush rdi\n", numOfInstruction);\
     fputs(buffer, f);}
 
 #define PRINT_CHAR_ASM()\
-    {char buffer[128];\
-    memset(buffer, 0, sizeof(char)*128);\
-    sprintf(buffer, "\n\t;;printChar\n.LABEL%zu:\n\tpop rdi\n\tcall PRINT_CHAR\n", numOfInstruction);\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;printChar\n.LABEL%zu:\n\tmov rax, 1\n\tmov rdi, 1\n\tmov rsi, rsp\n\tmov rdx, 1\n\tsyscall\n", numOfInstruction);\
     fputs(buffer, f);}
 
 
@@ -179,18 +192,43 @@
    fputs("\n\tmov     eax, buffer", f);\
    fputs("\n\tret\n\n", f);}\
 
+#define COMPARE_INIT()\
+    fputs("\nCOMPARE:", f);\
+    fputs("\n\ttest    rdx, rdx", f);\
+    fputs("\n\tjne     .L2", f);\
+    fputs("\n\tcmp     rsi, rdi", f);\
+    fputs("\n\tjmp     .L6", f);\
+    fputs("\n.L2:", f);\
+    fputs("\n\tdec     rdx", f);\
+    fputs("\n\tjne     .L4", f);\
+    fputs("\n\tcmp     rdi, rsi", f);\
+    fputs("\n.L6:", f);\
+    fputs("\n\tsetb    al", f);\
+    fputs("\n\tjmp     .L5", f);\
+    fputs("\n.L4:", f);\
+    fputs("\n\tcmp     rdi, rsi", f);\
+    fputs("\n\tsete    al", f);\
+    fputs("\n.L5:", f);\
+    fputs("\n\tmovzx   eax, al   ; Zero-extend AL into EAX", f);\
+    fputs("\n\tret               ; Return to the caller\n", f);\
+
+
 
 int main(){
     Bvm vm = initBVM(); 
     binToProgram("code.vm", vm.instruction);
     FILE *f = fopen("nasmAsm.asm", "w");
     if(f == NULL) return -1;
+    fputs("section .bss\n\tnew_stack resq 1000000  ; Reserve 1MB of qword for the new stack\n", f);
     fputs("segment .text\n", f);
     PRINT_INT_ASM_INIT();
     PRINT_CHAR_INIT_ASM();
+    COMPARE_INIT();
+    
     //STR_LABEL_RDI();
     fputs("global _start\n", f);
     fputs("_start:\n", f);
+    fputs("; Switch to new stack (aligned)\n\tmov rsp, new_stack + 1000000\n", f);
 
     //fputs(headerBuffer, f);
     size_t numOfInstruction = 0;
@@ -289,7 +327,7 @@ int main(){
     }
     fputs("\tmov rax, 60\n\tmov rdi, 0\n\tsyscall\n", f);    
     fclose(f);
-    system("nasm -f -ggdb elf64 nasmAsm.asm -o nasmAsm.o ");
+    system("nasm -f elf64 nasmAsm.asm -o nasmAsm.o ");
     system("ld nasmAsm.o -o nativeApp");
     printf("Native Executable\n");
     return 0;
