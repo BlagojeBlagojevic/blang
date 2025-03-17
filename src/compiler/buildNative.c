@@ -95,20 +95,20 @@
 #define IF_ASM()\
         {char buffer[256];\
             memset(buffer, 0, sizeof(char)*256);\
-            sprintf(buffer, "\n\t;;if %ld\n.LABEL%zu:\n\tpop rdi\n\tpop rsi\n\tmov rdx, %ld\n\t call COMPARE\n\tpush rax\n",vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
+            sprintf(buffer, "\n\t;;if %ld\n.LABEL%zu:\n\tpop rdi\n\tpop rsi\n\tmov rdx, %ld\n\tcall COMPARE\n\tpush rax\n",vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
             fputs(buffer, f);}             
     
 
 #define JMP_ASM()\
     {char buffer[256];\
         memset(buffer, 0, sizeof(char)*256);\
-        sprintf(buffer, "\n\t;;jmp\n.LABEL%zu:\n\tpop rdi\n\tjmp .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64 - 1);\
+        sprintf(buffer, "\n\t;;jmp\n.LABEL%zu:\n\tjmp .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64);\
         fputs(buffer, f);}             
 
 #define JMPF_ASM()\
     {char buffer[256];\
         memset(buffer, 0, sizeof(char)*256);\
-        sprintf(buffer, "\n\t;;jmpf\n.LABEL%zu:\n\tpop rdi\n\tjnz .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64 - 1);\
+        sprintf(buffer, "\n\t;;jmpf\n.LABEL%zu:\n\tpop rax\n\ttest rax, rax   ; Check if false (0)\n\tjz .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64);\
         fputs(buffer, f);}           
 
 #define PRINT_INT_ASM()\
@@ -122,6 +122,13 @@
     memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;printChar\n.LABEL%zu:\n\tmov rax, 1\n\tmov rdi, 1\n\tmov rsi, rsp\n\tmov rdx, 1\n\tsyscall\n", numOfInstruction);\
     fputs(buffer, f);}
+
+#define END_ASM()\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t; END,\n.LABEL%zu:\n\tmov rax, 60\n\tmov rdi, 0\n\tsyscall\n", numOfInstruction);\
+    fputs(buffer, f);}
+
 
 
 #define PRINT_INT_ASM_INIT()\
@@ -318,6 +325,7 @@ int main(){
             COPY_STACK_ASM();
             break;
         }
+        
         default:{
             NOT_IMPLEMENTED();
             break;
@@ -325,7 +333,7 @@ int main(){
         }
         numOfInstruction++;  
     }
-    fputs("\tmov rax, 60\n\tmov rdi, 0\n\tsyscall\n", f);    
+    END_ASM();    
     fclose(f);
     system("nasm -f elf64 nasmAsm.asm -o nasmAsm.o ");
     system("ld nasmAsm.o -o nativeApp");
