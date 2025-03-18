@@ -17,15 +17,15 @@ Here's a comprehensive list of all BVM instructions with implementation status:
 | ADD                | Arithmetic       | ✅           | Integer addition (`pop rax; add rbx`)  |
 | DEC                | Arithmetic       | ✅           | Handled as subtraction                 |
 | PRINT              | I/O              | ✅           | Integer printing via `PRINT_INT`        |
-| POP                | Stack Operations | ❌           |                                        |
+| POP                | Stack Operations | ✅           |                                        |
 | PUSHF              | Stack Operations | ❌           |                                        |
 | PUSHIP             | Stack Operations | ❌           |                                        |
 | PUSHSP             | Stack Operations | ❌           |                                        |
 | PRINTSTACK         | I/O              | ❌           |                                        |
 | PRINTSTRING        | I/O              | ❌           |                                        |
 | REVERSSTRING       | String           | ❌           |                                        |
-| MUL                | Arithmetic       | ❌           |                                        |
-| DIV                | Arithmetic       | ❌           |                                        |
+| MUL                | Arithmetic       | ✅           |                                        |
+| DIV                | Arithmetic       | ✅           |                                        |
 | MOD                | Arithmetic       | ❌           |                                        |
 | NOT                | Logic            | ❌           |                                        |
 | SHR                | Bitwise          | ❌           |                                        |
@@ -34,27 +34,27 @@ Here's a comprehensive list of all BVM instructions with implementation status:
 | OR                 | Bitwise          | ❌           |                                        |
 | AND                | Bitwise          | ❌           |                                        |
 | BNOT               | Bitwise          | ❌           |                                        |
-| DUP                | Stack Manip      | ❌           |                                        |
+| DUP                | Stack Manip      | ✅           |                                        |
 | OVER               | Stack Manip      | ❌           |                                        |
 | ROT                | Stack Manip      | ❌           |                                        |
 | SWAP_NO            | Stack Manip      | ❌           |                                        |
-| IF                 | Control Flow     | ❌           |                                        |
-| JMP                | Control Flow     | ❌           |                                        |
+| IF                 | Control Flow     | ✅           |                                        |
+| JMP                | Control Flow     | ✅           |                                        |
 | JMPT               | Control Flow     | ❌           |                                        |
-| JMPF               | Control Flow     | ❌           |                                        |
+| JMPF               | Control Flow     | ✅           |                                        |
 | JMPSTACK           | Control Flow     | ❌           |                                        |
 | SETSP              | Memory           | ❌           |                                        |
 | SETSPSTACK         | Memory           | ❌           |                                        |
 | RESTORE            | Memory           | ❌           |                                        |
-| COPY               | Memory           | ❌           |                                        |
-| COPYSTACK          | Memory           | ❌           |                                        |
+| COPY               | Memory           | ✅           |                                        |
+| COPYSTACK          | Memory           | ✅           |                                        |
 | SWAP               | Memory           | ❌           |                                        |
-| MEM                | Memory           | ❌           |                                        |
-| MEMSTACK           | Memory           | ❌           |                                        |
+| MEM                | Memory           | ✅           |                                        |
+| MEMSTACK           | Memory           | ✅           |                                        |
 | INSTRUCTIONSTACK   | Debug            | ❌           |                                        |
-| NOP                | Control Flow     | ❌           |                                        |
+| NOP                | Control Flow     | ✅           |                                        |
 | HALT               | Control Flow     | ❌           |                                        |
-| INC                | Arithmetic       | ❌           |                                        |
+| INC                | Arithmetic       | ✅           |                                        |
 | WRITE              | Syscall          | ❌           | Requires `BVM_SYSCALLS`                |
 | OPEN               | Syscall          | ❌           | Requires `BVM_SYSCALLS`                |
 | CLOSE              | Syscall          | ❌           | Requires `BVM_SYSCALLS`                |
