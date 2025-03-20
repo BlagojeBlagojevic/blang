@@ -8,13 +8,26 @@
     {char buffer[256];\
     memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;NOT IMPLEMENTED %s\n.LABEL%zu:\n", instructionNames[vm.instruction[i].type], numOfInstruction);\
-    fputs(buffer, f);}    
+    fputs(buffer, f);}  
+    
+#define NOP_ASM()\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;nop\n.LABEL%zu:\n", numOfInstruction);\
+    fputs(buffer, f);}  
 
 #define PUSH_ASM()\
     {char buffer[256];\
     memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;push %ld\n.LABEL%zu:\n\tpush %ld\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
     fputs(buffer, f);}
+   
+#define PUSHSP_ASM()\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;pushsp\n.LABEL%zu:\n\tmov rax, rsp\n\t\n\tmov rbx,  new_stack + 1000000\n\tsub rax, rbx\n\tshr rax, 3\n\tpush rax\n", numOfInstruction);\
+    fputs(buffer, f);}
+
 
 #define POP_ASM()\
     {char buffer[256];\
@@ -29,11 +42,6 @@
     fputs(buffer, f);}
 
 
-//#define MEM_ASM()\
-//    {char buffer[256];\
-//    memset(buffer, 0, sizeof(char)*256);\
-//    sprintf(buffer, "\n\t;;mem %ld\n.LABEL%zu:\n\tpop rax\n\tmov rbx, rsp\n\tmov rsp, new_stack+%ld\n\tpush rax\n\tmov rsp, rbx\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction,vm.instruction[i].operand._asI64+1);\
-//    fputs(buffer, f);}
 
 #define MEM_ASM()\
     {char buffer[256];\
@@ -44,15 +52,10 @@
 #define MEM_STACK_ASM()\
     {char buffer[256];\
     memset(buffer, 0, sizeof(char)*256);\
-    sprintf(buffer, "\n\t;;memstack %ld\n.LABEL%zu:pop rax\n\tshl rax, 3\n\tpop rbx\n\tmov [new_stack + rax], rbx\n\tpush rbx\n", vm.instruction[i].operand._asI64, numOfInstruction);\
+    sprintf(buffer, "\n\t;;memstack %ld\n.LABEL%zu:\n\tpop rax\n\tshl rax, 3\n\tpop rbx\n\tmov [new_stack + rax], rbx\n\tpush rbx\n", vm.instruction[i].operand._asI64, numOfInstruction);\
     fputs(buffer, f);}
 
 
-//#define COPY_ASM()\
-//    {char buffer[256];\
-//    memset(buffer, 0, sizeof(char)*256);\
-//    sprintf(buffer, "\n\t;;copy %ld\n.LABEL%zu:\n\tmov rbx, rsp\n\tmov rsp, new_stack+%ld\n\tpop rax\n\tpush rax\n\tmov rsp, rbx\n\tpush rax\n", vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
-//    fputs(buffer, f);}
 
 #define COPY_ASM()\
     {char buffer[256];\
@@ -66,6 +69,13 @@
     memset(buffer, 0, sizeof(char)*256);\
     sprintf(buffer, "\n\t;;copystack %ld\n.LABEL%zu:pop rax\n\tshl rax, 3\n\tmov rbx, [new_stack + rax]\n\tpush rbx\n", vm.instruction[i].operand._asI64, numOfInstruction);\
     fputs(buffer, f);}
+
+#define SETSPSTACK_ASM()\
+    {char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;setspstack %ld\n.LABEL%zu:\n\tpop rsp\n\timul rsp, 8\n\tadd rsp, new_stack + 1000000\n", vm.instruction[i].operand._asI64, numOfInstruction);\
+    fputs(buffer, f);}
+
 
 
 #define ADD_INT_ASM()\
@@ -92,11 +102,73 @@
         sprintf(buffer, "\n\t;;div\n.LABEL%zu:\n\tpop rax\n\tpop rdi\n\tcqo\n\tidiv rdi\n\tpush rax\n", numOfInstruction);\
         fputs(buffer, f);}   
 
-#define IF_ASM()\
-        {char buffer[256];\
+#define MOD_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;MOD\n.LABEL%zu:\n\tpop rdi\n\tpop rsi\n\tcall MOD\n\tpush rax\n", numOfInstruction);\
+        fputs(buffer, f);}   
+
+#define SHL_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;shl\n.LABEL%zu:\n\tpop rcx\n\tpop rax\n\tshl rax, cl\n\tpush rax\n", numOfInstruction);\
+        fputs(buffer, f);}   
+    
+
+#define SHR_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;shr\n.LABEL%zu:\n\t\n\tpop rcx\n\tpop rax\n\tshr rax, cl\n\tpush rax\n", numOfInstruction);\
+        fputs(buffer, f);}   
+        
+#define XOR_ASM()\
+    {char buffer[256];\
             memset(buffer, 0, sizeof(char)*256);\
-            sprintf(buffer, "\n\t;;if %ld\n.LABEL%zu:\n\tpop rdi\n\tpop rsi\n\tmov rdx, %ld\n\tcall COMPARE\n\tpush rax\n",vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
-            fputs(buffer, f);}             
+            sprintf(buffer, "\n\t;;xor\n.LABEL%zu:\n\tpop rdi\n\tpop rax\n\txor rax, rdi\n\tpush rax\n", numOfInstruction);\
+            fputs(buffer, f);}   
+
+#define OR_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;or\n.LABEL%zu:\n\tpop rdi\n\tpop rax\n\tor rax, rdi\n\tpush rax\n", numOfInstruction);\
+        fputs(buffer, f);} 
+
+#define AND_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;and\n.LABEL%zu:\n\tpop rdi\n\tpop rax\n\tand rax, rdi\n\tpush rax\n", numOfInstruction);\
+        fputs(buffer, f);}  
+
+#define NOT_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;not\n.LABEL%zu:\n\tpop rax\n\txor rax, -1\n\tpush rax\n", numOfInstruction);\
+        fputs(buffer, f);}         
+
+#define OVER_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;over\n.LABEL%zu:\n\tpop rax\n\tpop rdx\n\tpush rdx\n\tpush rax\n\tpush rdx\n", numOfInstruction);\
+        fputs(buffer, f);}         
+
+#define ROT_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;rot\n.LABEL%zu:\n\tpop rax\n\tpop rdx\n\tpop rdi\n\tpush rax\n\tpush rdi\n\tpush rdx\n", numOfInstruction);\
+        fputs(buffer, f);}    
+
+#define SWAPNO_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;swap_no\n.LABEL%zu:\n\tpop rax\n\tpop rdx\n\tpush rax\n\tpush rdx\n", numOfInstruction);\
+        fputs(buffer, f);}    
+    
+
+#define IF_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;if %ld\n.LABEL%zu:\n\tpop rdi\n\tpop rsi\n\tmov rdx, %ld\n\tcall COMPARE\n\tpush rax\n",vm.instruction[i].operand._asI64, numOfInstruction, vm.instruction[i].operand._asI64);\
+        fputs(buffer, f);}             
     
 
 #define JMP_ASM()\
@@ -110,6 +182,13 @@
         memset(buffer, 0, sizeof(char)*256);\
         sprintf(buffer, "\n\t;;jmpf\n.LABEL%zu:\n\tpop rax\n\ttest rax, rax   ; Check if false (0)\n\tjz .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64);\
         fputs(buffer, f);}           
+
+#define JMPT_ASM()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;jmpf\n.LABEL%zu:\n\tpop rax\n\ttest rax, rax   ; Check if false (0)\n\tjz .LABEL%zu\n", numOfInstruction, vm.instruction[i].operand._asI64);\
+        fputs(buffer, f);}           
+    
 
 #define PRINT_INT_ASM()\
     {char buffer[256];\
@@ -219,6 +298,13 @@
     fputs("\n\tmovzx   eax, al   ; Zero-extend AL into EAX", f);\
     fputs("\n\tret               ; Return to the caller\n", f);\
 
+#define MOD_INIT()\
+    fputs("\nMOD:", f);\
+    fputs("\n\tmov     rax, rdi", f);\
+    fputs("\n\tcdq", f);\
+    fputs("\n\tidiv    rsi", f);\
+    fputs("\n\tmov     rax, rdx", f);\
+    fputs("\n\tret\n", f);\
 
 
 int main(){
@@ -226,12 +312,12 @@ int main(){
     binToProgram("code.vm", vm.instruction);
     FILE *f = fopen("nasmAsm.asm", "w");
     if(f == NULL) return -1;
-    fputs("section .bss\n\tnew_stack resq 1000000  ; Reserve 1MB of qword for the new stack\n", f);
+    fputs("section .bss\n\tnew_stack resq 1000000  ; Reserve 1MB of qword for the new stack\n", f); //PROB SEND THIS AS A CONST WHEN WE CREATE A PROGRAM
     fputs("segment .text\n", f);
     PRINT_INT_ASM_INIT();
     PRINT_CHAR_INIT_ASM();
     COMPARE_INIT();
-    
+    MOD_INIT();
     //STR_LABEL_RDI();
     fputs("global _start\n", f);
     fputs("_start:\n", f);
@@ -245,6 +331,10 @@ int main(){
             PUSH_ASM();
             break;
         }
+        case PUSHSP:{
+            PUSHSP_ASM();
+            break;
+        }
         case POP:{
             POP_ASM();
             break;
@@ -254,41 +344,65 @@ int main(){
             break;
         }
         case ADD:{
-            if(vm.instruction[i].operand._asI64 == 0){
+            
                 ADD_INT_ASM();
-            }
-            else{
-                NOT_IMPLEMENTED();
-            }
+            
             break;
         }
         case DEC:{
-            if(vm.instruction[i].operand._asI64 == 0){
+            
                 SUB_INT_ASM();
-            }
-            else{
-                NOT_IMPLEMENTED();
-            }
+            
             break;
         }
         case MUL:{
-            if(vm.instruction[i].operand._asI64 == 0){
+            
                 MUL_INT_ASM();
-            }
-            else{
-                NOT_IMPLEMENTED();
-            }
             break;
         }
         case DIV:{
-            if(vm.instruction[i].operand._asI64 == 0){
+            
                 DIV_INT_ASM();
-            }
-            else{
-                NOT_IMPLEMENTED();
-            }
+            
             break;
         }
+        case MOD:{
+            MOD_ASM();
+            break;
+        }
+        case SHL:{
+            SHL_ASM();
+            break;
+        }
+        case SHR:{
+            SHR_ASM();
+            break;
+        }
+        case AND:{
+            AND_ASM();
+            break;
+        }
+        case OR:{
+            OR_ASM();
+            break;
+        }
+        case BNOT:{
+            NOT_ASM();
+            break;
+        }
+        case OVER:{
+            OVER_ASM();
+            break;
+        }
+        case ROT:{
+            ROT_ASM();
+            break;
+        }
+        case SWAP_NO:{
+            SWAPNO_ASM();
+            break;
+        }
+                
         case PRINT:{
             if(vm.instruction[i].operand._asI64 == 0){
                 PRINT_INT_ASM();
@@ -309,6 +423,10 @@ int main(){
             JMPF_ASM();
             break;
         }
+        case JMPT:{
+            JMPT_ASM();
+            break;
+        }
         case MEM:{
             MEM_ASM();
             break;
@@ -325,7 +443,14 @@ int main(){
             COPY_STACK_ASM();
             break;
         }
-        
+        case SETSPSTACK:{
+            SETSPSTACK_ASM();
+            break;
+        }
+        case NOP:{
+            NOP_ASM();
+            break;
+        }
         default:{
             NOT_IMPLEMENTED();
             break;
