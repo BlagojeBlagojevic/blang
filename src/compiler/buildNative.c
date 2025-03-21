@@ -202,6 +202,19 @@
     sprintf(buffer, "\n\t;;printChar\n.LABEL%zu:\n\tmov rax, 1\n\tmov rdi, 1\n\tmov rsi, rsp\n\tmov rdx, 1\n\tsyscall\n", numOfInstruction);\
     fputs(buffer, f);}
 
+#define WRITE_SYSCALL()\
+{char buffer[256];\
+    memset(buffer, 0, sizeof(char)*256);\
+    sprintf(buffer, "\n\t;;writeSyscall\n.LABEL%zu:\n\tmov rax, 1\n\tpop rdx\n\tpop rsi\n\tmov rdx, 100\n\tpop rdi\n\tsyscall\n", numOfInstruction);\
+    fputs(buffer, f);}
+
+#define READ_SYSCALL()\
+    {char buffer[256];\
+        memset(buffer, 0, sizeof(char)*256);\
+        sprintf(buffer, "\n\t;;readSyscall\n.LABEL%zu:\n\tmov rax, 0\n\tpop rdx\n\tpop rsi\n\tpop rdi\n\tsyscall\n", numOfInstruction);\
+        fputs(buffer, f);}
+
+
 #define END_ASM()\
     {char buffer[256];\
     memset(buffer, 0, sizeof(char)*256);\
@@ -449,6 +462,14 @@ int main(){
         }
         case NOP:{
             NOP_ASM();
+            break;
+        }
+        case WRITE:{
+            WRITE_SYSCALL();
+            break;
+        }
+        case READ:{
+            READ_SYSCALL();
             break;
         }
         default:{
