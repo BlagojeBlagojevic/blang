@@ -20,7 +20,7 @@
 #define MAX_SIZE 10000000
 #define SIZE_INTERPRETER 1000
 #define MAX_NUM_OF_WORDS 1000
-//> 
+//C:> 
 
 
 static Arena mainArena = {0};
@@ -92,26 +92,18 @@ int main(int argc, char **argv) {
 				
 		}
 
-		//fwrite(vm.instruction, sizeof(vm.instruction), 1, output);
 		uint64_t counter = 0;
 		freeBvm(&vm);
-		//fprintf(output, "", code, MAX_SIZE);
-		//fwrite(code, sizeof(char),, output);
 		fprintf(output, "{.type = %u, .operand = %lld}\n", 
 			END, 123 );
 		fprintf(output, "};");
 		fclose(output);
 		fclose(input);
-		//system("")
 	}
     else if(!strcmp(argv[1], "-i")){
 		Bvm vm = initBVM();
 		char *code = malloc((SIZE_INTERPRETER+1) * sizeof(char));
-		//char *stored = malloc(MAX_SIZE * sizeof(char));
-		//memset(stored, '\0', MAX_SIZE*sizeof(char));
 		memset(code, '\0', sizeof(char) * SIZE_INTERPRETER);
-		//int counter = 0;
-		//FILE *f = fopen("inter.blang", "w+");
 		Words *words = arena_alloc(&mainArena, MAX_NUM_OF_WORDS * sizeof(Words));
 		for (size_t i = 0; i < MAX_NUM_OF_WORDS; i++){
 			words[i].tokens = arena_alloc(&mainArena, sizeof(Token)*MAX_NUM_OF_TOKENS_IN_A_WORD*1000);
@@ -120,43 +112,25 @@ int main(int argc, char **argv) {
 		Token *t = NULL;
 		printf("\n\n\nHeap Vars are not allowed Tokenizer resets VarStack\nUse a word to def a var\n");
 		printf("Example:\nword ptrA 1234 endword\nword valA ptrA @ endword \n");
-		printf("0 ptrA ?? drop  while valA 1 + ptrA ?? valA 10 = if breakloop end valA print endloop\n");
-		//printf("0 ptrA ?? drop");  
-		//printf("while valA 1 + ptrA ??\n"); 
-		//printf("valA 10 = if\n"); 
-    	//printf("\tbreakloop\n"); 
-		//printf("end\nvalA\nprint\nendloop"); 
+		printf("0 ptrA ?? drop  while valA 1 + ptrA ?? valA 10 = if breakloop end valA print endloop\n"); 
 
 		printf("\n-------------Runtime-------------\n");
 		
 		while(1){
 			printf("\n> ");
-			//code[0] = '0';
 			memset(code, '\0', sizeof(char)*SIZE_INTERPRETER);
 			code[0] = '\n';
-			//strcpy(&code[2], stored);
 			char *c =  fgets(&code[1], SIZE_INTERPRETER*sizeof(char), stdin);
 			(void)c;
 			//
 			strcat(code, " endscript .");
-			//printf("\ncode: %s\n", code);
-			//fflush(stdin);
 			t = Tokeniser(code, words, &mainArena);
 			Parser(t, words, &vm, vm.numOfInstructions, &mainArena);
-			
-			//printf("\nnum of instructions %lld ip = %d\n", 
-			//vm.numOfInstructions, vm.IP);
-			//printf("\n-------------Runtime-------------\n");
 			vm.isRuning = TRUE;
 			loop(&vm);
-			//vm.numOfInstructions += vm.IP;
-			//vm.IP-= 2;
 			vm.IP = 0;
 			vm.numOfInstructions = 0;
-		///	vm.IP--;
-			//printf("\n---------------------------------\n");
-		
-			//arena_free(&mainArena);
+
 		}
 		arena_free(&mainArena);
 	  }
